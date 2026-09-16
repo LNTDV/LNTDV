@@ -699,20 +699,41 @@ function buildOrderPayload(){
 function registerOrder(){
   if(orderSending) return Promise.resolve(false);
   orderSending=true;
+
   var payload=buildOrderPayload();
+  // ID univoco: permette di riconoscere l'ordine anche nel foglio.
+  payload.idOrdine = "LNTDV-" + Date.now();
+
+  var body=JSON.stringify(payload);
+
+  // Metodo principale: POST verso Apps Script.
+  // text/plain evita il preflight CORS e doPost() del progetto lo legge come JSON.
   try{
     return fetch(APPS_SCRIPT_URL,{
       method:"POST",
       mode:"no-cors",
       headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(payload),
+      body:body,
       keepalive:true
     }).then(function(){
       return true;
     }).catch(function(){
+      // Fallback per Safari/iPhone o browser che interrompono fetch durante il cambio pagina.
+      try{
+        if(navigator.sendBeacon){
+          var blob=new Blob([body],{type:"text/plain;charset=UTF-8"});
+          return navigator.sendBeacon(APPS_SCRIPT_URL,blob);
+        }
+      }catch(e){}
       return false;
     });
   }catch(e){
+    try{
+      if(navigator.sendBeacon){
+        var blob2=new Blob([body],{type:"text/plain;charset=UTF-8"});
+        return Promise.resolve(navigator.sendBeacon(APPS_SCRIPT_URL,blob2));
+      }
+    }catch(e2){}
     return Promise.resolve(false);
   }
 }
