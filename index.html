@@ -3,25 +3,98 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f5f3ef">
-<meta name="description" content="La Nostra Terra da Vicino — catalogo fotografico di Edvinas Dragoni.">
+<meta name="theme-color" content="#5a3b2b">
+<meta name="description" content="La Nostra Terra da Vicino — Catalogo fotografico di Edvinas Dragoni, Arese 2026.">
 <title>La Nostra Terra da Vicino — Edvinas Dragoni</title>
 <style>
-  html,body{margin:0;width:100%;min-height:100%;background:#f5f3ef}
-  body{overflow:hidden}
-  #catalog-frame{display:block;width:100%;height:100vh;height:100dvh;border:0;background:#f5f3ef}
-  #fallback{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:5;display:none;padding:12px 18px;border-radius:999px;background:#171717;color:#fff;text-decoration:none;font:700 14px/1 Arial,sans-serif;box-shadow:0 8px 24px #0003}
+:root{--brown:#5a3b2b;--brown-dark:#3f281e;--beige:#f3eadc;--beige-2:#e8d7c1;--paper:#fffaf3}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--beige);overflow:hidden}
+body{font-family:Georgia,'Times New Roman',serif}
+#catalog-frame{display:block;width:100%;height:100vh;height:100dvh;border:0;background:var(--beige)}
+#fallback{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;display:none;padding:13px 20px;border-radius:999px;background:var(--brown);color:#fffaf3;text-decoration:none;font:700 14px/1 Arial,sans-serif;box-shadow:0 8px 28px #3f281e44}
+#error{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:28px;background:var(--beige);color:var(--brown-dark);text-align:center}
+#error .box{max-width:520px;background:var(--paper);border:1px solid var(--beige-2);border-radius:22px;padding:30px;box-shadow:0 12px 40px #3f281e18}
+#error h1{margin:0 0 10px;font-size:28px}
+#error p{margin:0;line-height:1.6}
 </style>
 </head>
 <body>
-<iframe id="catalog-frame" src="index_final_github.html?v=20260917" title="La Nostra Terra da Vicino — catalogo fotografico" loading="eager" allow="fullscreen"></iframe>
-<a id="fallback" href="index_final_github.html?v=20260917">Apri il catalogo</a>
+<iframe id="catalog-frame" src="index_final_github.html?v=20260917-final" title="La Nostra Terra da Vicino — catalogo fotografico" loading="eager" allow="fullscreen"></iframe>
+<a id="fallback" href="index_final_github.html?v=20260917-final">Apri il catalogo</a>
+<div id="error"><div class="box"><h1>La Nostra Terra da Vicino</h1><p>Il catalogo sta caricando. Se non compare, tocca “Apri il catalogo”.</p></div></div>
 <script>
+(function(){
   const frame=document.getElementById('catalog-frame');
   const fallback=document.getElementById('fallback');
-  let loaded=false;
-  frame.addEventListener('load',()=>{loaded=true;fallback.style.display='none';});
-  setTimeout(()=>{if(!loaded)fallback.style.display='block';},8000);
+  const error=document.getElementById('error');
+  let ready=false;
+
+  function injectFinalStyle(doc){
+    if(doc.getElementById('final-project-style')) return;
+    const style=doc.createElement('style');
+    style.id='final-project-style';
+    style.textContent=`
+      :root{--bg:#f3eadc!important;--paper:#fffaf3!important;--ink:#33231b!important;--muted:#755f50!important;--line:#d8c5ae!important;--accent:#5a3b2b!important;--soft:#eee0ce!important;--radius:16px!important}
+      html,body{background:#f3eadc!important;color:#33231b!important}
+      body{font-family:Georgia,'Times New Roman',serif!important}
+      .site{max-width:1380px!important;padding:18px clamp(12px,3vw,34px) 70px!important}
+      .hero{background:#fffaf3!important;border:1px solid #d8c5ae!important;border-radius:24px!important;box-shadow:0 12px 35px rgba(63,40,30,.08)!important}
+      h1{color:#5a3b2b!important}
+      .eyebrow,.intro,.photo-title,.hint,.panel p{color:#755f50!important}
+      .filter{background:#fffaf3!important;border-color:#cdb79e!important;color:#5a3b2b!important}
+      .filter.active{background:#5a3b2b!important;border-color:#5a3b2b!important;color:#fffaf3!important}
+      .photo-card{background:#fffaf3!important;border-color:#d8c5ae!important;box-shadow:0 5px 18px rgba(63,40,30,.06)!important}
+      .photo-open,.photo-open img{background:#e8d7c1!important}
+      .photo-meta{background:#eee0ce!important;color:#33231b!important}
+      .orientation-badge{color:#5a3b2b!important}
+      .panel,.selected-list{background:#fffaf3!important;border-color:#d8c5ae!important}
+      #drawer{background:#f8efe3!important}
+      .close,.secondary{background:#eee0ce!important;color:#5a3b2b!important;border-color:#d0baa0!important}
+      .primary,#order{background:#5a3b2b!important;color:#fffaf3!important}
+      .delivery-option{border-color:#d8c5ae!important;background:#fffaf3!important}
+      .delivery-option:has(input:checked),.delivery-option.is-chosen{border-color:#5a3b2b!important;background:#eee0ce!important;box-shadow:0 0 0 2px #5a3b2b!important}
+      #lightbox{background:rgba(47,29,20,.94)!important}
+      .mail-popup-box{background:#fffaf3!important;border:1px solid #d8c5ae!important}
+      .mail-popup-info{background:#eee0ce!important;border-color:#d8c5ae!important}
+      .mail-popup-close{background:#e8d7c1!important;color:#5a3b2b!important}
+      /* Mantiene l'ordine del file fotografico originale e rende le immagini uniformi senza deformarle. */
+      .photo-open{aspect-ratio:4/5!important;min-height:0!important}
+      .photo-open img{width:100%!important;height:100%!important;object-fit:contain!important}
+      .photo-card{break-inside:avoid}
+      /* Elimina ogni eventuale vecchia dicitura sulla consegna a casa. */
+      body *{ }
+    `;
+    doc.head.appendChild(style);
+
+    // Rimuove esclusivamente la vecchia dicitura richiesta dall'utente.
+    const walker=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{if(/consegna\s+(?:a\s+)?(?:casa|domicilio)[^\n]*non\s+prevista/i.test(n.nodeValue||'')){n.parentNode.removeChild(n)}});
+
+    // Etichetta automaticamente VERTICALE/ORIZZONTALE usando le proporzioni reali.
+    doc.querySelectorAll('.photo-card').forEach(card=>{
+      const img=card.querySelector('img');
+      if(!img) return;
+      const set=()=>{
+        const label=card.querySelector('.orientation-badge');
+        if(!label || !img.naturalWidth || !img.naturalHeight) return;
+        label.textContent=img.naturalWidth>=img.naturalHeight?'ORIZZONTALE':'VERTICALE';
+      };
+      img.complete?set():img.addEventListener('load',set,{once:true});
+    });
+  }
+
+  frame.addEventListener('load',function(){
+    ready=true;
+    fallback.style.display='none';
+    error.style.display='none';
+    try{injectFinalStyle(frame.contentDocument)}catch(e){fallback.style.display='block'}
+  });
+
+  setTimeout(function(){if(!ready){fallback.style.display='block';error.style.display='grid'}},7000);
+})();
 </script>
 </body>
 </html>
