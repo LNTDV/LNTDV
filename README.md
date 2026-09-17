@@ -1,47 +1,34 @@
 # LA NOSTRA TERRA DA VICINO
 
-### Fotografie di Edvinas Dragoni
+### Catalogo fotografico di Edvinas Dragoni — Arese 2026
 
-Una raccolta fotografica dedicata al territorio, alla natura, al tempo e al rapporto tra ambiente naturale e spazio urbano.
+**La Nostra Terra da Vicino** è una raccolta di 25 fotografie dedicata al territorio, alla natura, al tempo e al rapporto tra ambiente naturale e spazio urbano.
 
----
+## Percorsi
 
-## 📸 Il progetto
+- **Natura** — 10 fotografie
+- **Tempo** — 3 fotografie
+- **Natura vs Città** — 12 fotografie
 
-**La Nostra Terra da Vicino** nasce da uno sguardo personale sul mondo che ci circonda.
+## Catalogo
 
-Attraverso una raccolta di fotografie, il progetto invita a fermarsi, osservare e riscoprire luoghi e dettagli che spesso fanno parte della nostra quotidianità senza essere realmente guardati.
+Il catalogo pubblico è disponibile qui:
 
-Le immagini raccontano natura, trasformazioni, atmosfere e contrasti tra ambiente naturale e città.
+👉 **https://lntdv.github.io/LNTDV/**
 
----
+La pagina utilizza direttamente il file fotografico storico del progetto, mantenendo l'ordine delle immagini già definito. La veste grafica finale è stata impostata con palette **marrone e beige**, adattata alla consultazione da smartphone e computer.
 
-## 🖼️ La raccolta
+Sono inoltre presenti:
 
-La raccolta comprende **25 fotografie**, suddivise in tre percorsi:
+- visualizzazione uniforme delle fotografie senza deformarle;
+- indicazione **VERTICALE / ORIZZONTALE** in base alle proporzioni reali;
+- filtri per i percorsi fotografici;
+- selezione delle fotografie;
+- riepilogo dell'ordine;
+- visualizzazione ingrandita delle immagini;
+- rimozione della vecchia dicitura relativa alla consegna a casa.
 
-- 🌿 **Natura** — 10 fotografie
-- ⏳ **Tempo** — 3 fotografie
-- 🏙️ **Natura vs Città** — 12 fotografie
+## Autore
 
----
-
-## 🛒 Scegli la tua fotografia
-
-È possibile consultare il catalogo, scegliere le fotografie e richiedere la stampa nel formato desiderato.
-
-**Catalogo fotografico:**
-
-👉 [Apri il catalogo](https://lntdv.github.io/LNTDV/)
-
----
-
-## 👤 Edvinas Dragoni
-
-Fotografia come strumento per osservare, raccontare e dare un significato diverso a ciò che ci circonda.
-
-**La Nostra Terra da Vicino** è un invito a guardare più attentamente.
-
----
-
-© 2026 Edvinas Dragoni — La Nostra Terra da Vicino
+**Edvinas Dragoni**  
+La Nostra Terra da Vicino — 2026
