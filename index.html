@@ -3,15 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171717">
+<meta name="theme-color" content="#f5f3ef">
+<meta name="description" content="La Nostra Terra da Vicino — catalogo fotografico di Edvinas Dragoni.">
 <title>La Nostra Terra da Vicino — Edvinas Dragoni</title>
-<link rel="stylesheet" href="style.css?v=20260916">
+<style>
+  html,body{margin:0;width:100%;min-height:100%;background:#f5f3ef}
+  body{overflow:hidden}
+  #catalog-frame{display:block;width:100%;height:100vh;height:100dvh;border:0;background:#f5f3ef}
+  #fallback{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:5;display:none;padding:12px 18px;border-radius:999px;background:#171717;color:#fff;text-decoration:none;font:700 14px/1 Arial,sans-serif;box-shadow:0 8px 24px #0003}
+</style>
 </head>
 <body>
-<div id="page-loader"><span>La Nostra Terra da Vicino</span></div>
-<main id="catalog-shell">
-  <iframe id="catalog-frame" src="index_final_github.html" title="La Nostra Terra da Vicino — catalogo fotografico" loading="eager"></iframe>
-</main>
-<script src="script.js?v=20260916" defer></script>
+<iframe id="catalog-frame" src="index_final_github.html?v=20260917" title="La Nostra Terra da Vicino — catalogo fotografico" loading="eager" allow="fullscreen"></iframe>
+<a id="fallback" href="index_final_github.html?v=20260917">Apri il catalogo</a>
+<script>
+  const frame=document.getElementById('catalog-frame');
+  const fallback=document.getElementById('fallback');
+  let loaded=false;
+  frame.addEventListener('load',()=>{loaded=true;fallback.style.display='none';});
+  setTimeout(()=>{if(!loaded)fallback.style.display='block';},8000);
+</script>
 </body>
 </html>
