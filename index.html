@@ -4,22 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#5a3b2b">
-<meta name="description" content="La Nostra Terra da Vicino — Catalogo Natura di Edvinas Dragoni, Arese 2026.">
-<title>Catalogo Natura — Edvinas Dragoni</title>
+<meta name="description" content="La Nostra Terra da Vicino — Catalogo fotografico di Edvinas Dragoni, Arese 2026.">
+<title>Catalogo fotografico Arese 2026 — Edvinas Dragoni</title>
 <style>
-:root{--brown:#5a3b2b;--dark:#3d281d;--beige:#f3eadc;--paper:#fffaf3;--line:#d8c5ae;--green:#28a745}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--beige)}body{font-family:Georgia,'Times New Roman',serif}
+:root{--brown:#5a3b2b;--dark:#3d281d;--beige:#f3eadc;--paper:#fffaf3;--line:#d8c5ae}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--beige)}body{font-family:Georgia,'Times New Roman',serif;color:var(--dark)}
 #catalog{width:100%;height:100vh;height:100dvh;border:0;display:block;background:var(--beige)}
 #loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--beige);color:var(--brown);font-weight:700;z-index:10}
 </style>
 </head>
 <body>
 <div id="loading">Sto preparando il catalogo fotografico…</div>
-<iframe id="catalog" title="La Nostra Terra da Vicino — Catalogo Natura"></iframe>
+<iframe id="catalog" title="La Nostra Terra da Vicino — Catalogo fotografico"></iframe>
 <script>
 const OLD='https://raw.githubusercontent.com/LNTDV/LNTDV/f963575cf7185f8d3bd59d1e83c33963ee29af45/index_final_github.html';
+const NEW_WEB_APP='https://script.google.com/macros/s/AKfycbzJfCCIjsgNiTl_4ON8-1h7d8nspcazc9CCxkJoRRXJz8N8klzWQUTMBAdVKBUTsA/exec';
 const frame=document.getElementById('catalog');
 fetch(OLD).then(r=>r.text()).then(html=>{
+  html=html.replace(/https:\/\/script\.google\.com\/macros\/s\/[^'"`\s]+/g,NEW_WEB_APP);
   frame.srcdoc=html;
   frame.addEventListener('load',()=>{
     const doc=frame.contentDocument;
@@ -51,7 +53,7 @@ fetch(OLD).then(r=>r.text()).then(html=>{
     const hero=doc.querySelector('.hero');
     if(hero && !doc.querySelector('.catalog-natura-title')){
       const block=doc.createElement('div');block.style.marginTop='14px';
-      block.innerHTML='<div class="catalog-natura-title">Catalogo Natura</div><p class="catalog-natura-sub">10 fotografie · Edvinas Dragoni · Arese 2026</p>';
+      block.innerHTML='<div class="catalog-natura-title">Catalogo fotografico Arese 2026</div><p class="catalog-natura-sub">La Nostra Terra da Vicino · Edvinas Dragoni · 25 fotografie</p>';
       hero.appendChild(block);
     }
     document.getElementById('loading').style.display='none';
