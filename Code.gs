@@ -33,7 +33,8 @@ function doPost(e) {
     const orderId = /^LNTDV-[A-Z0-9-]{6,80}$/.test(suppliedOrderId) ? suppliedOrderId : ('LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase());
     const paymentMethod = String(payload.paymentMethod || '');
     const paymentStatus = String(payload.paymentStatus || 'RICEVUTO').toUpperCase();
-    const trackingToken = Utilities.getUuid().replace(/-/g,'').toUpperCase();
+    const suppliedTrackingToken = String(payload.trackingToken || '').trim().toUpperCase();
+    const trackingToken = /^[A-Z0-9]{24,80}$/.test(suppliedTrackingToken) ? suppliedTrackingToken : Utilities.getUuid().replace(/-/g,'').toUpperCase();
     const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
     const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.orientation || 'Orientamento non specificato'} — ${x.format || 'Formato non specificato'} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
     const row = sheet.getLastRow() + 1;
