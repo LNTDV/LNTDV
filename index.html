@@ -703,6 +703,14 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const orientation={"001":"Orizzontale","002":"Orizzontale","003":"Verticale","004":"Orizzontale","005":"Orizzontale","006":"Verticale","007":"Verticale","008":"Verticale","009":"Verticale","010":"Orizzontale","011":"Verticale","012":"Orizzontale","013":"Verticale","014":"Verticale","015":"Verticale","016":"Verticale","017":"Verticale","018":"Verticale","019":"Orizzontale","020":"Orizzontale","021":"Orizzontale","022":"Orizzontale","023":"Orizzontale","024":"Orizzontale","025":"Orizzontale"};
   const APPS="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
   const cards=[...document.querySelectorAll(".card")];
+  // Carica le 25 fotografie incorporate negli asset JavaScript.
+  // Le immagini sono presenti nel repository come window.LNTDV_PHOTO_XX.
+  cards.forEach(card=>{
+    const id=card.dataset.photo;
+    const img=card.querySelector("img");
+    const key="LNTDV_PHOTO_"+String(id).padStart(2,"0");
+    if(img && window[key]) img.src=window[key];
+  });
   const bar=document.getElementById("orderBar"),barCount=document.getElementById("orderBarCount"),barTotal=document.getElementById("orderBarTotal");
   const panel=document.getElementById("orderPanel"),list=document.getElementById("orderList"),totalEl=document.getElementById("orderTotal"),countEl=document.getElementById("summaryCount");
   const summary=document.getElementById("selectionSummary"),complete=document.getElementById("completePayment");
