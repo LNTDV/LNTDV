@@ -820,7 +820,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     const wanted=card.dataset.orientation||"orizzontale";
     const isLandscape=img.naturalWidth>=img.naturalHeight;
     let deg=0;
-    if(wanted==="verticale" && isLandscape) deg=(card.dataset.photo==="017"?-90:90);
+    if(wanted==="verticale" && isLandscape) deg=(["003","013","014","016"].includes(card.dataset.photo)?-90:(card.dataset.photo==="017"?90:90));
     if(wanted==="orizzontale" && !isLandscape) deg=90;
     img.style.transform=deg?"rotate("+deg+"deg)":"none";
     img.classList.toggle("auto-rotated",!!deg);
