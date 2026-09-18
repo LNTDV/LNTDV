@@ -56,7 +56,7 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText}); }
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
-  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '');
+  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
 
@@ -173,16 +173,16 @@ function ensureSettings_(sheet) {
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
 function formatSettings_(sheet) { sheet.getRange(1,1,1,2).setFontWeight('bold'); sheet.autoResizeColumns(1,2); }
-function json_(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
+function json_(obj, callback) { const data = JSON.stringify(obj); if (callback && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) return ContentService.createTextOutput(callback + '(' + data + ');').setMimeType(ContentService.MimeType.JAVASCRIPT); return ContentService.createTextOutput(data).setMimeType(ContentService.MimeType.JSON); }
 
 
-function trackOrder_(orderId, email, token) {
+function trackOrder_(orderId, email, token, callback) {
   orderId = String(orderId || '').trim();
   email = String(email || '').trim().toLowerCase();
   token = String(token || '').trim().toUpperCase();
-  if (!orderId && !token) return json_({ok:false,error:'Link di tracciamento non valido.'});
+  if (!orderId || !token) return json_({ok:false,error:'ID ordine e token obbligatori.'}, callback);
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'});
+  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'}, callback);
   const values = sheet.getDataRange().getValues();
   const index = values.findIndex((r,i) => {
     if (i === 0) return false;
@@ -191,7 +191,7 @@ function trackOrder_(orderId, email, token) {
     const emailOk = email ? String(r[6] || '').toLowerCase() === email : true;
     return idOk && tokenOk && emailOk;
   });
-  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'});
+  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'}, callback);
   const row = values[index];
   const status = String(row[14] || 'NUOVO').toUpperCase();
   const labels = {
@@ -209,5 +209,5 @@ function trackOrder_(orderId, email, token) {
     label:labels[status] || status,
     total:Number(row[10] || 0),
     labels:{RICEVUTO:'Ricevuto',IN_LAVORAZIONE:'In lavorazione',PRONTO_AL_RITIRO:'Pronto al ritiro',CONSEGNATO:'Consegnato'}
-  });
+  }, callback);
 }
