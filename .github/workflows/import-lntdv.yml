@@ -4,6 +4,10 @@ on:
   push:
     paths:
       - ".github/workflows/import-lntdv.yml"
+      - "scripts/patch_lntdv.py"
+      - "scripts/fix_photo_loading.py"
+      - "catalog/**"
+      - "assets/**"
   workflow_dispatch:
 
 permissions:
@@ -34,11 +38,35 @@ jobs:
       - name: Apply requested features
         run: python scripts/patch_lntdv.py
 
+      - name: Fix photo loading
+        run: python scripts/fix_photo_loading.py
+
+      - name: Validate final catalog
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          missing=[]
+          for n in range(1,26):
+              needle=f'./assets/photo{n:02d}.js?v=20260918'
+              if needle not in s:
+                  missing.append(f"photo{n:02d}.js")
+          if missing:
+              raise SystemExit("Asset fotografici mancanti nell'index: " + ", ".join(missing))
+          preloads=len(re.findall(r'<link rel="preload" as="script" href="./assets/photo\d{2}\.js\?v=20260918">',s))
+          if preloads != 25:
+              raise SystemExit(f"Preload fotografici attesi: 25, trovati: {preloads}")
+          if s.count('data-photo="') != 25:
+              raise SystemExit("Il catalogo non contiene esattamente 25 schede fotografiche")
+          print("Validazione OK: 25 foto, 25 asset e 25 preload.")
+          PY
+
       - name: Commit and publish
         run: |
           git config user.name "LNTDV Website Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Publish full LNTDV photo catalog with order tracking"
+          git commit -m "Fix immediate loading of all 25 catalog photos"
           git push
