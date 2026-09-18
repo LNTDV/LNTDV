@@ -870,10 +870,26 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     const total=photosTotal+fee;
     if(!items.length||items.some(x=>!x.format)||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
-    const payload={orderId,customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",shipping:fee,promotion:promoApplied?"Spedizione gratuita sopra €150":"",total};
+    // Payload piatto compatibile con doPost di Google Apps Script.
+    // text/plain evita il preflight CORS; Apps Script legge il JSON da e.postData.contents.
+    const payload={
+      idOrdine:orderId,
+      nome:name,
+      cognome:"",
+      email:email,
+      fotografie:items.map(x=>x.code+" (x"+x.quantity+")").join(" | "),
+      formato:items.map(x=>x.format).join(" | "),
+      quantita:String(items.reduce((a,x)=>a+x.quantity,0)),
+      consegna:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",
+      totale:total,
+      note:document.getElementById("customerNote").value.trim(),
+      stato:"NUOVO",
+      paymentMethod:"Ordine online",
+      paymentStatus:"RICEVUTO"
+    };
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
-      await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
+      await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(payload)});
       paymentStatus.innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: "+esc(orderId)+"<br>Ti invieremo una email di conferma dell’ordine.";
     }catch(e){complete.disabled=false;paymentStatus.textContent="Errore nell'invio dell'ordine. Riprova tra poco.";}
   });
