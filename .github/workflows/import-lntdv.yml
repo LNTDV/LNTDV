@@ -15,17 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download catalog from OneDrive
-        env:
-          SOURCE: "https://1drv.ms/u/c/3aa23e29b315a91f/IQAruC04qXd8QJExbUuL-Q65AZdx36KtaVclKlg9DcSKiDw?e=FVbYOJ&download=1"
+      - name: Assemble exact photo catalog
         run: |
-          curl -L --fail --retry 3 --retry-all-errors "$SOURCE" -o index.html
+          rm -f index.html
+          for n in $(seq -w 1 14); do
+            cat "catalog/part-$n.html" >> index.html
+          done
           python - <<'PY'
           from pathlib import Path
           s=Path("index.html").read_text(encoding="utf-8")
           if "<html" not in s.lower() or "<body" not in s.lower():
-              raise SystemExit("OneDrive non ha restituito un HTML valido")
-          print("Catalogo scaricato:", len(s), "byte")
+              raise SystemExit("Catalogo non valido")
+          if s.count("<article") < 20 or s.count("<img") < 20:
+              raise SystemExit("Il catalogo non contiene tutte le fotografie")
+          print("Catalogo assemblato:", len(s), "byte", s.count("<article"), "articoli", s.count("<img"), "immagini")
           PY
 
       - name: Apply requested features
@@ -37,5 +40,5 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Publish LNTDV photo catalog with order tracking"
+          git commit -m "Publish full LNTDV photo catalog with order tracking"
           git push
