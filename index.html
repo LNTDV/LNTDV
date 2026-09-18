@@ -819,7 +819,6 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
       await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
-      localStorage.removeItem(STORAGE);
       paymentStatus.innerHTML="<strong>Ordine inviato.</strong><br>ID ordine: "+esc(orderId)+"<br>Riceverai una email di conferma.";
     }catch(e){complete.disabled=false;paymentStatus.textContent="Errore nell'invio dell'ordine. Riprova tra poco.";}
   });
@@ -854,23 +853,40 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const promoNote=document.getElementById("promoNote");
 
   function updatePromo(photos,delivery){
+    // La promozione è visibile SOLO dentro il riepilogo dell'ordine.
     const eligible=photos>PROMO_THRESHOLD && delivery==="Spedizione";
-    promoSummary.classList.toggle("active",true);
-    promoAccept.disabled=!eligible;
+    promoSummary.classList.toggle("active",eligible || promoApplied);
+    promoAccept.disabled=!eligible || promoApplied;
     if(promoApplied && !eligible) promoApplied=false;
     if(promoApplied){
       promoSummaryPrice.textContent="Spedizione: €0,00";
-      promoNote.textContent="Promozione applicata: hai ottenuto la spedizione gratuita.";
+      promoNote.textContent="Promozione applicata: spedizione gratuita.";
       promoAccept.textContent="PROMOZIONE APPLICATA";
     }else{
       promoSummaryPrice.textContent=delivery==="Spedizione"?"Spedizione: €10,00":"Ritiro: €0,00";
       promoAccept.textContent="APPLICA SPEDIZIONE GRATUITA";
-      if(photos<=PROMO_THRESHOLD) promoNote.textContent="La promozione si attiva solo per ordini superiori a €150.";
-      else if(delivery!=="Spedizione") promoNote.textContent="Seleziona Spedizione per utilizzare la promozione.";
-      else promoNote.textContent="Clicca per ottenere la spedizione gratuita.";
+      if(!eligible){
+        promoNote.textContent="La spedizione gratuita si applica solo a ordini superiori a €150 con Spedizione.";
+      }else{
+        promoNote.textContent="Ordine idoneo: puoi scegliere la spedizione gratuita.";
+      }
     }
   }
 
+
+  promoAccept.addEventListener("click",()=>{
+    const items=getItems();
+    const photos=items.reduce((a,x)=>a+x.price*x.quantity,0);
+    if(photos>PROMO_THRESHOLD && getDelivery()==="Spedizione"){
+      promoApplied=true;
+      refresh();
+      // Rimane nel riepilogo: non apre nuove pagine e non cambia schermata.
+    }
+  });
+  promoDecline.addEventListener("click",()=>{
+    promoApplied=false;
+    refresh();
+  });
 
   function applyOrientation(img,card){
     const id=card.dataset.photo;
