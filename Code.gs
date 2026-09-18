@@ -28,12 +28,13 @@ function doPost(e) {
     const shipping = deliveryType.toLowerCase().includes('sped') ? Number(cfg.shippingPrice || 0) : 0;
     const subtotal = Number(payload.total || 0);
     const total = subtotal + shipping;
-    const orderId = 'LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase();
+    const suppliedOrderId = String(payload.orderId || '').trim();
+    const orderId = /^LNTDV-[A-Z0-9-]{6,80}$/.test(suppliedOrderId) ? suppliedOrderId : ('LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase());
     const paymentMethod = String(payload.paymentMethod || '');
     const paymentStatus = String(payload.paymentStatus || 'RICEVUTO').toUpperCase();
     const trackingToken = Utilities.getUuid().replace(/-/g,'').toUpperCase();
     const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
-    const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.format || ''} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
+    const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.orientation || 'Orientamento non specificato'} — ${x.format || 'Formato non specificato'} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
     const row = sheet.getLastRow() + 1;
     sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', false, paymentStatus === 'PAGATO' ? 'PAGATO' : 'RICEVUTO', trackingToken]);
     sheet.getRange(row, 14).insertCheckboxes().setValue(false);
