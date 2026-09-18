@@ -2,6 +2,7 @@
 (function(){
   const KEY="lntdv_cart_v3";
   const ORDER_KEY="lntdv_last_order_v3";
+  const TRACKING_KEY="lntdv_tracking_orders_v1";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
   const ORIENTATIONS={};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
@@ -10,6 +11,10 @@
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   function read(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}}
   function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function trackingList(){const v=read(TRACKING_KEY);return Array.isArray(v)?v:[]}
+  function saveTracking(orderId,token){if(!orderId||!token)return;const list=trackingList().filter(x=>x&&x.orderId!==orderId);list.unshift({orderId:String(orderId),token:String(token).toUpperCase(),savedAt:new Date().toISOString()});write(TRACKING_KEY,list.slice(0,20))}
+  function rememberTrackingFromUrl(){try{const p=new URLSearchParams(location.search);const orderId=(p.get("ordine")||"").trim();const token=(p.get("token")||"").trim();if(orderId&&token)saveTracking(orderId,token)}catch(e){}}
+  function makeToken(){try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID().replace(/-/g,"").toUpperCase();if(window.crypto&&crypto.getRandomValues){const a=new Uint8Array(24);crypto.getRandomValues(a);return Array.from(a,b=>b.toString(16).padStart(2,"0")).join("").toUpperCase()}}catch(e){}return (Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).replace(/[^A-Z0-9]/gi,"").toUpperCase()}
   function items(){
     return [...document.querySelectorAll(".card.selected")].map(card=>{
       const code=card.querySelector(".meta strong")?.textContent.trim()||"Fotografia";
@@ -82,17 +87,17 @@
   $("completePayment")?.addEventListener("click",async()=>{
     const a=items(),p=document.querySelector('input[name="checkoutPayment"]:checked')?.value||"", email=$("customerEmail").value.trim();
     if(!a.length||a.some(x=>!x.format)||!p||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
-    const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),pinfo=pricing(a),t=pinfo.total,button=$("completePayment");
-    const payload={orderId,paymentMethod:p,paymentStatus:"DA_VERIFICARE",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,baseTotal:pinfo.base,promotion:pinfo.promo!==null?"Promo "+a.length+" foto":null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true};
+    const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),trackingToken=makeToken(),pinfo=pricing(a),t=pinfo.total,button=$("completePayment");
+    const payload={orderId,paymentMethod:p,paymentStatus:"DA_VERIFICARE",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,baseTotal:pinfo.base,promotion:pinfo.promo!==null?"Promo "+a.length+" foto":null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken:trackingToken};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
       await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
-      write(ORDER_KEY,{orderId,status:"ORDINE RICEVUTO",message:"Ordine inviato. Conserva l'ID ordine per la verifica."});
+      saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO",message:"Ordine inviato. ID e token sono stati salvati su questo dispositivo."});
       $("paymentStatus").innerHTML="<strong>Ordine inviato.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br>Riceverai la conferma via email. Il pagamento viene considerato effettuato solo dopo verifica.";
       document.querySelectorAll(".card.selected").forEach(c=>{c.classList.remove("selected");c.setAttribute("aria-pressed","false")});write(KEY,[]);refresh();
     }catch(err){button.disabled=false;$("paymentStatus").textContent="Errore nell'invio dell'ordine. Riprova."}
   });
   const observer=new MutationObserver(()=>ensureCheckoutOptions());
   observer.observe(document.body,{childList:true,subtree:true});
-  restore();refresh();
+  rememberTrackingFromUrl();restore();refresh();
 })();
