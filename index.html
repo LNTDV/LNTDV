@@ -817,11 +817,9 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   });
 
   function applyOrientation(img,card){
-    const wanted=card.dataset.orientation||"orizzontale";
-    const isLandscape=img.naturalWidth>=img.naturalHeight;
-    let deg=0;
-    if(wanted==="verticale" && isLandscape) deg=(["003","013","014","016"].includes(card.dataset.photo)?-90:(card.dataset.photo==="017"?90:90));
-    if(wanted==="orizzontale" && !isLandscape) deg=90;
+    const id=card.dataset.photo;
+    const rotationMap={"003":-90,"006":90,"007":90,"008":90,"009":90,"011":90,"013":-90,"014":-90,"015":90,"016":-90,"017":90,"018":90};
+    const deg=rotationMap[id]||0;
     img.style.transform=deg?"rotate("+deg+"deg)":"none";
     img.classList.toggle("auto-rotated",!!deg);
   }
