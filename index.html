@@ -679,18 +679,24 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const summary=document.getElementById("selectionSummary"),complete=document.getElementById("completePayment"),paymentStatus=document.getElementById("paymentStatus");
   const deliveryNote=document.getElementById("deliveryNote");
   const STORAGE="lntdv-cart-v3";
+  let selectionOrder=[];
 
   function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
   function getDelivery(){return document.querySelector('input[name="deliveryType"]:checked')?.value||"Ritiro";}
   function getPayment(){return document.querySelector('input[name="checkoutPayment"]:checked')?.value||"";}
   function getItems(){
-    return cards.filter(c=>c.classList.contains("selected")).map(card=>{
-      const id=card.dataset.photo, format=card.querySelector(".format-select")?.value||"";
+    return selectionOrder.map(id=>{
+      const card=document.querySelector('.card[data-photo="'+id+'"]');
+      if(!card)return null;
+      const format=card.querySelector(".format-select")?.value||"";
       return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:prices[format]||0,image:card.querySelector("img")?.src||""};
-    });
+    }).filter(Boolean);
   }
   function saveCart(){
-    localStorage.setItem(STORAGE,JSON.stringify(getItems().map(x=>({id:x.id,format:x.format}))));
+    localStorage.setItem(STORAGE,JSON.stringify(selectionOrder.map(id=>{
+      const card=document.querySelector('.card[data-photo="'+id+'"]');
+      return card ? {id,format:card.querySelector(".format-select")?.value||""} : null;
+    }).filter(Boolean)));
   }
   function updateSelectionText(n){
     const t=n===0?"Seleziona una fotografia e il formato desiderato":n===1?"1 fotografia selezionata":n+" fotografie selezionate";
@@ -717,13 +723,15 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   function restore(){
     try{
       const saved=JSON.parse(localStorage.getItem(STORAGE)||"[]");
+      selectionOrder=[];
       saved.forEach(x=>{
         const card=document.querySelector('.card[data-photo="'+x.id+'"]');
         if(!card)return;
+        selectionOrder.push(x.id);
         card.classList.add("selected");card.setAttribute("aria-pressed","true");
         const select=card.querySelector(".format-select");if(select)select.value=x.format||"";
       });
-    }catch(e){}
+    }catch(e){selectionOrder=[];}
   }
   function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
   function closeOrder(){panel.classList.remove("active");panel.setAttribute("aria-hidden","true");document.body.style.overflow="";}
@@ -731,9 +739,42 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   cards.forEach(card=>{
     card.setAttribute("role","button");card.setAttribute("tabindex","0");card.setAttribute("aria-pressed","false");
     const select=card.querySelector(".format-select");
-    card.addEventListener("click",e=>{if(e.target.closest("select,option,button,input"))return;card.classList.toggle("selected");card.setAttribute("aria-pressed",card.classList.contains("selected"));refresh();});
-    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.classList.toggle("selected");card.setAttribute("aria-pressed",card.classList.contains("selected"));refresh();}});
-    select?.addEventListener("change",()=>{if(select.value)card.classList.add("selected");refresh();});
+    card.addEventListener("click",e=>{
+      if(e.target.closest("select,option,button,input"))return;
+      const id=card.dataset.photo;
+      const selected=card.classList.contains("selected");
+      if(selected){
+        card.classList.remove("selected");
+        selectionOrder=selectionOrder.filter(x=>x!==id);
+      }else{
+        card.classList.add("selected");
+        selectionOrder.push(id);
+      }
+      card.setAttribute("aria-pressed",card.classList.contains("selected"));
+      refresh();
+    });
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){
+        e.preventDefault();
+        const id=card.dataset.photo;
+        if(card.classList.contains("selected")){
+          card.classList.remove("selected");
+          selectionOrder=selectionOrder.filter(x=>x!==id);
+        }else{
+          card.classList.add("selected");
+          selectionOrder.push(id);
+        }
+        card.setAttribute("aria-pressed",card.classList.contains("selected"));
+        refresh();
+      }
+    });
+    select?.addEventListener("change",()=>{
+      if(select.value && !card.classList.contains("selected")){
+        card.classList.add("selected");
+        selectionOrder.push(card.dataset.photo);
+      }
+      refresh();
+    });
   });
   document.querySelectorAll('input[name="deliveryType"],input[name="checkoutPayment"]').forEach(x=>x.addEventListener("change",refresh));
   ["customerName","customerEmail"].forEach(id=>document.getElementById(id).addEventListener("input",refresh));
