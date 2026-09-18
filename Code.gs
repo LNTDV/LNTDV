@@ -11,6 +11,7 @@ function setup() {
   ensureSettings_(settings);
   formatOrders_(orders);
   formatSettings_(settings);
+  ensureOrderEditTrigger_();
 }
 
 function doPost(e) {
@@ -327,4 +328,40 @@ function shipmentStatus_(orderId, email, token, callback) {
   const shipmentStatus = String(row[18] || '').trim();
   const shipmentUrl = String(row[19] || '').trim();
   return json_({ok:true,orderId:orderId,deliveryType:String(row[11] || ''),status:status,trackingNumber:shipmentTracking,carrier:carrier,shipmentStatus:shipmentStatus,trackingUrl:shipmentUrl}, callback);
+}
+
+
+/**
+ * Quando il gestore spunta la casella "Ricezione ordine" nel foglio Ordini,
+ * invia automaticamente la mail all'indirizzo già registrato nell'ordine.
+ * Il trigger installabile consente a Apps Script di usare MailApp.
+ */
+function ensureOrderEditTrigger_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const triggers = ScriptApp.getProjectTriggers();
+  const exists = triggers.some(t => t.getHandlerFunction() === 'onOrderCheckboxEdit_');
+  if (!exists) ScriptApp.newTrigger('onOrderCheckboxEdit_').forSpreadsheet(ss).onEdit().create();
+}
+
+function onOrderCheckboxEdit_(e) {
+  try {
+    if (!e || !e.range) return;
+    const range = e.range;
+    const sheet = range.getSheet();
+    if (sheet.getName() !== SHEET_NAME) return;
+    if (range.getColumn() !== 14 || range.getRow() < 2) return;
+    if (String(e.value || '').toUpperCase() !== 'TRUE') return;
+
+    const rowNumber = range.getRow();
+    const values = sheet.getRange(rowNumber, 1, 1, 16).getValues()[0];
+    if (!values[1] || !values[6]) return;
+
+    const currentStatus = String(values[14] || 'NUOVO').toUpperCase();
+    if (currentStatus === 'RICEVUTO') return;
+
+    sheet.getRange(rowNumber, 15).setValue('RICEVUTO');
+    sendStatusEmail_(values, 'RICEVUTO');
+  } catch (err) {
+    console.error(err);
+  }
 }
