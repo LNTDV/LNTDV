@@ -955,7 +955,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
         };
         function check(){
           const sc=document.createElement("script");
-          sc.src=APPS+"?action=track&ordine="+encodeURIComponent(orderId)+"&token="+encodeURIComponent(trackingToken)+"&email="+encodeURIComponent(email)+"&callback="+callback+"&v="+Date.now();
+          sc.src=APPS+"?action=track&orderId="+encodeURIComponent(orderId)+"&token="+encodeURIComponent(trackingToken)+"&email="+encodeURIComponent(email)+"&callback="+callback+"&v="+Date.now();
           sc.onerror=()=>{sc.remove();if(++attempts>=12){finished=true;cleanup();reject(new Error("Verifica non disponibile."));}else setTimeout(check,1000);};
           sc.onload=()=>setTimeout(()=>sc.remove(),200);
           document.body.appendChild(sc);
