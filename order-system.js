@@ -39,6 +39,7 @@
         <option value="Biblioteca di Arese — data da concordare">Biblioteca di Arese — data da concordare</option>
       </select>
       <div style="font-size:12px;line-height:1.45;margin-top:7px;opacity:.78">Ritiro gratuito. Quando l'ordine sarà pronto riceverai una email con la conferma e le indicazioni per il ritiro.</div>
+      <div id="lntdvPromo" style="margin-top:10px;padding:9px 11px;border-left:3px solid #54745a;background:rgba(84,116,90,.055);font-size:12px;line-height:1.4;font-weight:600">Promo: 1 foto €50 · 2 foto €80 · 3 foto €120</div>
     </div>`;
     button.parentNode.insertBefore(wrap,button);
   }
