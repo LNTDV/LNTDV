@@ -110,24 +110,17 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);background:var(--cream);font:11px Arial;color:var(--brown2)}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.order-bar{left:12px;right:12px;bottom:12px;width:auto;max-width:none;min-width:0}.order-bar-info{gap:7px}.order-bar-label{font-size:9px}.order-bar-total{font-size:15px}.order-button{padding:9px 10px}.checkout-grid{grid-template-columns:1fr}.order-checkout{padding:20px}.checkout-photo-row{grid-template-columns:28px 48px minmax(0,1fr) auto;gap:9px}.checkout-photo-thumb{width:48px;height:48px}.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}}
 
-/* Promozione temporanea */
-.promo-modal{position:fixed;inset:0;background:rgba(35,23,17,.78);display:none;align-items:center;justify-content:center;padding:18px;z-index:999999}
-.promo-modal.active{display:flex!important;visibility:visible!important;opacity:1!important}
-.promo-box{width:min(560px,100%);background:#fbf8f3;border:2px solid #6f8f72;border-radius:24px;padding:30px 24px;text-align:center;box-shadow:0 28px 90px rgba(0,0,0,.42);animation:promoIn .35s ease-out}
-@keyframes promoIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
-.promo-kicker{font:800 11px Arial;letter-spacing:2px;color:#4f6d54;text-transform:uppercase}
-.promo-box h2{margin:9px 0 8px;font:500 clamp(28px,7vw,38px) Georgia;color:#4b2f22}
-.promo-box p{margin:0 auto 18px;max-width:440px;font:13px/1.55 Arial;color:#756357}
-.promo-countdown-label{font:700 10px Arial;letter-spacing:1.5px;text-transform:uppercase;color:#765848;margin-top:14px}
-.promo-timer{display:flex;justify-content:center;gap:7px;margin:10px 0 18px}
-.promo-time-unit{min-width:64px;padding:9px 7px;background:#4b2f22;color:#fff;border-radius:12px}
-.promo-time-unit strong{display:block;font:700 25px Arial;line-height:1.05}
-.promo-time-unit span{display:block;margin-top:4px;font:9px Arial;letter-spacing:1px;text-transform:uppercase;color:#eadbd0}
-.promo-price{font:700 19px Georgia;color:#4f6d54;margin:8px 0 18px}
-.promo-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.promo-actions button{border:0;border-radius:11px;padding:12px 17px;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}
-.promo-accept{background:#4f6d54;color:#fff}.promo-decline{background:#eadfd3;color:#4b2f22}
-@media(max-width:480px){.promo-box{padding:24px 15px}.promo-timer{gap:4px}.promo-time-unit{min-width:54px}.promo-time-unit strong{font-size:21px}}
+/* Promozione dopo il riepilogo */
+.promo-summary{display:none;margin:16px 0;background:#fbf8f3;border:2px solid #6f8f72;border-radius:18px;padding:20px;text-align:center}
+.promo-summary.active{display:block}
+.promo-kicker{font:800 10px Arial;letter-spacing:1.7px;color:#4f6d54;text-transform:uppercase}
+.promo-summary h3{margin:7px 0 6px;font:500 25px Georgia;color:#4b2f22}
+.promo-summary p{margin:0 auto 14px;max-width:560px;font:12px/1.5 Arial;color:#756357}
+.promo-summary-price{font:700 18px Georgia;color:#4f6d54;margin:8px 0 14px}
+.promo-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.promo-actions button{border:0;border-radius:10px;padding:11px 15px;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}
+.promo-accept{background:#4f6d54;color:#fff}.promo-accept:disabled{opacity:.45;cursor:not-allowed}.promo-decline{background:#eadfd3;color:#4b2f22}
+.promo-note{margin-top:9px;font:10px Arial;color:#756357}
 </style>
 <script src="assets/photo01.js"></script>
 <script src="assets/photo02.js"></script>
@@ -633,25 +626,6 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 </main>
 
 
-<div class="promo-modal active" id="promoModal" aria-hidden="false">
-  <div class="promo-box" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
-    <div class="promo-kicker">PROMOZIONE LNTDV · A TEMPO</div>
-    <h2 id="promoTitle">Una promozione dedicata a te</h2>
-    <p>La promozione è disponibile per un periodo limitato. Il conto alla rovescia qui sotto si aggiorna in tempo reale.</p>
-    <div class="promo-countdown-label">Tempo rimanente</div>
-    <div class="promo-timer" id="promoTimer" aria-live="polite">
-      <div class="promo-time-unit"><strong id="promoDays">00</strong><span>giorni</span></div>
-      <div class="promo-time-unit"><strong id="promoHours">00</strong><span>ore</span></div>
-      <div class="promo-time-unit"><strong id="promoMinutes">00</strong><span>minuti</span></div>
-      <div class="promo-time-unit"><strong id="promoSeconds">00</strong><span>secondi</span></div>
-    </div>
-    <div class="promo-price" id="promoPrice">Promozione attiva</div>
-    <div class="promo-actions">
-      <button class="promo-accept" id="promoAccept" type="button">APPROFITTA DELLA PROMOZIONE</button>
-      <button class="promo-decline" id="promoDecline" type="button">CONTINUA SENZA PROMOZIONE</button>
-    </div>
-  </div>
-</div>
 
 <div class="order-bar" id="orderBar">
   <div class="order-bar-info">
@@ -671,6 +645,17 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     <div class="checkout-selected">
       <div class="checkout-section-title"><span>Fotografie selezionate</span><span id="summaryCount" class="checkout-count">0</span></div>
       <div id="orderList" class="checkout-photo-list"><div class="checkout-empty">Nessuna fotografia selezionata.</div></div>
+    </div>
+    <div class="promo-summary" id="promoSummary" aria-live="polite">
+      <div class="promo-kicker">PROMOZIONE LNTDV</div>
+      <h3>Spedizione gratuita per ordini superiori a €150</h3>
+      <p>La promozione si applica alla spedizione quando il valore delle fotografie supera €150.</p>
+      <div class="promo-summary-price" id="promoSummaryPrice">Spedizione: €10,00</div>
+      <div class="promo-actions">
+        <button class="promo-accept" id="promoAccept" type="button">APPLICA SPEDIZIONE GRATUITA</button>
+        <button class="promo-decline" id="promoDecline" type="button">CONTINUA SENZA PROMOZIONE</button>
+      </div>
+      <div class="promo-note" id="promoNote">Seleziona la spedizione e supera €150 per attivarla.</div>
     </div>
     <div class="checkout-grid">
       <section class="checkout-block">
@@ -694,9 +679,6 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       <section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
         <div class="payment-choice">
-          <label><input type="radio" name="checkoutPayment" value="Carta"><span>Carta</span></label>
-          <label><input type="radio" name="checkoutPayment" value="Apple Pay"><span>Apple Pay</span></label>
-          <label><input type="radio" name="checkoutPayment" value="Google Pay"><span>Google Pay</span></label>
           <label><input type="radio" name="checkoutPayment" value="Bonifico bancario"><span>Bonifico bancario</span></label>
         </div>
         <div class="payment-status" id="paymentStatus"></div>
@@ -741,7 +723,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     summary.innerHTML="<span>"+t+"</span>"; summary.classList.toggle("active",n>0);
   }
   function refresh(){
-    const items=getItems(), delivery=getDelivery(), fee=delivery==="Spedizione"?10:0, photos=items.reduce((a,x)=>a+x.price*x.quantity,0), total=photos+fee;
+    const items=getItems(), delivery=getDelivery(), photos=items.reduce((a,x)=>a+x.price*x.quantity,0); if(!(photos>150 && delivery==="Spedizione")) promoApplied=false; const fee=delivery==="Spedizione"?(promoApplied?0:10):0, total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
     const copyCount=items.reduce((a,x)=>a+x.quantity,0);
@@ -753,6 +735,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     }
     list.insertAdjacentHTML("beforeend",'<div class="checkout-delivery-line"><span>'+(delivery==="Spedizione"?"Spedizione":"Ritiro gratuito")+'</span><strong>€'+fee.toFixed(2).replace(".",",")+'</strong></div>');
     totalEl.textContent="€"+total.toFixed(2).replace(".",",");
+    updatePromo(photos,delivery);
     if(deliveryNote) deliveryNote.textContent=delivery==="Spedizione"?"Spedizione in Italia · €10,00.":"Ritiro gratuito da concordare a Milano.";
     const ready=items.length>0 && items.every(x=>!!x.format) && !!getPayment() && !!document.getElementById("customerName").value.trim() && !!document.getElementById("customerEmail").value.trim();
     complete.disabled=!ready;
@@ -829,10 +812,10 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 
   document.getElementById("completePayment").addEventListener("click",async()=>{
     const items=getItems(),delivery=getDelivery(),payment=getPayment(),name=document.getElementById("customerName").value.trim(),email=document.getElementById("customerEmail").value.trim();
-    const fee=delivery==="Spedizione"?10:0,total=items.reduce((a,x)=>a+x.price*x.quantity,0)+fee;
+    const photosTotal=items.reduce((a,x)=>a+x.price*x.quantity,0),fee=delivery==="Spedizione"?(promoApplied?0:10):0,total=photosTotal+fee;
     if(!items.length||items.some(x=>!x.format)||!payment||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
-    const payload={orderId,paymentMethod:payment,paymentStatus:"RICEVUTO",customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?"Spedizione · €10":"Ritiro gratuito presso Milano",total};
+    const payload={orderId,paymentMethod:payment,paymentStatus:"RICEVUTO",customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",shipping:fee,promotion:promoApplied?"Spedizione gratuita sopra €150":"",total};
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
       await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
@@ -861,52 +844,32 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   });
 
 
-  // Promozione a tempo: popup sempre visibile all'ingresso durante il periodo promozionale.
-  const PROMO_START=new Date("2026-09-18T00:00:00+02:00").getTime();
-  const PROMO_END=new Date("2026-09-26T23:59:59+02:00").getTime();
-  const promoModal=document.getElementById("promoModal");
-  const promoDays=document.getElementById("promoDays");
-  const promoHours=document.getElementById("promoHours");
-  const promoMinutes=document.getElementById("promoMinutes");
-  const promoSeconds=document.getElementById("promoSeconds");
-  const promoPrice=document.getElementById("promoPrice");
+  // Promozione: compare solo nel riepilogo finale dell'ordine.
+  const PROMO_THRESHOLD=150;
+  let promoApplied=false;
+  const promoSummary=document.getElementById("promoSummary");
+  const promoSummaryPrice=document.getElementById("promoSummaryPrice");
   const promoAccept=document.getElementById("promoAccept");
   const promoDecline=document.getElementById("promoDecline");
+  const promoNote=document.getElementById("promoNote");
 
-  function closePromo(){
-    promoModal.classList.remove("active");
-    promoModal.setAttribute("aria-hidden","true");
-  }
-  function renderPromo(){
-    const left=Math.max(0,PROMO_END-Date.now());
-    if(left<=0){
-      closePromo();
-      promoPrice.textContent="Promozione terminata";
-      return false;
+  function updatePromo(photos,delivery){
+    const eligible=photos>PROMO_THRESHOLD && delivery==="Spedizione";
+    promoSummary.classList.toggle("active",true);
+    promoAccept.disabled=!eligible;
+    if(promoApplied && !eligible) promoApplied=false;
+    if(promoApplied){
+      promoSummaryPrice.textContent="Spedizione: €0,00";
+      promoNote.textContent="Promozione applicata: hai ottenuto la spedizione gratuita.";
+      promoAccept.textContent="PROMOZIONE APPLICATA";
+    }else{
+      promoSummaryPrice.textContent=delivery==="Spedizione"?"Spedizione: €10,00":"Ritiro: €0,00";
+      promoAccept.textContent="APPLICA SPEDIZIONE GRATUITA";
+      if(photos<=PROMO_THRESHOLD) promoNote.textContent="La promozione si attiva solo per ordini superiori a €150.";
+      else if(delivery!=="Spedizione") promoNote.textContent="Seleziona Spedizione per utilizzare la promozione.";
+      else promoNote.textContent="Clicca per ottenere la spedizione gratuita.";
     }
-    const totalSeconds=Math.floor(left/1000);
-    const days=Math.floor(totalSeconds/86400);
-    const hours=Math.floor((totalSeconds%86400)/3600);
-    const minutes=Math.floor((totalSeconds%3600)/60);
-    const seconds=totalSeconds%60;
-    promoDays.textContent=String(days).padStart(2,"0");
-    promoHours.textContent=String(hours).padStart(2,"0");
-    promoMinutes.textContent=String(minutes).padStart(2,"0");
-    promoSeconds.textContent=String(seconds).padStart(2,"0");
-    promoPrice.textContent="Promozione attiva fino al 26 settembre";
-    return true;
   }
-
-  // Mostra il popup a ogni nuovo ingresso, senza localStorage/sessionStorage.
-  if(Date.now()>=PROMO_START && Date.now()<PROMO_END){
-    promoModal.classList.add("active");
-    promoModal.setAttribute("aria-hidden","false");
-    renderPromo();
-    const promoInterval=setInterval(()=>{if(!renderPromo()) clearInterval(promoInterval)},1000);
-  }
-  promoAccept.addEventListener("click",closePromo);
-  promoDecline.addEventListener("click",closePromo);
-  promoModal.addEventListener("click",e=>{if(e.target===promoModal)closePromo();});
 
 
   function applyOrientation(img,card){
