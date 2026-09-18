@@ -1009,5 +1009,19 @@ for(let n=1;n<=25;n++){
   }
 })();
 </script>
+<script>
+/* LNTDV: decodifica le 25 foto appena gli asset sono disponibili. */
+window.addEventListener("DOMContentLoaded",()=>{
+  for(let n=1;n<=25;n++){
+    const num=String(n).padStart(2,"0");
+    const src=window["LNTDV_PHOTO_"+num];
+    if(typeof src==="string" && src.startsWith("data:image/")){
+      const img=new Image();
+      img.decoding="sync";
+      img.src=src;
+    }
+  }
+},{once:true});
+</script>
 </body>
 </html>
