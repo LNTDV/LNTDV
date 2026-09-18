@@ -42,7 +42,7 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .format-select:hover{border-color:#8fa591}
 .format-select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(111,143,114,.10)}
 .format-select:has(option:checked:not([value=""])){border-color:rgba(111,143,114,.60);background:rgba(111,143,114,.045)}
- .order-bar{display:none;position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:320px;max-width:calc(100vw - 36px);padding:13px 13px 13px 18px;border:1px solid rgba(216,195,173,.3);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
+ .order-bar{display:none;position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:320px;max-width:calc(100vw - 36px);padding:13px 13px 13px 18px;border:1px solid rgba(216,195,173,.3);border-radius:16px;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
 .order-bar.active{display:flex}.order-bar-info{display:flex;align-items:center;gap:12px;min-width:0;white-space:nowrap}.order-bar-label{font-size:11px}.order-bar-total{font-size:20px}
 .order-bar-label{font:10px Arial;letter-spacing:1.3px;text-transform:uppercase;color:#efe6db}
 .order-bar-info strong{font:700 11px Arial;color:#d8c3ad}
@@ -146,7 +146,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 <script src="assets/photo23.js"></script>
 <script src="assets/photo24.js"></script>
 <script src="assets/photo25.js"></script>
-</head>
+<style data-lntdv-order-fix="1">.order-bar{display:none!important}.order-bar.active{display:flex!important}</style>\n</head>
 <body>
 <header>
   <div class="brand">EDVINAS DRAGONI</div>
@@ -626,7 +626,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 
 
 
-<div class="order-bar" id="orderBar">
+<div class="order-bar" id="orderBar" aria-hidden="true">
   <div class="order-bar-info">
     <span class="order-bar-label">Il mio ordine</span>
     <strong id="orderBarCount">0 foto</strong>
@@ -758,10 +758,9 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     updatePromo(photos,delivery);
     if(deliveryNote) deliveryNote.textContent=delivery==="Spedizione"?"Spedizione in Italia · €10,00.":"Ritiro gratuito da concordare a Milano.";
     const ready=items.length>0 && items.every(x=>!!x.format) && !!document.getElementById("customerName").value.trim() && !!document.getElementById("customerEmail").value.trim();
-    complete.disabled=!ready;
-    paymentStatus.textContent=!items.length?"Seleziona almeno una fotografia.":items.some(x=>!x.format)?"Seleziona il formato per ogni fotografia.":(!document.getElementById("customerName").value.trim()||!document.getElementById("customerEmail").value.trim())?"Inserisci nome ed email per ricevere la conferma.":"Ordine pronto per l'invio.";
+    complete.disabled=!ready; bar.setAttribute("aria-hidden",items.length?"false":"true"); paymentStatus.textContent=!items.length?"Seleziona almeno una fotografia.":items.some(x=>!x.format)?"Seleziona il formato per ogni fotografia.":(!document.getElementById("customerName").value.trim()||!document.getElementById("customerEmail").value.trim())?"Inserisci nome ed email per ricevere la conferma.":"Ordine pronto per l'invio.";
   }
-  function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+  function openOrder(){refresh(); if(!getItems().length){return;} panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
   function closeOrder(){panel.classList.remove("active");panel.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
   cards.forEach(card=>{
@@ -800,17 +799,11 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
         refresh();
       }
     });
-    select?.addEventListener("change",()=>{
-      if(select.value && !card.classList.contains("selected")){
-        card.classList.add("selected");
-        selectionOrder.push(card.dataset.photo);
-      }
-      refresh();
-    });
+    select?.addEventListener("change",()=>{ if(select.value && !card.classList.contains("selected")){ card.classList.add("selected"); selectionOrder.push(card.dataset.photo); quantities[card.dataset.photo]=1; } else if(!select.value && card.classList.contains("selected")){ card.classList.remove("selected"); card.setAttribute("aria-pressed","false"); selectionOrder=selectionOrder.filter(x=>x!==card.dataset.photo); delete quantities[card.dataset.photo]; } refresh(); });
   });
   document.querySelectorAll('input[name="deliveryType"]').forEach(x=>x.addEventListener("change",refresh));
   ["customerName","customerEmail"].forEach(id=>document.getElementById(id).addEventListener("input",refresh));
-  document.getElementById("openOrder").addEventListener("click",openOrder);
+  document.getElementById("openOrder").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openOrder();});
   document.getElementById("closeOrder").addEventListener("click",closeOrder);
   panel.addEventListener("click",e=>{
     if(e.target===panel){closeOrder();return;}
@@ -818,10 +811,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     if(!btn)return;
     const wrap=btn.closest(".qty-controls"),id=wrap?.dataset.qty;
     if(!id)return;
-    let q=Math.max(1,Number(quantities[id]||1));
-    if(btn.classList.contains("qty-plus")) q++;
-    else q--;
-    if(q<=0){
+    let q=Math.max(1,Number(quantities[id]||1)); if(btn.classList.contains("qty-plus")) q++; else q--; if(q<=0){
       const card=document.querySelector('.card[data-photo="'+id+'"]');
       if(card){card.classList.remove("selected");card.setAttribute("aria-pressed","false");}
       selectionOrder=selectionOrder.filter(x=>x!==id); delete quantities[id];
