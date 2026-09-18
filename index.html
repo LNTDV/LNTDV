@@ -31,7 +31,7 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 @keyframes firstPhotoVeil{from{opacity:1}to{opacity:0}}
 .card img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;background:#f2ece5;image-orientation:from-image;user-select:none;-webkit-user-drag:none;transition:filter .3s ease,transform .35s ease}
 .card.selected img{filter:brightness(.98)}
-.card[data-photo="017"] img{transform:rotate(-90deg)}
+.card img.auto-rotated{will-change:transform}
 .meta{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px}
 .meta strong{font:700 12px Arial;letter-spacing:1.2px}
 .meta>span{align-self:flex-start;background:var(--brown);color:#fff;border-radius:999px;padding:5px 9px;font:10px Arial;letter-spacing:1px}
@@ -775,9 +775,20 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     document.body.appendChild(sc);
   });
 
+  function applyOrientation(img,card){
+    const wanted=card.dataset.orientation||"orizzontale";
+    const isLandscape=img.naturalWidth>=img.naturalHeight;
+    let deg=0;
+    if(wanted==="verticale" && isLandscape) deg=(card.dataset.photo==="017"?-90:90);
+    if(wanted==="orizzontale" && !isLandscape) deg=90;
+    img.style.transform=deg?"rotate("+deg+"deg)":"none";
+    img.classList.toggle("auto-rotated",!!deg);
+  }
+
   restore();
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
+    img.addEventListener("load",()=>applyOrientation(img,card),{once:false});
     const src=window["LNTDV_PHOTO_"+id.slice(1)];
     if(src)img.src=src;
   });
