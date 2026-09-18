@@ -73,6 +73,10 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .checkout-photo-detail{margin-top:4px;font:11px Arial;color:#756357}
 .checkout-photo-detail .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin:0 5px 1px 1px}
 .checkout-photo-price{font:700 13px Arial;color:#5b4032;white-space:nowrap}
+.qty-controls{display:inline-flex;align-items:center;gap:8px;margin-top:8px}
+.qty-controls button{width:28px;height:28px;border:1px solid #cdb8a5;border-radius:8px;background:#fffaf3;color:#4b2f22;font:bold 17px Arial;line-height:1;cursor:pointer}
+.qty-controls button:hover{border-color:var(--green);background:#edf3ed}
+.qty-value{min-width:20px;text-align:center;font:700 12px Arial;color:#4b2f22}
 .checkout-delivery-line{display:flex;justify-content:space-between;padding:11px 0 5px;border-top:1px solid rgba(91,64,50,.10);font:11px Arial;color:#756357}
 .checkout-delivery-line strong{color:#5b4032}
 .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -680,6 +684,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const deliveryNote=document.getElementById("deliveryNote");
   const STORAGE="lntdv-cart-v3";
   let selectionOrder=[];
+  const quantities={};
 
   function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
   function getDelivery(){return document.querySelector('input[name="deliveryType"]:checked')?.value||"Ritiro";}
@@ -689,13 +694,13 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       const card=document.querySelector('.card[data-photo="'+id+'"]');
       if(!card)return null;
       const format=card.querySelector(".format-select")?.value||"";
-      return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:prices[format]||0,image:card.querySelector("img")?.src||""};
+      return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:prices[format]||0,quantity:Math.max(1,Number(quantities[id]||1)),image:card.querySelector("img")?.src||""};
     }).filter(Boolean);
   }
   function saveCart(){
     localStorage.setItem(STORAGE,JSON.stringify(selectionOrder.map(id=>{
       const card=document.querySelector('.card[data-photo="'+id+'"]');
-      return card ? {id,format:card.querySelector(".format-select")?.value||""} : null;
+      return card ? {id,format:card.querySelector(".format-select")?.value||"",quantity:Math.max(1,Number(quantities[id]||1))} : null;
     }).filter(Boolean)));
   }
   function updateSelectionText(n){
@@ -703,14 +708,15 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     summary.innerHTML="<span>"+t+"</span>"; summary.classList.toggle("active",n>0);
   }
   function refresh(){
-    const items=getItems(), delivery=getDelivery(), fee=delivery==="Spedizione"?10:0, photos=items.reduce((a,x)=>a+x.price,0), total=photos+fee;
+    const items=getItems(), delivery=getDelivery(), fee=delivery==="Spedizione"?10:0, photos=items.reduce((a,x)=>a+x.price*x.quantity,0), total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
-    barCount.textContent=items.length+" "+(items.length===1?"foto":"foto"); bar.classList.toggle("active",items.length>0);
+    const copyCount=items.reduce((a,x)=>a+x.quantity,0);
+    barCount.textContent=copyCount+" "+(copyCount===1?"copia":"copie"); bar.classList.toggle("active",items.length>0);
     barTotal.textContent="€"+total.toFixed(2).replace(".",",");
     if(!items.length){list.innerHTML='<div class="checkout-empty">Nessuna fotografia selezionata.</div>';}
     else{
-      list.innerHTML=items.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb"><img src="'+esc(x.image)+'" alt="'+esc(x.code)+'"></div><div><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation)+'<span class="dot"></span>'+esc(x.format||"Formato da selezionare")+'</div></div><div class="checkout-photo-price">€'+x.price.toFixed(2).replace(".",",")+'</div></div>').join("");
+      list.innerHTML=items.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb"><img src="'+esc(x.image)+'" alt="'+esc(x.code)+'"></div><div><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation)+'<span class="dot"></span>'+esc(x.format||"Formato da selezionare")+'</div><div class="qty-controls" data-qty="'+esc(x.id)+'"><button type="button" class="qty-minus" aria-label="Diminuisci copie">−</button><span class="qty-value">'+x.quantity+'</span><button type="button" class="qty-plus" aria-label="Aumenta copie">+</button></div></div><div class="checkout-photo-price">€'+(x.price*x.quantity).toFixed(2).replace(".",",")+'</div></div>').join("");
     }
     list.insertAdjacentHTML("beforeend",'<div class="checkout-delivery-line"><span>'+(delivery==="Spedizione"?"Spedizione":"Ritiro gratuito")+'</span><strong>€'+fee.toFixed(2).replace(".",",")+'</strong></div>');
     totalEl.textContent="€"+total.toFixed(2).replace(".",",");
@@ -724,10 +730,12 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     try{
       const saved=JSON.parse(localStorage.getItem(STORAGE)||"[]");
       selectionOrder=[];
+      Object.keys(quantities).forEach(k=>delete quantities[k]);
       saved.forEach(x=>{
         const card=document.querySelector('.card[data-photo="'+x.id+'"]');
         if(!card)return;
         selectionOrder.push(x.id);
+        quantities[x.id]=Math.max(1,Number(x.quantity||1));
         card.classList.add("selected");card.setAttribute("aria-pressed","true");
         const select=card.querySelector(".format-select");if(select)select.value=x.format||"";
       });
@@ -746,9 +754,11 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       if(selected){
         card.classList.remove("selected");
         selectionOrder=selectionOrder.filter(x=>x!==id);
+        delete quantities[id];
       }else{
         card.classList.add("selected");
         selectionOrder.push(id);
+        quantities[id]=1;
       }
       card.setAttribute("aria-pressed",card.classList.contains("selected"));
       refresh();
@@ -760,9 +770,11 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
         if(card.classList.contains("selected")){
           card.classList.remove("selected");
           selectionOrder=selectionOrder.filter(x=>x!==id);
+          delete quantities[id];
         }else{
           card.classList.add("selected");
           selectionOrder.push(id);
+          quantities[id]=1;
         }
         card.setAttribute("aria-pressed",card.classList.contains("selected"));
         refresh();
@@ -780,15 +792,30 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   ["customerName","customerEmail"].forEach(id=>document.getElementById(id).addEventListener("input",refresh));
   document.getElementById("openOrder").addEventListener("click",openOrder);
   document.getElementById("closeOrder").addEventListener("click",closeOrder);
-  panel.addEventListener("click",e=>{if(e.target===panel)closeOrder();});
+  panel.addEventListener("click",e=>{
+    if(e.target===panel){closeOrder();return;}
+    const btn=e.target.closest(".qty-minus,.qty-plus");
+    if(!btn)return;
+    const wrap=btn.closest(".qty-controls"),id=wrap?.dataset.qty;
+    if(!id)return;
+    let q=Math.max(1,Number(quantities[id]||1));
+    if(btn.classList.contains("qty-plus")) q++;
+    else q--;
+    if(q<=0){
+      const card=document.querySelector('.card[data-photo="'+id+'"]');
+      if(card){card.classList.remove("selected");card.setAttribute("aria-pressed","false");}
+      selectionOrder=selectionOrder.filter(x=>x!==id); delete quantities[id];
+    }else quantities[id]=q;
+    refresh();
+  });
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOrder();});
 
   document.getElementById("completePayment").addEventListener("click",async()=>{
     const items=getItems(),delivery=getDelivery(),payment=getPayment(),name=document.getElementById("customerName").value.trim(),email=document.getElementById("customerEmail").value.trim();
-    const fee=delivery==="Spedizione"?10:0,total=items.reduce((a,x)=>a+x.price,0)+fee;
+    const fee=delivery==="Spedizione"?10:0,total=items.reduce((a,x)=>a+x.price*x.quantity,0)+fee;
     if(!items.length||items.some(x=>!x.format)||!payment||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
-    const payload={orderId,paymentMethod:payment,paymentStatus:"RICEVUTO",customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),deliveryType:delivery==="Spedizione"?"Spedizione · €10":"Ritiro gratuito presso Milano",total};
+    const payload={orderId,paymentMethod:payment,paymentStatus:"RICEVUTO",customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?"Spedizione · €10":"Ritiro gratuito presso Milano",total};
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
       await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
