@@ -60,6 +60,7 @@ function doGet(e) {
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
   if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
+  if (p.action === 'shipment') return shipmentStatus_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
 
@@ -306,4 +307,24 @@ function verifyXpayOrder_(orderId, key) {
     paymentCircuit:successful.length ? (successful[successful.length - 1].paymentCircuit || null) : null,
     correlationId:correlationId
   });
+}
+
+
+function shipmentStatus_(orderId, email, token, callback) {
+  orderId = String(orderId || '').trim();
+  email = String(email || '').trim().toLowerCase();
+  token = String(token || '').trim().toUpperCase();
+  if (!orderId || !token) return json_({ok:false,error:'ID ordine e token obbligatori.'}, callback);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'}, callback);
+  const values = sheet.getDataRange().getValues();
+  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId && String(r[15] || '').toUpperCase() === token && (!email || String(r[6] || '').toLowerCase() === email));
+  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'}, callback);
+  const row = values[index];
+  const status = String(row[14] || 'NUOVO').toUpperCase();
+  const shipmentTracking = String(row[16] || '').trim();
+  const carrier = String(row[17] || '').trim();
+  const shipmentStatus = String(row[18] || '').trim();
+  const shipmentUrl = String(row[19] || '').trim();
+  return json_({ok:true,orderId:orderId,deliveryType:String(row[11] || ''),status:status,trackingNumber:shipmentTracking,carrier:carrier,shipmentStatus:shipmentStatus,trackingUrl:shipmentUrl}, callback);
 }
