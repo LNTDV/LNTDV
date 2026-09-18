@@ -89,7 +89,32 @@
     const payload={orderId,paymentMethod:"BONIFICO",paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:Number(prices[x.format])||0,quantity:1})),total:t,baseTotal:t,promotion:null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
-      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
+      // Invio diretto al Web App Apps Script senza aprire Gmail/Mail.
+      // Usiamo un normale POST tramite iframe: evita problemi CORS/no-cors del fetch
+      // e lascia che Apps Script esegua doPost() sul server.
+      await new Promise((resolve,reject)=>{
+        const iframe=document.createElement("iframe");
+        iframe.name="lntdv-order-submit";
+        iframe.style.display="none";
+        document.body.appendChild(iframe);
+        const form=document.createElement("form");
+        form.method="POST";
+        form.action=SCRIPT_URL;
+        form.target=iframe.name;
+        form.style.display="none";
+        const input=document.createElement("input");
+        input.type="hidden";
+        input.name="payload";
+        input.value=JSON.stringify(payload);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        let finished=false;
+        const done=()=>{if(finished)return;finished=true;setTimeout(()=>{try{form.remove();iframe.remove()}catch(e){}},1500);resolve()};
+        iframe.addEventListener("load",done,{once:true});
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(done,8000);
+      });
       saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO"});write(PAYMENT_KEY,{orderId,token:trackingToken,email,status:"IN_ATTESA_DI_PAGAMENTO"});
       $("paymentStatus").innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br><br>Ti abbiamo inviato via email i dati per il bonifico. Totale ordine: <strong>"+euro(t)+"</strong>.";
       document.querySelectorAll(".card.selected").forEach(c=>{c.classList.remove("selected");c.setAttribute("aria-pressed","false")});write(KEY,[]);refresh();
