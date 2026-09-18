@@ -708,7 +708,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   cards.forEach(card=>{
     const id=card.dataset.photo;
     const img=card.querySelector("img");
-    const key="LNTDV_PHOTO_"+String(id).padStart(2,"0");
+    const key="LNTDV_PHOTO_"+String(id).slice(1);
     if(img && window[key]) img.src=window[key];
   });
   const bar=document.getElementById("orderBar"),barCount=document.getElementById("orderBarCount"),barTotal=document.getElementById("orderBarTotal");
