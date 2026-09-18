@@ -889,7 +889,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
     img.addEventListener("load",()=>applyOrientation(img,card),{once:false});
-    const src=window["LNTDV_PHOTO_"+id.slice(1)];
+    const src=window["LNTDV_PHOTO_"+id.replace(/^0/,"")];
     if(src)img.src=src;
   });
   refresh();
