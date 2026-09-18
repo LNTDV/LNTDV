@@ -42,8 +42,8 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .format-select:hover{border-color:#8fa591}
 .format-select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(111,143,114,.10)}
 .format-select:has(option:checked:not([value=""])){border-color:rgba(111,143,114,.60);background:rgba(111,143,114,.045)}
-.order-bar{display:none;position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:270px;max-width:calc(100vw - 36px);padding:10px 10px 10px 15px;border:1px solid rgba(216,195,173,.3);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
-.order-bar.active{display:flex}.order-bar-info{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
+ .order-bar{display:none;position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:320px;max-width:calc(100vw - 36px);padding:13px 13px 13px 18px;border:1px solid rgba(216,195,173,.3);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
+.order-bar.active{display:flex}.order-bar-info{display:flex;align-items:center;gap:12px;min-width:0;white-space:nowrap}.order-bar-label{font-size:11px}.order-bar-total{font-size:20px}
 .order-bar-label{font:10px Arial;letter-spacing:1.3px;text-transform:uppercase;color:#efe6db}
 .order-bar-info strong{font:700 11px Arial;color:#d8c3ad}
 .order-bar-total{font:700 17px Georgia;color:#fff}
@@ -94,9 +94,9 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 #orderTotal{font:25px Georgia;color:#fff}
 .checkout-submit{border:0;background:var(--green-dark);color:#fff;padding:13px 18px;border-radius:11px;font:bold 10px Arial;letter-spacing:1.2px;cursor:pointer}
 .checkout-submit:disabled{opacity:.45;cursor:not-allowed}
-.tracking-section{max-width:1100px;margin:20px auto 100px;padding:28px 18px;background:linear-gradient(145deg,#f5ead7,#eadbc4);border:1px solid rgba(84,45,43,.18);border-radius:20px}
+.tracking-section{max-width:1100px;margin:90px auto 120px;padding:34px 22px;background:linear-gradient(145deg,#f5ead7,#eadbc4);border:1px solid rgba(84,45,43,.18);border-radius:20px}
 .tracking-head{margin-bottom:18px}
-.tracking-title{margin:5px 0;color:#2f211a}
+.tracking-title{margin:7px 0 8px;color:#2f211a;font-size:30px}
 .tracking-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
 .tracking-form input{width:100%;padding:11px;border:1px solid rgba(91,64,50,.18);border-radius:10px;background:#fff}
 .tracking-submit{border:0;border-radius:10px;padding:11px 15px;background:#2f211a;color:#fff;cursor:pointer}
