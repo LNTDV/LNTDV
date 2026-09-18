@@ -3,6 +3,7 @@
   const KEY="lntdv_cart_v3";
   const ORDER_KEY="lntdv_last_order_v3";
   const TRACKING_KEY="lntdv_tracking_orders_v1";
+  const PAYMENT_KEY="lntdv_pending_payment_v1";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
   const ORIENTATIONS={};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
@@ -61,6 +62,7 @@
   }
   function refresh(){
     ensureCheckoutOptions();
+    const payInputs=document.querySelectorAll('input[name="checkoutPayment"]');payInputs.forEach(x=>{x.checked=false;x.disabled=true});
     const a=items(),pinfo=pricing(a),t=pinfo.total, payment=document.querySelector('input[name="checkoutPayment"]:checked')?.value||"";
     if($("summaryCount"))$("summaryCount").textContent=a.length;
     if($("orderBarCount"))$("orderBarCount").textContent=a.length+" foto";
@@ -85,15 +87,15 @@
   $("closeOrder")?.addEventListener("click",close);
   document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
   $("completePayment")?.addEventListener("click",async()=>{
-    const a=items(),p=document.querySelector('input[name="checkoutPayment"]:checked')?.value||"", email=$("customerEmail").value.trim();
+    const a=items(),p="BONIFICO", email=$("customerEmail").value.trim();
     if(!a.length||a.some(x=>!x.format)||!p||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),trackingToken=makeToken(),pinfo=pricing(a),t=pinfo.total,button=$("completePayment");
-    const payload={orderId,paymentMethod:p,paymentStatus:"DA_VERIFICARE",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,baseTotal:pinfo.base,promotion:pinfo.promo!==null?"Promo "+a.length+" foto":null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken:trackingToken};
+    const payload={orderId,paymentMethod:p,paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,baseTotal:pinfo.base,promotion:pinfo.promo!==null?"Promo "+a.length+" foto":null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken:trackingToken};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
       await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
-      saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO",message:"Ordine inviato. ID e token sono stati salvati su questo dispositivo."});
-      $("paymentStatus").innerHTML="<strong>Ordine inviato.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br>Riceverai la conferma via email. Il pagamento viene considerato effettuato solo dopo verifica.";
+      saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO",message:"Ordine inviato. ID e token sono stati salvati su questo dispositivo."});write(PAYMENT_KEY,{orderId,token:trackingToken,email,status:"IN_ATTESA_DI_PAGAMENTO"});
+      $("paymentStatus").innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br><br>Ti abbiamo inviato via email i dati per il bonifico. L’ordine è stato registrato prima del pagamento.";
       document.querySelectorAll(".card.selected").forEach(c=>{c.classList.remove("selected");c.setAttribute("aria-pressed","false")});write(KEY,[]);refresh();
     }catch(err){button.disabled=false;$("paymentStatus").textContent="Errore nell'invio dell'ordine. Riprova."}
   });
