@@ -1,6 +1,7 @@
 const SHEET_NAME = 'Ordini';
 const SETTINGS_SHEET = 'Impostazioni';
 const OWNER_EMAIL = 'info.lanostraterradavicino@gmail.com';
+const SITE_URL = 'https://lntdv.it/';
 
 function setup() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -30,18 +31,19 @@ function doPost(e) {
     const orderId = payload.orderId || ('LNTDV-' + Utilities.getUuid().slice(0, 8).toUpperCase());
     const paymentMethod = String(payload.paymentMethod || '');
     const paymentStatus = String(payload.paymentStatus || 'RICEVUTO').toUpperCase();
+    const trackingToken = Utilities.getUuid().replace(/-/g,'').toUpperCase();
     const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.format || ''} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
     const row = sheet.getLastRow() + 1;
-    sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', false, paymentStatus === 'PAGATO' ? 'PAGATO' : 'RICEVUTO']);
+    sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', false, paymentStatus === 'PAGATO' ? 'PAGATO' : 'RICEVUTO', trackingToken]);
     sheet.getRange(row, 14).insertCheckboxes().setValue(false);
     const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${cfg.pickupText}`;
-    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nQuesta email conferma la ricezione della richiesta. Il pagamento viene considerato confermato solo quando il sistema restituisce esplicitamente l'esito PAGATO.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nQuesta email conferma la ricezione della richiesta. Il pagamento viene considerato confermato solo quando il sistema restituisce esplicitamente l'esito PAGATO.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     MailApp.sendEmail({to: customer.email, subject: `Conferma ordine ${orderId} — La Nostra Terra da Vicino`, body: body});
     if (paymentStatus === 'PAGATO') {
       const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
       MailApp.sendEmail({to: customer.email, subject: `Pagamento confermato ${orderId} — La Nostra Terra da Vicino`, body: paymentBody});
     }
-    const adminUrl = ScriptApp.getService().getUrl() + '?action=order&orderId=' + encodeURIComponent(orderId) + '&key=' + encodeURIComponent(cfg.adminKey);
+    const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);\n    const adminUrl = ScriptApp.getService().getUrl() + '?action=order&orderId=' + encodeURIComponent(orderId) + '&key=' + encodeURIComponent(cfg.adminKey);
     MailApp.sendEmail({to: OWNER_EMAIL, subject: `Nuovo ordine ${orderId}${paymentStatus === 'PAGATO' ? ' — PAGATO' : ''}`, body: body + (paymentStatus === 'PAGATO' ? '\n\nPAGAMENTO CONFERMATO DAL SISTEMA.' : '') + `\n\nGESTIONE ORDINE:\n${adminUrl}`});
     return json_({ok:true, orderId:orderId, paymentStatus:paymentStatus, subtotal:subtotal, shipping:shipping, total:total});
   } catch (err) {
@@ -53,7 +55,7 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText}); }
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
-  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '');
+  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
 
@@ -154,7 +156,7 @@ function getSettings_() {
 }
 
 function ensureHeader_(sheet) {
-  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Spedizione','Totale','Modalità consegna','Note','Ricezione ordine','Stato'];
+  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Spedizione','Totale','Modalità consegna','Note','Ricezione ordine','Stato','Token tracking'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers); else sheet.getRange(1,1,1,headers.length).setValues([headers]);
   sheet.setFrozenRows(1);
 }
@@ -163,19 +165,26 @@ function ensureSettings_(sheet) {
   if (sheet.getLastRow() === 0) { sheet.getRange(1,1,4,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE']]); sheet.setFrozenRows(1); }
 }
 
-function formatOrders_(sheet) { sheet.getRange(1,1,1,15).setFontWeight('bold'); sheet.autoResizeColumns(1,15); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
+function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
 function formatSettings_(sheet) { sheet.getRange(1,1,1,2).setFontWeight('bold'); sheet.autoResizeColumns(1,2); }
 function json_(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 
 
-function trackOrder_(orderId, email) {
+function trackOrder_(orderId, email, token) {
   orderId = String(orderId || '').trim();
   email = String(email || '').trim().toLowerCase();
-  if (!orderId || !email) return json_({ok:false,error:'ID ordine ed email sono obbligatori.'});
+  token = String(token || '').trim().toUpperCase();
+  if (!orderId && !token) return json_({ok:false,error:'Link di tracciamento non valido.'});
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'});
   const values = sheet.getDataRange().getValues();
-  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId && String(r[6] || '').toLowerCase() === email);
+  const index = values.findIndex((r,i) => {
+    if (i === 0) return false;
+    const idOk = orderId ? String(r[1]) === orderId : true;
+    const tokenOk = token ? String(r[15] || '').toUpperCase() === token : false;
+    const emailOk = email ? String(r[6] || '').toLowerCase() === email : true;
+    return idOk && tokenOk && emailOk;
+  });
   if (index < 1) return json_({ok:false,error:'Ordine non trovato.'});
   const row = values[index];
   const status = String(row[14] || 'NUOVO').toUpperCase();
