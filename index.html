@@ -696,7 +696,10 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 
 <script>
 (function(){
-  const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
+  const basePrices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
+  // Prezzo progressivo della promozione: 1ª €50, 2ª €80, 3ª €110, 4ª €170.
+  // Dal 4° scatto in poi si mantiene €170 per ogni copia aggiuntiva.
+  function progressivePrice(index){ return [50,80,110,170][Math.min(index,3)]; }
   const orientation={"001":"Orizzontale","002":"Orizzontale","003":"Verticale","004":"Orizzontale","005":"Orizzontale","006":"Verticale","007":"Verticale","008":"Verticale","009":"Verticale","010":"Orizzontale","011":"Verticale","012":"Orizzontale","013":"Verticale","014":"Verticale","015":"Verticale","016":"Verticale","017":"Verticale","018":"Verticale","019":"Orizzontale","020":"Orizzontale","021":"Orizzontale","022":"Orizzontale","023":"Orizzontale","024":"Orizzontale","025":"Orizzontale"};
   const APPS="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
   const cards=[...document.querySelectorAll(".card")];
@@ -715,7 +718,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       const card=document.querySelector('.card[data-photo="'+id+'"]');
       if(!card)return null;
       const format=card.querySelector(".format-select")?.value||"";
-      return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:prices[format]||0,quantity:Math.max(1,Number(quantities[id]||1)),image:card.querySelector("img")?.src||""};
+      return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:basePrices[format]||0,quantity:Math.max(1,Number(quantities[id]||1)),image:card.querySelector("img")?.src||""};
     }).filter(Boolean);
   }
   function updateSelectionText(n){
@@ -723,7 +726,12 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     summary.innerHTML="<span>"+t+"</span>"; summary.classList.toggle("active",n>0);
   }
   function refresh(){
-    const items=getItems(), delivery=getDelivery(), photos=items.reduce((a,x)=>a+x.price*x.quantity,0); if(!(photos>150 && delivery==="Spedizione")) promoApplied=false; const fee=delivery==="Spedizione"?(promoApplied?0:10):0, total=photos+fee;
+    const items=getItems(), delivery=getDelivery();
+    // Il prezzo promozionale è progressivo per l'ordine: €50 / €80 / €110 / €170.
+    let progressiveIndex=0;
+    items.forEach(x=>{ x.price=progressivePrice(progressiveIndex); progressiveIndex+=x.quantity; });
+    const photos=items.reduce((a,x)=>a+x.price*x.quantity,0);
+    if(!(photos>150 && delivery==="Spedizione")) promoApplied=false; const fee=delivery==="Spedizione"?(promoApplied?0:10):0, total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
     const copyCount=items.reduce((a,x)=>a+x.quantity,0);
