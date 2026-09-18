@@ -29,7 +29,7 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .photo-wrap:after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.15);opacity:0;pointer-events:none}
 .card:first-child .photo-wrap:after{opacity:1;animation:firstPhotoVeil 1s ease-out .15s forwards}
 @keyframes firstPhotoVeil{from{opacity:1}to{opacity:0}}
-.card img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;background:#f2ece5;image-orientation:from-image;user-select:none;-webkit-user-drag:none;transition:filter .3s ease,transform .35s ease}
+.card img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;background:#f2ece5;user-select:none;-webkit-user-drag:none;transition:filter .3s ease,transform .35s ease}
 .card.selected img{filter:brightness(.98)}
 .card img.auto-rotated{will-change:transform}
 .meta{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px}
@@ -931,7 +931,8 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   bar.classList.remove("active");
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
-    img.addEventListener("load",()=>applyOrientation(img,card),{once:false});
+    // Imposta l'orientamento PRIMA di assegnare la sorgente: niente rotazione visibile dopo il caricamento.
+    applyOrientation(img,card);
     const src=window["LNTDV_PHOTO_"+id.replace(/^0/,"")];
     if(src)img.src=src;
   });
