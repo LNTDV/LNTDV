@@ -109,6 +109,19 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .tracking-step.active,.tracking-step.done{background:#dce8dd;color:#3f5e45}
 footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);background:var(--cream);font:11px Arial;color:var(--brown2)}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.order-bar{left:12px;right:12px;bottom:12px;width:auto;max-width:none;min-width:0}.order-bar-info{gap:7px}.order-bar-label{font-size:9px}.order-bar-total{font-size:15px}.order-button{padding:9px 10px}.checkout-grid{grid-template-columns:1fr}.order-checkout{padding:20px}.checkout-photo-row{grid-template-columns:28px 48px minmax(0,1fr) auto;gap:9px}.checkout-photo-thumb{width:48px;height:48px}.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}}
+
+/* Promozione temporanea */
+.promo-modal{position:fixed;inset:0;background:rgba(35,23,17,.68);display:none;align-items:center;justify-content:center;padding:20px;z-index:15000}
+.promo-modal.active{display:flex}
+.promo-box{width:min(520px,100%);background:#fbf8f3;border:1px solid #d8c6b4;border-radius:22px;padding:30px;text-align:center;box-shadow:0 28px 80px rgba(0,0,0,.35)}
+.promo-kicker{font:700 10px Arial;letter-spacing:2px;color:#6f8f72;text-transform:uppercase}
+.promo-box h2{margin:9px 0 8px;font:500 32px Georgia;color:#4b2f22}
+.promo-box p{margin:0 auto 18px;max-width:420px;font:13px/1.55 Arial;color:#756357}
+.promo-timer{font:700 34px Arial;color:#4b2f22;letter-spacing:2px;margin:12px 0}
+.promo-price{font:700 25px Georgia;color:#4f6d54;margin:8px 0 18px}
+.promo-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.promo-actions button{border:0;border-radius:11px;padding:12px 17px;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}
+.promo-accept{background:#4f6d54;color:#fff}.promo-decline{background:#eadfd3;color:#4b2f22}
 </style>
 <script src="assets/photo01.js"></script>
 <script src="assets/photo02.js"></script>
@@ -613,7 +626,21 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   </section>
 </main>
 
-<div class="order-bar" id="orderBar">
+
+<div class="promo-modal" id="promoModal" aria-hidden="true">
+  <div class="promo-box">
+    <div class="promo-kicker">PROMOZIONE LNTDV · 8 GIORNI</div>
+    <h2>Una promozione dedicata a te</h2>
+    <p>La promozione è disponibile per un massimo di 60 minuti dal tuo ingresso nel catalogo. Il prezzo promozionale viene aggiornato automaticamente mentre il tempo scorre.</p>
+    <div class="promo-timer" id="promoTimer">60:00</div>
+    <div class="promo-price" id="promoPrice">Prezzo promozionale attivo</div>
+    <div class="promo-actions">
+      <button class="promo-accept" id="promoAccept" type="button">APPROFITTA DELLA PROMOZIONE</button>
+      <button class="promo-decline" id="promoDecline" type="button">CONTINUA SENZA PROMOZIONE</button>
+    </div>
+  </div>
+</div>
+\n<div class="order-bar" id="orderBar">
   <div class="order-bar-info">
     <span class="order-bar-label">Il mio ordine</span>
     <strong id="orderBarCount">0 foto</strong>
@@ -682,7 +709,6 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const panel=document.getElementById("orderPanel"),list=document.getElementById("orderList"),totalEl=document.getElementById("orderTotal"),countEl=document.getElementById("summaryCount");
   const summary=document.getElementById("selectionSummary"),complete=document.getElementById("completePayment"),paymentStatus=document.getElementById("paymentStatus");
   const deliveryNote=document.getElementById("deliveryNote");
-  const STORAGE="lntdv-cart-v3";
   let selectionOrder=[];
   const quantities={};
 
@@ -696,12 +722,6 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       const format=card.querySelector(".format-select")?.value||"";
       return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:prices[format]||0,quantity:Math.max(1,Number(quantities[id]||1)),image:card.querySelector("img")?.src||""};
     }).filter(Boolean);
-  }
-  function saveCart(){
-    localStorage.setItem(STORAGE,JSON.stringify(selectionOrder.map(id=>{
-      const card=document.querySelector('.card[data-photo="'+id+'"]');
-      return card ? {id,format:card.querySelector(".format-select")?.value||"",quantity:Math.max(1,Number(quantities[id]||1))} : null;
-    }).filter(Boolean)));
   }
   function updateSelectionText(n){
     const t=n===0?"Seleziona una fotografia e il formato desiderato":n===1?"1 fotografia selezionata":n+" fotografie selezionate";
@@ -724,24 +744,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     const ready=items.length>0 && items.every(x=>!!x.format) && !!getPayment() && !!document.getElementById("customerName").value.trim() && !!document.getElementById("customerEmail").value.trim();
     complete.disabled=!ready;
     paymentStatus.textContent=!items.length?"Seleziona almeno una fotografia.":items.some(x=>!x.format)?"Seleziona il formato per ogni fotografia.":(!document.getElementById("customerName").value.trim()||!document.getElementById("customerEmail").value.trim())?"Inserisci nome ed email per ricevere la conferma.":!getPayment()?"Seleziona il metodo di pagamento.":"Ordine pronto per l'invio.";
-    saveCart();
-  }
-  function restore(){
-    try{
-      const saved=JSON.parse(localStorage.getItem(STORAGE)||"[]");
-      selectionOrder=[];
-      Object.keys(quantities).forEach(k=>delete quantities[k]);
-      saved.forEach(x=>{
-        const card=document.querySelector('.card[data-photo="'+x.id+'"]');
-        if(!card)return;
-        selectionOrder.push(x.id);
-        quantities[x.id]=Math.max(1,Number(x.quantity||1));
-        card.classList.add("selected");card.setAttribute("aria-pressed","true");
-        const select=card.querySelector(".format-select");if(select)select.value=x.format||"";
-      });
-    }catch(e){selectionOrder=[];}
-  }
-  function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+  }\n  function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
   function closeOrder(){panel.classList.remove("active");panel.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
   cards.forEach(card=>{
@@ -843,6 +846,30 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     document.body.appendChild(sc);
   });
 
+
+  // Promozione: attiva per 8 giorni dalla pubblicazione, con timer personale di 60 minuti.
+  const PROMO_START=new Date("2026-09-18T00:00:00+02:00").getTime();
+  const PROMO_DAYS=8*24*60*60*1000, PROMO_WINDOW=60*60*1000;
+  const promoModal=document.getElementById("promoModal"), promoTimer=document.getElementById("promoTimer"), promoPrice=document.getElementById("promoPrice");
+  const promoAccept=document.getElementById("promoAccept"), promoDecline=document.getElementById("promoDecline");
+  const promoStart=Date.now();
+  function promoOpen(){return Date.now()<PROMO_START+PROMO_DAYS;}
+  function promoRender(){
+    if(!promoOpen()){promoModal.classList.remove("active");return;}
+    const left=Math.max(0,PROMO_WINDOW-(Date.now()-promoStart));
+    const sec=Math.ceil(left/1000), mm=Math.floor(sec/60), ss=sec%60;
+    promoTimer.textContent=String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+    const pct=left/PROMO_WINDOW;
+    promoPrice.textContent=left>0 ? "Promozione attiva · tempo residuo "+Math.round(pct*100)+"%" : "Promozione terminata";
+    if(left<=0){promoAccept.disabled=true;promoAccept.style.opacity=".45";}
+  }
+  if(promoOpen()){
+    promoModal.classList.add("active");promoModal.setAttribute("aria-hidden","false");promoRender();
+    const promoInterval=setInterval(()=>{promoRender();if(Date.now()-promoStart>=PROMO_WINDOW)clearInterval(promoInterval)},1000);
+  }
+  promoAccept.addEventListener("click",()=>{promoModal.classList.remove("active");promoModal.setAttribute("aria-hidden","true");});
+  promoDecline.addEventListener("click",()=>{promoModal.classList.remove("active");promoModal.setAttribute("aria-hidden","true");});
+
   function applyOrientation(img,card){
     const id=card.dataset.photo;
     const rotationMap={"003":-90,"006":90,"007":90,"008":90,"009":90,"011":90,"013":-90,"014":-90,"015":90,"016":-90,"017":-90,"018":90};
@@ -851,8 +878,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     img.classList.toggle("auto-rotated",!!deg);
   }
 
-  restore();
-  summary.classList.remove("active");
+  // Ogni nuovo ingresso parte sempre da una selezione vuota: nessun carrello persistente.\n  selectionOrder=[];\n  Object.keys(quantities).forEach(k=>delete quantities[k]);\n  cards.forEach(card=>{card.classList.remove("selected");card.setAttribute("aria-pressed","false");});\n  summary.classList.remove("active");
   bar.classList.remove("active");
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
