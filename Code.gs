@@ -28,10 +28,12 @@ function doPost(e) {
     const shipping = deliveryType.toLowerCase().includes('sped') ? Number(cfg.shippingPrice || 0) : 0;
     const subtotal = Number(payload.total || 0);
     const total = subtotal + shipping;
-    const orderId = payload.orderId || ('LNTDV-' + Utilities.getUuid().slice(0, 8).toUpperCase());
+    const orderId = 'LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase();
     const paymentMethod = String(payload.paymentMethod || '');
+    const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
     const paymentStatus = String(payload.paymentStatus || 'RICEVUTO').toUpperCase();
     const trackingToken = Utilities.getUuid().replace(/-/g,'').toUpperCase();
+    const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
     const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.format || ''} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
     const row = sheet.getLastRow() + 1;
     sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', false, paymentStatus === 'PAGATO' ? 'PAGATO' : 'RICEVUTO', trackingToken]);
@@ -45,7 +47,7 @@ function doPost(e) {
     }
     const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);\n    const adminUrl = ScriptApp.getService().getUrl() + '?action=order&orderId=' + encodeURIComponent(orderId) + '&key=' + encodeURIComponent(cfg.adminKey);
     MailApp.sendEmail({to: OWNER_EMAIL, subject: `Nuovo ordine ${orderId}${paymentStatus === 'PAGATO' ? ' — PAGATO' : ''}`, body: body + (paymentStatus === 'PAGATO' ? '\n\nPAGAMENTO CONFERMATO DAL SISTEMA.' : '') + `\n\nGESTIONE ORDINE:\n${adminUrl}`});
-    return json_({ok:true, orderId:orderId, paymentStatus:paymentStatus, subtotal:subtotal, shipping:shipping, total:total});
+    return json_({ok:true, orderId:orderId, trackingToken:trackingToken, paymentStatus:paymentStatus, subtotal:subtotal, shipping:shipping, total:total});
   } catch (err) {
     return json_({ok:false, error:String(err)});
   }
@@ -123,6 +125,8 @@ function sendStatusEmail_(row, status) {
     ANNULLATO: 'Il tuo ordine è stato annullato. Per informazioni puoi rispondere a questa email.',
     NUOVO: 'Il tuo ordine è stato registrato.'
   }[status];
+  const trackingToken = String(row[15] || '');
+  const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
   const body = `Gentile ${name},
 
 ${message}
@@ -135,6 +139,9 @@ Totale ordine: €${total}
 Modalità: ${pickup}
 
 Stato: ${labels[status]}
+
+Segui il tuo ordine:
+${trackingUrl}
 
 Edvinas Dragoni
 La Nostra Terra da Vicino`;
