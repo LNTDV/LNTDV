@@ -6,7 +6,6 @@
   const PAYMENT_KEY="lntdv_pending_payment_v1";
   let BANK_IBAN="";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
-  const ORIENTATIONS={};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
   const $=id=>document.getElementById(id);
   const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
@@ -22,18 +21,19 @@
       const code=card.querySelector(".meta strong")?.textContent.trim()||"Fotografia";
       const select=card.querySelector(".format-select");
       const format=select?.value||"";
-      const orientation=(card.querySelector("[data-orientation]")?.dataset.value||card.querySelector("[data-orientation]")?.textContent||"").trim();
+      const orientation=(card.dataset.orientation||"").trim();
       return {code,format,price:prices[format]||0,image:card.querySelector("img")?.src||"",orientation};
     });
   }
+  // PREZZI FISSI, SENZA BUNDLE:
+  // Stampa fotografica €40 · Forex €50 · Digitale €25.
+  // Ogni riga viene calcolata come prezzo del formato × quantità.
+  // Esempio obbligatorio: Forex €50 + Digitale €25 = €75.
+  function totalBase(a){return a.reduce((s,x)=>s+(Number(prices[x.format])||0),0)}
   function pricing(a){
-    const printOnly=a.length>0 && a.every(x=>x.format==="Stampa fotografica");
-    const promo=a.length<=3 && printOnly ? ({1:50,2:80,3:120}[a.length]||0) : null;
     const base=totalBase(a);
-    return {base,promo,total:promo!==null?promo:base};
+    return {base,promo:null,total:base};
   }
-  function totalBase(a){return a.reduce((s,x)=>s+x.price,0)}
-  function total(a){return pricing(a).total}
   function ensureCheckoutOptions(){
     const panel=$("orderPanel"), button=$("completePayment");
     if(!panel||!button||$("lntdvCheckoutOptions"))return;
@@ -46,7 +46,7 @@
         <option value="Biblioteca di Arese — data da concordare">Biblioteca di Arese — data da concordare</option>
       </select>
       <div style="font-size:12px;line-height:1.45;margin-top:7px;opacity:.78">Ritiro gratuito. Quando l'ordine sarà pronto riceverai una email con la conferma e le indicazioni per il ritiro.</div>
-      <div id="lntdvPromo" style="margin-top:10px;padding:9px 11px;border-left:3px solid #54745a;background:rgba(84,116,90,.055);font-size:12px;line-height:1.4;font-weight:600">Promo: 1 foto €50 · 2 foto €80 · 3 foto €120</div><div id="lntdvBankBox" style="margin-top:12px;padding:12px;border:1px solid #d8c5ae;border-radius:10px;background:#fff"><div style="font-weight:700;margin-bottom:7px">Pagamento tramite bonifico</div><div style="font-size:13px;line-height:1.55">IBAN: <strong id="lntdvBankIban">Caricamento…</strong><br>Causale: <strong id="lntdvBankCausale">verrà indicata dopo l’invio dell’ordine</strong></div><div style="font-size:12px;opacity:.78;margin-top:7px">Prima registriamo l’ordine. Subito dopo riceverai la ricevuta dell’ordine e i dati per il bonifico.</div></div>
+      <div id="lntdvBankBox" style="margin-top:12px;padding:12px;border:1px solid #d8c5ae;border-radius:10px;background:#fff"><div style="font-weight:700;margin-bottom:7px">Pagamento tramite bonifico</div><div style="font-size:13px;line-height:1.55">IBAN: <strong id="lntdvBankIban">Caricamento…</strong><br>Causale: <strong id="lntdvBankCausale">verrà indicata dopo l’invio dell’ordine</strong></div><div style="font-size:12px;opacity:.78;margin-top:7px">Prima registriamo l’ordine. Subito dopo riceverai la ricevuta dell’ordine e i dati per il bonifico.</div></div>
     </div>`;
     button.parentNode.insertBefore(wrap,button);
   }
@@ -58,20 +58,15 @@
       const hit=saved.find(x=>x.code===code); if(!hit)return;
       card.classList.add("selected"); card.setAttribute("aria-pressed","true");
       const s=card.querySelector(".format-select"); if(s)s.value=hit.format||"";
-      const o=card.querySelector("[data-orientation]"); if(o&&hit.orientation){o.textContent=hit.orientation==='verticale'?'Verticale':hit.orientation==='orizzontale'?'Orizzontale':hit.orientation;o.dataset.value=hit.orientation;}
     });
   }
   function refresh(){
     ensureCheckoutOptions();
-    const payInputs=document.querySelectorAll('input[name="checkoutPayment"]');payInputs.forEach(x=>{x.checked=false;x.disabled=true});
-    const a=items(),pinfo=pricing(a),t=pinfo.total, payment="BONIFICO";
+    const a=items(),pinfo=pricing(a),t=pinfo.total;
     if($("summaryCount"))$("summaryCount").textContent=a.length;
     if($("orderBarCount"))$("orderBarCount").textContent=a.length+" foto";
     if($("orderBarTotal"))$("orderBarTotal").textContent=euro(t);
     if($("orderTotal"))$("orderTotal").textContent=euro(t);
-    const promoNote=pinfo.promo!==null && a.length>0 ? "Promo: "+a.length+" foto — "+euro(pinfo.promo) : "";
-    const promoEl=$("lntdvPromo");
-    if(promoEl) promoEl.textContent=pinfo.promo!==null && a.length>0 ? ("Promo applicata: "+a.length+" foto — "+euro(pinfo.promo)) : "Promo: 1 foto €50 · 2 foto €80 · 3 foto €120";
     if($("orderList"))$("orderList").innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'">':"")+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+" · ":"")+esc(x.format||"Modalità non selezionata")+'</div></div><div class="checkout-photo-price">'+euro(x.price)+'</div></div>').join(""):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("customerEmail")?.value.trim()||"");
     const ok=a.length&&a.every(x=>x.format)&&$("customerName")?.value.trim()&&validEmail;
@@ -80,23 +75,23 @@
     save();
   }
   function open(){refresh();$("orderPanel")?.classList.add("active");$("orderPanel")?.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
-  function close(){ $("orderPanel")?.classList.remove("active");$("orderPanel")?.setAttribute("aria-hidden","true");document.body.style.overflow=""}
+  function close(){$("orderPanel")?.classList.remove("active");$("orderPanel")?.setAttribute("aria-hidden","true");document.body.style.overflow=""}
   document.addEventListener("click",e=>{if(e.target.closest(".card")&&!e.target.closest("select,option,input,button,a"))setTimeout(refresh,0)});
-  document.addEventListener("change",e=>{if(e.target.classList.contains("format-select")){const c=e.target.closest(".card");c?.classList.add("selected");c?.setAttribute("aria-pressed","true");refresh()}else if(e.target.name==="checkoutPayment")refresh()});
+  document.addEventListener("change",e=>{if(e.target.classList.contains("format-select")){const c=e.target.closest(".card");c?.classList.add("selected");c?.setAttribute("aria-pressed","true");refresh()}});
   ["customerName","customerEmail","customerStreet","customerZip","customerCity","customerNote"].forEach(id=>$(id)?.addEventListener("input",refresh));
   $("openOrder")?.addEventListener("click",e=>{e.preventDefault();open()});
   $("closeOrder")?.addEventListener("click",close);
   document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
   $("completePayment")?.addEventListener("click",async()=>{
-    const a=items(),p="BONIFICO", email=$("customerEmail").value.trim();
-    if(!a.length||a.some(x=>!x.format)||!p||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
+    const a=items(),email=$("customerEmail").value.trim();
+    if(!a.length||a.some(x=>!x.format)||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),trackingToken=makeToken(),pinfo=pricing(a),t=pinfo.total,button=$("completePayment");
-    const payload={orderId,paymentMethod:p,paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,baseTotal:pinfo.base,promotion:pinfo.promo!==null?"Promo "+a.length+" foto":null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken:trackingToken};
+    const payload={orderId,paymentMethod:"BONIFICO",paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:Number(prices[x.format])||0,quantity:1})),total:t,baseTotal:t,promotion:null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
       await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
-      saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO",message:"Ordine inviato. ID e token sono stati salvati su questo dispositivo."});write(PAYMENT_KEY,{orderId,token:trackingToken,email,status:"IN_ATTESA_DI_PAGAMENTO"});
-      $("paymentStatus").innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br><br>Ti abbiamo inviato via email i dati per il bonifico. L’ordine è stato registrato prima del pagamento.";
+      saveTracking(orderId,trackingToken);write(ORDER_KEY,{orderId,token:trackingToken,status:"ORDINE RICEVUTO"});write(PAYMENT_KEY,{orderId,token:trackingToken,email,status:"IN_ATTESA_DI_PAGAMENTO"});
+      $("paymentStatus").innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br><br>Ti abbiamo inviato via email i dati per il bonifico. Totale ordine: <strong>"+euro(t)+"</strong>.";
       document.querySelectorAll(".card.selected").forEach(c=>{c.classList.remove("selected");c.setAttribute("aria-pressed","false")});write(KEY,[]);refresh();
     }catch(err){button.disabled=false;$("paymentStatus").textContent="Errore nell'invio dell'ordine. Riprova."}
   });
