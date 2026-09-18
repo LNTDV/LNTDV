@@ -703,14 +703,46 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const orientation={"001":"Orizzontale","002":"Orizzontale","003":"Verticale","004":"Orizzontale","005":"Orizzontale","006":"Verticale","007":"Verticale","008":"Verticale","009":"Verticale","010":"Orizzontale","011":"Verticale","012":"Orizzontale","013":"Verticale","014":"Verticale","015":"Verticale","016":"Verticale","017":"Verticale","018":"Verticale","019":"Orizzontale","020":"Orizzontale","021":"Orizzontale","022":"Orizzontale","023":"Orizzontale","024":"Orizzontale","025":"Orizzontale"};
   const APPS="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
   const cards=[...document.querySelectorAll(".card")];
-  // Carica le 25 fotografie dagli asset locali del repository GitHub.
-  // Uso percorsi relativi per evitare blocchi MIME/CORS della versione raw.
-  cards.forEach(card=>{
+  // CARICAMENTO FOTO ROBUSTO:
+  // ogni codice LNTDV-XXX viene collegato esplicitamente al relativo
+  // asset assets/photoXX.js. Se una variabile immagine non è presente,
+  // il relativo codice viene ricaricato automaticamente prima di mostrare
+  // la fotografia. Questo evita che una foto rimanga vuota dopo un aggiornamento.
+  const photoAssets={};
+  for(let n=1;n<=25;n++){
+    const num=String(n).padStart(2,"0");
+    photoAssets[String(n).padStart(3,"0")]={
+      key:"LNTDV_PHOTO_"+num,
+      src:"./assets/photo"+num+".js"
+    };
+  }
+  function setPhotoSource(card){
     const id=card.dataset.photo;
     const img=card.querySelector("img");
-    const key="LNTDV_PHOTO_"+String(id).slice(1);
-    if(img && window[key]) img.src=window[key];
-  });
+    const asset=photoAssets[id];
+    if(!img||!asset)return;
+    const apply=()=>{
+      const data=window[asset.key];
+      if(typeof data==="string" && data.startsWith("data:image/")){
+        img.src=data;
+        img.dataset.photoCode="LNTDV-"+id;
+        img.dataset.photoAsset=asset.src;
+      }else{
+        img.removeAttribute("src");
+        img.dataset.photoMissing="true";
+      }
+    };
+    if(typeof window[asset.key]==="string" && window[asset.key].startsWith("data:image/")){
+      apply();
+      return;
+    }
+    const script=document.createElement("script");
+    script.src=asset.src+"?v="+Date.now();
+    script.onload=apply;
+    script.onerror=()=>{img.removeAttribute("src");img.dataset.photoMissing="true";};
+    document.head.appendChild(script);
+  }
+  cards.forEach(setPhotoSource);
   const bar=document.getElementById("orderBar"),barCount=document.getElementById("orderBarCount"),barTotal=document.getElementById("orderBarTotal");
   const panel=document.getElementById("orderPanel"),list=document.getElementById("orderList"),totalEl=document.getElementById("orderTotal"),countEl=document.getElementById("summaryCount");
   const summary=document.getElementById("selectionSummary"),complete=document.getElementById("completePayment");
