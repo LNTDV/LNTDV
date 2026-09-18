@@ -3,3 +3,7 @@
 .orderbar{left:auto!important;right:18px!important;transform:translateY(150px)!important;width:min(420px,calc(100% - 36px));}
 .orderbar.show{transform:translateY(0)!important;}
 @media(max-width:640px){.orderbar{left:12px!important;right:12px!important;width:auto!important;transform:translateY(150px)!important;}.orderbar.show{transform:translateY(0)!important;}}
+
+/* Conferma visiva discreta sulla fotografia selezionata */
+.card.selected .pic{position:relative;}
+.card.selected .pic::before{content:'✓';position:absolute;top:10px;right:10px;z-index:4;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(84,116,90,.92);color:#fff;font:700 13px Arial;box-shadow:0 2px 8px rgba(0,0,0,.14);pointer-events:none;}
