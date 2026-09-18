@@ -4,6 +4,7 @@
   const ORDER_KEY="lntdv_last_order_v3";
   const TRACKING_KEY="lntdv_tracking_orders_v1";
   const PAYMENT_KEY="lntdv_pending_payment_v1";
+  let BANK_IBAN="";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
   const ORIENTATIONS={};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
@@ -45,7 +46,7 @@
         <option value="Biblioteca di Arese — data da concordare">Biblioteca di Arese — data da concordare</option>
       </select>
       <div style="font-size:12px;line-height:1.45;margin-top:7px;opacity:.78">Ritiro gratuito. Quando l'ordine sarà pronto riceverai una email con la conferma e le indicazioni per il ritiro.</div>
-      <div id="lntdvPromo" style="margin-top:10px;padding:9px 11px;border-left:3px solid #54745a;background:rgba(84,116,90,.055);font-size:12px;line-height:1.4;font-weight:600">Promo: 1 foto €50 · 2 foto €80 · 3 foto €120</div>
+      <div id="lntdvPromo" style="margin-top:10px;padding:9px 11px;border-left:3px solid #54745a;background:rgba(84,116,90,.055);font-size:12px;line-height:1.4;font-weight:600">Promo: 1 foto €50 · 2 foto €80 · 3 foto €120</div><div id="lntdvBankBox" style="margin-top:12px;padding:12px;border:1px solid #d8c5ae;border-radius:10px;background:#fff"><div style="font-weight:700;margin-bottom:7px">Pagamento tramite bonifico</div><div style="font-size:13px;line-height:1.55">IBAN: <strong id="lntdvBankIban">Caricamento…</strong><br>Causale: <strong id="lntdvBankCausale">verrà indicata dopo l’invio dell’ordine</strong></div><div style="font-size:12px;opacity:.78;margin-top:7px">Prima registriamo l’ordine. Subito dopo riceverai la ricevuta dell’ordine e i dati per il bonifico.</div></div>
     </div>`;
     button.parentNode.insertBefore(wrap,button);
   }
@@ -63,7 +64,7 @@
   function refresh(){
     ensureCheckoutOptions();
     const payInputs=document.querySelectorAll('input[name="checkoutPayment"]');payInputs.forEach(x=>{x.checked=false;x.disabled=true});
-    const a=items(),pinfo=pricing(a),t=pinfo.total, payment=document.querySelector('input[name="checkoutPayment"]:checked')?.value||"";
+    const a=items(),pinfo=pricing(a),t=pinfo.total, payment="BONIFICO";
     if($("summaryCount"))$("summaryCount").textContent=a.length;
     if($("orderBarCount"))$("orderBarCount").textContent=a.length+" foto";
     if($("orderBarTotal"))$("orderBarTotal").textContent=euro(t);
@@ -73,9 +74,9 @@
     if(promoEl) promoEl.textContent=pinfo.promo!==null && a.length>0 ? ("Promo applicata: "+a.length+" foto — "+euro(pinfo.promo)) : "Promo: 1 foto €50 · 2 foto €80 · 3 foto €120";
     if($("orderList"))$("orderList").innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'">':"")+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+" · ":"")+esc(x.format||"Modalità non selezionata")+'</div></div><div class="checkout-photo-price">'+euro(x.price)+'</div></div>').join(""):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("customerEmail")?.value.trim()||"");
-    const ok=a.length&&a.every(x=>x.format)&&payment&&$("customerName")?.value.trim()&&validEmail;
+    const ok=a.length&&a.every(x=>x.format)&&$("customerName")?.value.trim()&&validEmail;
     if($("completePayment"))$("completePayment").disabled=!ok;
-    if($("paymentStatus"))$("paymentStatus").textContent=!a.length?"Seleziona almeno una fotografia.":!a.every(x=>x.format)?"Scegli il formato per ogni fotografia.":!ok?"Completa nome, email e metodo di pagamento.":"Ordine pronto.";
+    if($("paymentStatus"))$("paymentStatus").textContent=!a.length?"Seleziona almeno una fotografia.":!a.every(x=>x.format)?"Scegli il formato per ogni fotografia.":!ok?"Completa nome ed email.":"Ordine pronto.";
     save();
   }
   function open(){refresh();$("orderPanel")?.classList.add("active");$("orderPanel")?.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
@@ -101,5 +102,5 @@
   });
   const observer=new MutationObserver(()=>ensureCheckoutOptions());
   observer.observe(document.body,{childList:true,subtree:true});
-  rememberTrackingFromUrl();restore();refresh();
+  fetch(SCRIPT_URL+"?action=config").then(r=>r.json()).then(x=>{if(x&&x.ok)BANK_IBAN=String(x.iban||"")}).catch(()=>{}).finally(()=>{rememberTrackingFromUrl();restore();refresh()});
 })();
