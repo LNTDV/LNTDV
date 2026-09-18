@@ -53,6 +53,7 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText}); }
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
+  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
 
@@ -165,3 +166,33 @@ function ensureSettings_(sheet) {
 function formatOrders_(sheet) { sheet.getRange(1,1,1,15).setFontWeight('bold'); sheet.autoResizeColumns(1,15); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
 function formatSettings_(sheet) { sheet.getRange(1,1,1,2).setFontWeight('bold'); sheet.autoResizeColumns(1,2); }
 function json_(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
+
+
+function trackOrder_(orderId, email) {
+  orderId = String(orderId || '').trim();
+  email = String(email || '').trim().toLowerCase();
+  if (!orderId || !email) return json_({ok:false,error:'ID ordine ed email sono obbligatori.'});
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'});
+  const values = sheet.getDataRange().getValues();
+  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId && String(r[6] || '').toLowerCase() === email);
+  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'});
+  const row = values[index];
+  const status = String(row[14] || 'NUOVO').toUpperCase();
+  const labels = {
+    RICEVUTO:'Ricevuto',
+    IN_LAVORAZIONE:'In lavorazione',
+    PRONTO_AL_RITIRO:'Pronto al ritiro',
+    CONSEGNATO:'Consegnato',
+    ANNULLATO:'Annullato',
+    NUOVO:'Registrato'
+  };
+  return json_({
+    ok:true,
+    orderId:String(row[1]),
+    status:status,
+    label:labels[status] || status,
+    total:Number(row[10] || 0),
+    labels:{RICEVUTO:'Ricevuto',IN_LAVORAZIONE:'In lavorazione',PRONTO_AL_RITIRO:'Pronto al ritiro',CONSEGNATO:'Consegnato'}
+  });
+}
