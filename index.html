@@ -676,6 +676,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
         <div class="delivery-note" id="deliveryNote">Ritiro gratuito da concordare a Milano.</div>
       </section>
       </div>
+    <div id="paymentStatus" aria-live="polite" style="margin:0 0 12px;font:11px/1.45 Arial;color:#756357;text-align:center;"></div>
     <div class="checkout-bottom">
       <div><span class="total-label">Totale</span><strong id="orderTotal">€0,00</strong></div>
       <button class="checkout-submit" id="completePayment" type="button" disabled>CONFERMA E INVIA ORDINE</button>
@@ -700,6 +701,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const panel=document.getElementById("orderPanel"),list=document.getElementById("orderList"),totalEl=document.getElementById("orderTotal"),countEl=document.getElementById("summaryCount");
   const summary=document.getElementById("selectionSummary"),complete=document.getElementById("completePayment");
   const deliveryNote=document.getElementById("deliveryNote");
+  const paymentStatus=document.getElementById("paymentStatus");
   let selectionOrder=[];
   const quantities={};
 
@@ -865,70 +867,3 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const PROMO_THRESHOLD=150;
   let promoApplied=false;
   const promoSummary=document.getElementById("promoSummary");
-  const promoSummaryPrice=document.getElementById("promoSummaryPrice");
-  const promoAccept=document.getElementById("promoAccept");
-  const promoDecline=document.getElementById("promoDecline");
-  const promoNote=document.getElementById("promoNote");
-
-  function updatePromo(photos,delivery){
-    // La promozione è visibile SOLO dentro il riepilogo dell'ordine.
-    const eligible=photos>PROMO_THRESHOLD && delivery==="Spedizione";
-    promoSummary.classList.toggle("active",eligible || promoApplied);
-    promoAccept.disabled=!eligible || promoApplied;
-    if(promoApplied && !eligible) promoApplied=false;
-    if(promoApplied){
-      promoSummaryPrice.textContent="Spedizione: €0,00";
-      promoNote.textContent="Promozione applicata: spedizione gratuita.";
-      promoAccept.textContent="PROMOZIONE APPLICATA";
-    }else{
-      promoSummaryPrice.textContent=delivery==="Spedizione"?"Spedizione: €10,00":"Ritiro: €0,00";
-      promoAccept.textContent="APPLICA SPEDIZIONE GRATUITA";
-      if(!eligible){
-        promoNote.textContent="La spedizione gratuita si applica solo a ordini superiori a €150 con Spedizione.";
-      }else{
-        promoNote.textContent="Ordine idoneo: puoi scegliere la spedizione gratuita.";
-      }
-    }
-  }
-
-
-  promoAccept.addEventListener("click",()=>{
-    const items=getItems();
-    const photos=items.reduce((a,x)=>a+x.price*x.quantity,0);
-    if(photos>PROMO_THRESHOLD && getDelivery()==="Spedizione"){
-      promoApplied=true;
-      refresh();
-      // Rimane nel riepilogo: non apre nuove pagine e non cambia schermata.
-    }
-  });
-  promoDecline.addEventListener("click",()=>{
-    promoApplied=false;
-    refresh();
-  });
-
-  function applyOrientation(img,card){
-    const id=card.dataset.photo;
-    const rotationMap={"003":-90,"006":90,"007":90,"008":90,"009":90,"011":90,"013":-90,"014":-90,"015":90,"016":-90,"017":-90,"018":90};
-    const deg=rotationMap[id]||0;
-    img.style.transform=deg?"rotate("+deg+"deg)":"none";
-    img.classList.toggle("auto-rotated",!!deg);
-  }
-
-  // Ogni nuovo ingresso parte sempre da una selezione vuota: nessun carrello persistente.
-  selectionOrder=[];
-  Object.keys(quantities).forEach(k=>delete quantities[k]);
-  cards.forEach(card=>{card.classList.remove("selected");card.setAttribute("aria-pressed","false");});
-  summary.classList.remove("active");
-  bar.classList.remove("active");
-  cards.forEach(card=>{
-    const id=card.dataset.photo,img=card.querySelector("img");
-    // Imposta l'orientamento PRIMA di assegnare la sorgente: niente rotazione visibile dopo il caricamento.
-    applyOrientation(img,card);
-    const src=window["LNTDV_PHOTO_"+id.replace(/^0/,"")];
-    if(src)img.src=src;
-  });
-  refresh();
-})();
-</script>
-</body>
-</html>
