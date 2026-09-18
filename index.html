@@ -749,24 +749,38 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     card.setAttribute("role","button");card.setAttribute("tabindex","0");card.setAttribute("aria-pressed","false");
     const select=card.querySelector(".format-select");
     card.addEventListener("click",e=>{
+      // La fotografia NON si seleziona cliccando sull'immagine/card.
+      // Prima il cliente deve scegliere esplicitamente il formato.
       if(e.target.closest("select,option,button,input"))return;
+      const select=card.querySelector(".format-select");
+      if(!select || !select.value){
+        select?.focus();
+        paymentStatus.textContent="Prima seleziona il formato desiderato per questa fotografia.";
+        return;
+      }
       const id=card.dataset.photo;
-      const selected=card.classList.contains("selected");
-      if(selected){
+      if(card.classList.contains("selected")){
         card.classList.remove("selected");
+        card.setAttribute("aria-pressed","false");
         selectionOrder=selectionOrder.filter(x=>x!==id);
         delete quantities[id];
       }else{
         card.classList.add("selected");
+        card.setAttribute("aria-pressed","true");
         selectionOrder.push(id);
         quantities[id]=1;
       }
-      card.setAttribute("aria-pressed",card.classList.contains("selected"));
       refresh();
     });
     card.addEventListener("keydown",e=>{
       if(e.key==="Enter"||e.key===" "){
         e.preventDefault();
+        const select=card.querySelector(".format-select");
+        if(!select || !select.value){
+          select?.focus();
+          paymentStatus.textContent="Prima seleziona il formato desiderato per questa fotografia.";
+          return;
+        }
         const id=card.dataset.photo;
         if(card.classList.contains("selected")){
           card.classList.remove("selected");
@@ -781,7 +795,24 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
         refresh();
       }
     });
-    select?.addEventListener("change",()=>{ if(select.value && !card.classList.contains("selected")){ card.classList.add("selected"); selectionOrder.push(card.dataset.photo); quantities[card.dataset.photo]=1; } else if(!select.value && card.classList.contains("selected")){ card.classList.remove("selected"); card.setAttribute("aria-pressed","false"); selectionOrder=selectionOrder.filter(x=>x!==card.dataset.photo); delete quantities[card.dataset.photo]; } refresh(); });
+    select?.addEventListener("change",()=>{
+      const id=card.dataset.photo;
+      if(select.value){
+        // Solo dopo la scelta del formato la foto entra nell'ordine.
+        if(!card.classList.contains("selected")){
+          card.classList.add("selected");
+          card.setAttribute("aria-pressed","true");
+          selectionOrder.push(id);
+          quantities[id]=1;
+        }
+      }else if(card.classList.contains("selected")){
+        card.classList.remove("selected");
+        card.setAttribute("aria-pressed","false");
+        selectionOrder=selectionOrder.filter(x=>x!==id);
+        delete quantities[id];
+      }
+      refresh();
+    });
   });
   document.querySelectorAll('input[name="deliveryType"]').forEach(x=>x.addEventListener("change",refresh));
   ["customerName","customerEmail"].forEach(id=>document.getElementById(id).addEventListener("input",refresh));
