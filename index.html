@@ -837,7 +837,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
       await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
-      paymentStatus.innerHTML="<strong>Ordine inviato.</strong><br>ID ordine: "+esc(orderId)+"<br>Riceverai una email di conferma.";
+      paymentStatus.innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: "+esc(orderId)+"<br>Ti invieremo una email di conferma dell’ordine.";
     }catch(e){complete.disabled=false;paymentStatus.textContent="Errore nell'invio dell'ordine. Riprova tra poco.";}
   });
 
