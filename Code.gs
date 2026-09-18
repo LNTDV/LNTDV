@@ -38,8 +38,9 @@ function doPost(e) {
     const row = sheet.getLastRow() + 1;
     sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', false, paymentStatus === 'PAGATO' ? 'PAGATO' : 'RICEVUTO', trackingToken]);
     sheet.getRange(row, 14).insertCheckboxes().setValue(false);
-    const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${cfg.pickupText}`;
-    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nQuesta email conferma la ricezione della richiesta. Il pagamento viene considerato confermato solo quando il sistema restituisce esplicitamente l'esito PAGATO.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+    const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${deliveryType}`;
+    const promotionText = payload.promotion ? `Promozione applicata: ${payload.promotion}\n` : '';
+    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: ${paymentMethod || 'non specificato'}\n\nQuesta email conferma la ricezione della richiesta. Il pagamento viene considerato confermato solo quando il sistema restituisce esplicitamente l'esito PAGATO.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     MailApp.sendEmail({to: customer.email, subject: `Conferma ordine ${orderId} — La Nostra Terra da Vicino`, body: body});
     if (paymentStatus === 'PAGATO') {
       const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
@@ -127,9 +128,10 @@ function sendStatusEmail_(row, status) {
   }[status];
   const trackingToken = String(row[15] || '');
   const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
+  const pickupNote = status === 'PRONTO_AL_RITIRO' ? `\n\nRITIRO:\n${pickup}\n\nQuando vieni a ritirare, porta con te l'ID ordine ${orderId}.` : '';
   const body = `Gentile ${name},
 
-${message}
+${message}${pickupNote}
 
 ID ordine: ${orderId}
 
