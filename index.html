@@ -17,7 +17,7 @@ h1{font-size:clamp(34px,6vw,66px);font-weight:400;margin:12px 0}
 .legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .legend span{border:1px solid #bda897;border-radius:999px;padding:7px 11px;font:10px Arial;letter-spacing:1px}
 main{max-width:1280px;margin:auto;padding:28px 18px 130px}
-.selection-summary{text-align:center;margin:0 0 20px}
+.selection-summary{text-align:center;margin:0 0 20px;display:none}.selection-summary.active{display:block}
 .selection-summary span{display:inline-block;padding:9px 16px;border:1px solid #cdb8a5;border-radius:999px;background:#fbf6ef;color:#5a3b2b;font:600 10px Arial;letter-spacing:.8px;text-transform:uppercase}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(75,47,34,.08);transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease}
@@ -42,8 +42,8 @@ main{max-width:1280px;margin:auto;padding:28px 18px 130px}
 .format-select:hover{border-color:#8fa591}
 .format-select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(111,143,114,.10)}
 .format-select:has(option:checked:not([value=""])){border-color:rgba(111,143,114,.60);background:rgba(111,143,114,.045)}
-.order-bar{position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:270px;max-width:calc(100vw - 36px);padding:10px 10px 10px 15px;border:1px solid rgba(216,195,173,.3);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
-.order-bar-info{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
+.order-bar{display:none;position:fixed;right:18px;bottom:18px;left:auto;z-index:10000;min-width:270px;max-width:calc(100vw - 36px);padding:10px 10px 10px 15px;border:1px solid rgba(216,195,173,.3);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);backdrop-filter:blur(8px)}
+.order-bar.active{display:flex}.order-bar-info{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
 .order-bar-label{font:10px Arial;letter-spacing:1.3px;text-transform:uppercase;color:#efe6db}
 .order-bar-info strong{font:700 11px Arial;color:#d8c3ad}
 .order-bar-total{font:700 17px Georgia;color:#fff}
@@ -700,13 +700,13 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   }
   function updateSelectionText(n){
     const t=n===0?"Seleziona una fotografia e il formato desiderato":n===1?"1 fotografia selezionata":n+" fotografie selezionate";
-    summary.innerHTML="<span>"+t+"</span>";
+    summary.innerHTML="<span>"+t+"</span>"; summary.classList.toggle("active",n>0);
   }
   function refresh(){
     const items=getItems(), delivery=getDelivery(), fee=delivery==="Spedizione"?10:0, photos=items.reduce((a,x)=>a+x.price,0), total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
-    barCount.textContent=items.length+" "+(items.length===1?"foto":"foto");
+    barCount.textContent=items.length+" "+(items.length===1?"foto":"foto"); bar.classList.toggle("active",items.length>0);
     barTotal.textContent="€"+total.toFixed(2).replace(".",",");
     if(!items.length){list.innerHTML='<div class="checkout-empty">Nessuna fotografia selezionata.</div>';}
     else{
@@ -825,6 +825,8 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   }
 
   restore();
+  summary.classList.remove("active");
+  bar.classList.remove("active");
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
     img.addEventListener("load",()=>applyOrientation(img,card),{once:false});
