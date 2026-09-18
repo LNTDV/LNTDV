@@ -902,29 +902,49 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     const total=photosTotal+fee;
     if(!items.length||items.some(x=>!x.format)||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
-    // Payload piatto compatibile con doPost di Google Apps Script.
-    // text/plain evita il preflight CORS; Apps Script legge il JSON da e.postData.contents.
+    const trackingToken=(window.crypto&&crypto.randomUUID?crypto.randomUUID().replace(/-/g,""):String(Date.now())+Math.random().toString(36).slice(2)).toUpperCase();
     const payload={
-      idOrdine:orderId,
-      nome:name,
-      cognome:"",
-      email:email,
-      fotografie:items.map(x=>x.code+" (x"+x.quantity+")").join(" | "),
-      formato:items.map(x=>x.format).join(" | "),
-      quantita:String(items.reduce((a,x)=>a+x.quantity,0)),
-      consegna:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",
-      totale:total,
-      note:document.getElementById("customerNote").value.trim(),
-      stato:"NUOVO",
+      orderId,
+      customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},
+      items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:priceForFormat(x.format),quantity:x.quantity})),
+      total:photosTotal,
+      deliveryType:delivery,
+      promotion:(promoApplied&&delivery==="Spedizione")?"Spedizione gratuita":"",
       paymentMethod:"Ordine online",
-      paymentStatus:"RICEVUTO"
+      paymentStatus:"IN_ATTESA_DI_PAGAMENTO",
+      trackingToken
     };
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
     try{
-      await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(payload)});
-      paymentStatus.innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: "+esc(orderId)+"<br>Ti invieremo una email di conferma dell’ordine.";
-    }catch(e){complete.disabled=false;paymentStatus.textContent="Errore nell'invio dell'ordine. Riprova tra poco.";}
-  });
+      await fetch(APPS,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
+      paymentStatus.textContent="Verifica della ricezione dell'ordine…";
+      const confirmed=await new Promise((resolve,reject)=>{
+        const callback="lntdvConfirm_"+Date.now();
+        let finished=false,attempts=0;
+        const cleanup=()=>{try{delete window[callback]}catch(_){}};
+        window[callback]=data=>{
+          if(finished)return;
+          if(data&&data.ok){finished=true;cleanup();resolve(data);return;}
+          if(++attempts>=12){finished=true;cleanup();reject(new Error("L'ordine non risulta ancora registrato."));}
+          else setTimeout(check,1000);
+        };
+        function check(){
+          const sc=document.createElement("script");
+          sc.src=APPS+"?action=track&ordine="+encodeURIComponent(orderId)+"&token="+encodeURIComponent(trackingToken)+"&email="+encodeURIComponent(email)+"&callback="+callback+"&v="+Date.now();
+          sc.onerror=()=>{sc.remove();if(++attempts>=12){finished=true;cleanup();reject(new Error("Verifica non disponibile."));}else setTimeout(check,1000);};
+          sc.onload=()=>setTimeout(()=>sc.remove(),200);
+          document.body.appendChild(sc);
+        }
+        check();
+      });
+      localStorage.setItem("lntdv_last_order_v3",JSON.stringify({orderId,token:trackingToken,status:"RICEVUTO"}));
+      paymentStatus.innerHTML="<strong>Ordine ricevuto e registrato.</strong><br>ID ordine: <strong>"+esc(confirmed.orderId||orderId)+"</strong><br><br>La richiesta è stata registrata nel sistema. La conferma dell'ordine è stata inviata all'indirizzo <strong>"+esc(email)+"</strong>.";
+      complete.disabled=true;
+    }catch(err){
+      complete.disabled=false;
+      paymentStatus.textContent="Non è stato possibile verificare la ricezione dell'ordine. Non inviare nuovamente subito: controlla la tua email o riprova tra poco.";
+    }
+  });;
 
   document.getElementById("trackingForm").addEventListener("submit",e=>{
     e.preventDefault();
