@@ -1,75 +1,752 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="La nostra terra da vicino — catalogo fotografico di Edvinas Dragoni.">
-<title>Edvinas Dragoni — La nostra terra da vicino</title>
-<style>
-:root{--bd:#2f211a;--b:#5b4032;--bs:#765848;--deep:#241914;--be:#d8c3ad;--bel:#efe6db;--cr:#faf7f1;--wh:#fffdf9;--gr:#54745a;--tx:#30241e;--mu:#756357;--ln:rgba(91,64,50,.18);--sh:0 18px 55px rgba(47,33,26,.13);--r:20px}
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Georgia,"Times New Roman",serif;background:var(--cr);color:var(--tx);line-height:1.55}button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit}
-.nav{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:15px 4vw;background:rgba(250,247,241,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--ln)}.logo{font:800 14px Arial;letter-spacing:2px;color:var(--bd)}.navlinks{display:flex;gap:22px;list-style:none}.navlinks a{text-decoration:none;font:11px Arial;letter-spacing:1.5px;text-transform:uppercase}.navlinks a:hover{color:var(--gr)}
-.hero{background:var(--bd);color:var(--bel);padding:105px 5vw 90px;text-align:center}.hero small,.label{font:10px Arial;text-transform:uppercase;letter-spacing:3px;color:var(--bs)}.hero small{color:var(--be)}.hero h1{font-size:clamp(48px,8vw,100px);font-weight:400;line-height:.94;margin:22px auto;max-width:1000px}.hero h1 i{color:var(--be)}.hero p{max-width:720px;margin:auto;color:#e8d9cd;font-size:18px}.cta{display:inline-block;margin-top:34px;padding:13px 20px;border:1px solid #cdb5a1;border-radius:999px;text-decoration:none;font:11px Arial;letter-spacing:1.5px;text-transform:uppercase}
-section{padding:80px 5vw}.inner{max-width:1200px;margin:auto}.title{font-size:clamp(36px,5vw,60px);font-weight:400;line-height:1.02;color:var(--bd);margin:9px 0 18px}.text{max-width:820px;color:var(--mu);font-size:17px}.catalog{background:var(--bel)}.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:35px}.cat{padding:30px;min-height:250px;border-radius:var(--r);background:var(--b);color:#fff;text-decoration:none;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:var(--sh);transition:.4s}.cat:nth-child(2){background:var(--bs)}.cat:nth-child(3){background:var(--deep)}.cat:hover{transform:translateY(-6px)}.cat b{font-size:34px;font-weight:400}.cat span{font:10px Arial;letter-spacing:2px;color:var(--be);text-transform:uppercase;margin-bottom:7px}.cat p{color:#eee0d5;font-size:14px;margin-top:5px}
-.gallery{padding-top:65px}.gallery-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:25px}.back{border:1px solid var(--ln);background:transparent;border-radius:999px;padding:10px 15px;font:11px Arial}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}.card{background:var(--wh);border:1px solid rgba(91,64,50,.1);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(47,33,26,.09)}.pic{aspect-ratio:3/4;background:#e8ddd1;overflow:hidden;cursor:zoom-in}.pic img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}.card:hover img{transform:scale(1.025)}.info{padding:14px}.num{font:9px Arial;letter-spacing:2px;color:var(--bs);text-transform:uppercase}.card h3{font-size:20px;font-weight:400;color:var(--bd);margin:4px 0 11px}.format-title{font:9px Arial;letter-spacing:1.8px;text-transform:uppercase;color:var(--bs);margin-bottom:7px}.formats{display:grid;gap:6px}.fmt{position:relative}.fmt input{position:absolute;opacity:0}.fmt label{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid var(--ln);border-radius:9px;background:var(--cr);font:11px Arial;transition:.25s}.fmt label:hover{border-color:var(--bs);transform:translateX(2px)}.fmt input:checked+label{background:var(--gr);color:#fff;border-color:var(--gr)}.price{white-space:nowrap}
-.pairs{display:grid;gap:35px}.pair{border-top:1px solid var(--ln);padding-top:20px}.pair h3{font-size:27px;font-weight:400;margin-bottom:15px;color:var(--bd)}.pairgrid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
-.dark{background:var(--bd);color:var(--bel)}.dark .title{color:var(--bel)}.dark .text{color:#d8c9bd}.boxes{display:grid;grid-template-columns:repeat(3,1fr);margin-top:35px;border:1px solid #ffffff2a}.box{padding:25px;border-right:1px solid #ffffff2a}.box:last-child{border:0}.box small{font:9px Arial;letter-spacing:2px;text-transform:uppercase;color:#cbb4a3}.box strong{display:block;font-size:19px;font-weight:400;margin-top:6px}
-.orderbar{position:fixed;z-index:2000;left:50%;bottom:16px;transform:translate(-50%,150px);width:min(760px,calc(100% - 24px));background:rgba(47,33,26,.98);color:#fff;border-radius:17px;padding:12px 14px 12px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 20px 60px #0005;transition:.45s}.orderbar.show{transform:translate(-50%,0)}.orderbar .count{font:12px Arial}.orderbar .total{font-weight:700}.orderbar button{border:0;background:var(--be);color:var(--bd);border-radius:10px;padding:11px 14px;font:bold 11px Arial}
-.modal{position:fixed;inset:0;z-index:3000;background:#190f0ccc;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:15px;opacity:0;visibility:hidden;transition:.3s}.modal.open{opacity:1;visibility:visible}.modalbox{width:min(720px,100%);max-height:92vh;overflow:auto;background:var(--cr);border-radius:22px;padding:25px}.mhead{display:flex;justify-content:space-between;align-items:start}.mhead h2{font-size:39px;font-weight:400;color:var(--bd)}.x{border:0;background:none;font-size:28px;color:var(--bd)}.list{display:grid;gap:7px;margin:18px 0}.item{background:var(--be);border-radius:10px;padding:10px 12px;font:12px Arial}.totals{border-top:1px solid var(--ln);padding-top:14px;display:grid;gap:5px;font:13px Arial}.totalbig{font-size:19px;font-weight:700;color:var(--bd)}.form{display:grid;gap:9px;margin-top:18px}.form input,.form textarea,.form select{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;background:#fff;outline:none}.form textarea{min-height:75px}.pay{padding:14px;background:var(--bel);border-radius:13px;margin-top:5px}.pay strong{display:block;color:var(--bd);margin-bottom:8px}.pay label{display:flex;gap:8px;align-items:center;font:13px Arial;margin:7px 0}.submit{border:0;background:var(--gr);color:#fff;padding:14px;border-radius:11px;font:bold 11px Arial;letter-spacing:1px}.note{font:10px/1.5 Arial;color:var(--mu)}
-.track{background:var(--bel)}.trackbox{max-width:700px;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:22px;margin-top:25px;box-shadow:var(--sh)}.trackrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.trackrow input{padding:12px;border:1px solid var(--ln);border-radius:9px}.trackbtn{margin-top:10px;background:var(--bd);color:#fff;border:0;border-radius:9px;padding:12px 16px;font:bold 11px Arial}.trackresult{margin-top:18px;padding:15px;background:var(--cr);border-radius:12px;display:none}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:15px}.step{padding:10px 5px;text-align:center;border-radius:8px;background:#e5d9cc;font:9px Arial;text-transform:uppercase}.step.on{background:var(--gr);color:#fff}
-.lightbox{position:fixed;inset:0;z-index:4000;background:#0f0a07f2;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden}.lightbox.open{opacity:1;visibility:visible}.lightbox img{max-width:95vw;max-height:90vh}.lightbox .x{position:absolute;right:20px;top:15px;color:#fff}.cap{position:absolute;bottom:18px;left:20px;color:#fff;font:10px Arial;letter-spacing:1px}
-footer{background:var(--deep);color:#cdbbad;padding:30px 5vw;display:flex;justify-content:space-between;font:10px Arial;letter-spacing:1px}
-@media(max-width:1050px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.navlinks{display:none}.cats,.boxes{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.pairgrid,.trackrow{grid-template-columns:1fr}.hero h1{font-size:54px}.gallery-head{display:block}.back{margin-top:15px}.steps{grid-template-columns:1fr 1fr}}@media(max-width:440px){.grid{grid-template-columns:1fr}.pic{aspect-ratio:4/3}.orderbar{flex-wrap:wrap}}
-/* FINAL CATALOG PRESENTATION */
-.catalog{padding-top:70px}
-.gallery .inner{max-width:1280px}
-.pic{position:relative;aspect-ratio:4/3;background:#eee8e1;display:flex;align-items:center;justify-content:center}
-.pic img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;transition:transform .65s ease,filter .65s ease}
-.pic.reveal::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.16);pointer-events:none;animation:photoVeil .9s ease-out forwards}
-@keyframes photoVeil{0%{opacity:1}100%{opacity:0}}
-.orientation{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font:9px Arial;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
-.orientation::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--be)}
-.fmt input:checked+label{background:rgba(84,116,90,.055);color:var(--tx);border-color:rgba(84,116,90,.5);transform:none;box-shadow:inset 2px 0 0 var(--gr)}
-.fmt input:checked+label::after{content:"✓";color:var(--gr);font-weight:700;margin-left:auto}
-.fmt input:checked+label .price{color:var(--gr);font-weight:700}
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La nostra terra da vicino — Edvinas Dragoni</title>
+<style>:root{--brown:#4b2f22;--brown2:#6b4734;--cream:#f4eadf;--paper:#fbf8f3;--line:#d8c6b4}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--brown);font-family:Georgia,serif}header{background:var(--brown);color:#f4eadf;padding:55px 20px 42px;text-align:center}.brand{font:800 15px Arial;letter-spacing:3px}h1{font-size:clamp(38px,7vw,72px);font-weight:400;margin:14px 0}.intro{max-width:760px;margin:auto;line-height:1.6;color:#eadbd0}.legend{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:20px}.legend span{border:1px solid #bda897;border-radius:999px;padding:7px 11px;font:10px Arial;letter-spacing:1px}main{max-width:1250px;margin:auto;padding:30px 18px 60px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(75,47,34,.08)}
+.card{position:relative;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.card.selected{border-color:#3f8f5a;box-shadow:0 0 0 3px rgba(63,143,90,.22),0 10px 30px rgba(75,47,34,.08)}
+.card.selected .photo-wrap{outline:4px solid #3f8f5a;outline-offset:-4px}
+.selection-check{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:#3f8f5a;color:#fff;display:none;align-items:center;justify-content:center;font:700 22px Arial;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.card.selected .selection-check{display:flex}
+.card.selected img{filter:brightness(.96)}
+.photo-wrap{border:1px solid #eadfd5;border-radius:14px;overflow:hidden}.card img{width:100%;aspect-ratio:4/3;display:block;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-drag:none}.print-choice{margin:0 0 3px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fcfaf7}
+.print-choice label{display:block;margin-bottom:6px;font:10px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--brown2)}
+.format-select{width:100%;padding:10px 12px;border:1px solid #d9c9bb;border-radius:12px;background:#fff;color:var(--brown);font:12px Arial,sans-serif;outline:none}
+.format-select:focus{border-color:#9f816c;box-shadow:0 0 0 2px rgba(159,129,108,.12)}
+.meta{padding:15px 17px 17px;display:flex;flex-direction:column;gap:7px}.meta strong{font:700 12px Arial;letter-spacing:1.2px}.meta span{align-self:flex-start;background:var(--brown);color:#fff;border-radius:999px;padding:5px 9px;font:10px Arial;letter-spacing:1px}.meta small{font:11px Arial;color:var(--brown2)}footer{background:var(--cream);border-top:1px solid var(--line);padding:25px 18px;text-align:center;font:11px Arial;color:var(--brown2)}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.order-panel{position:fixed;inset:auto 18px 18px auto;width:min(440px,calc(100vw - 36px));max-height:85vh;overflow:auto;background:#fff;border:1px solid #d8c6b4;border-radius:18px;box-shadow:0 18px 50px rgba(75,47,34,.22);padding:20px;z-index:50;display:none}
+.order-panel.open{display:block}.order-panel h2{margin:0 0 12px;font-size:24px;font-weight:500}.order-close{float:right;border:0;background:none;font-size:22px;color:#6b4734;cursor:pointer}
+.order-list{font:12px Arial;line-height:1.5;margin:10px 0}.order-item{padding:9px 0;border-bottom:1px solid #eee4dc}
+.order-total{font:700 16px Arial;margin:14px 0;color:#4b2f22}.payment-block{margin-top:14px;padding:13px;border:1px solid #d8c6b4;border-radius:12px;background:#fbf8f3}
+.payment-block label{display:block;font:10px Arial;letter-spacing:1px;text-transform:uppercase;color:#6b4734;margin-bottom:7px}
+.payment-select,.order-action{width:100%;padding:11px;border-radius:10px;border:1px solid #d8c6b4;background:#fff;color:#4b2f22;font:12px Arial}
+.order-action{margin-top:10px;background:#4b2f22;color:#fff;border-color:#4b2f22;cursor:pointer}.order-action:disabled{opacity:.45;cursor:not-allowed}
+.payment-status{margin-top:9px;font:11px Arial;line-height:1.45;color:#6b4734}
+.order-fab{position:fixed;right:18px;bottom:18px;z-index:45;border:0;border-radius:999px;padding:12px 17px;background:#4b2f22;color:#fff;font:12px Arial;cursor:pointer;box-shadow:0 8px 22px rgba(75,47,34,.2)}
 </style>
-<style id="tracking-styles">.tracking-section{margin:55px auto 35px;max-width:900px;padding:30px;background:#efe6db;border:1px solid #d8c6b4;border-radius:20px;color:#3d281d}.tracking-kicker{font:10px Arial;letter-spacing:2px;text-transform:uppercase;color:#765848}.tracking-section h2{font:34px Georgia;font-weight:400;margin:7px 0}.tracking-section p{font:13px/1.55 Arial;color:#756357}.tracking-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-top:18px}.tracking-form input{padding:13px;border:1px solid #cdb8a5;border-radius:11px;background:#fff;font:13px Arial}.tracking-form button{border:0;border-radius:11px;padding:13px 17px;background:#4b2f22;color:#fff;font:bold 10px Arial;letter-spacing:1px}.tracking-result{margin-top:18px;padding:18px;background:#fffdf9;border:1px solid rgba(91,64,50,.16);border-radius:15px}.tracking-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:16px}.tracking-step{padding:10px 8px;text-align:center;border-radius:10px;background:#e5d8ca;color:#806f63;font:9px Arial;text-transform:uppercase}.tracking-step.on{background:#5b4032;color:#fff}@media(max-width:700px){.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}}</style></head>
-<body>
-<section class="catalog" id="catalogo"><div class="inner"><div class="label">Il catalogo</div><h2 class="title">Tre modi di guardare lo stesso territorio.</h2><p class="text">Scegli una narrazione e consulta le fotografie disponibili. Per ogni immagine puoi scegliere formato e quantità.</p><div class="cats"><a class="cat" href="#natura"><span>01 · 10 fotografie</span><b>Natura</b><p>Dettagli, forme, materia e piccoli paesaggi.</p></a><a class="cat" href="#tempo"><span>02 · 3 fotografie</span><b>Tempo</b><p>Passaggio, movimento e trasformazione.</p></a><a class="cat" href="#nvs"><span>03 · 12 fotografie</span><b>Natura vs Città</b><p>Il confronto tra presenza naturale e costruita.</p></a></div></div></section>
+<style>
+.collection-notice{
+  margin:18px auto 0;
+  max-width:900px;
+  padding:12px 16px;
+  border:1px solid rgba(91,64,50,.22);
+  border-radius:12px;
+  background:#efe6db;
+  color:#5b4032;
+  font:13px/1.5 Arial,sans-serif;
+  text-align:center;
+}
+.collection-notice .asterisk{
+  font-weight:800;
+  font-size:18px;
+  vertical-align:-1px;
+  margin-right:5px;
+}
+.collection-notice strong{color:#2f211a}
+</style>
 
-<section class="gallery" id="natura"><div class="inner"><div class="gallery-head"><div><div class="label">Catalogo · Natura</div><h2 class="title">Natura</h2><p class="text">10 fotografie.</p></div><button class="back" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">← Catalogo</button></div><div class="grid" id="natureGrid"></div></div></section>
-<section class="gallery" id="tempo"><div class="inner"><div class="gallery-head"><div><div class="label">Catalogo · Tempo</div><h2 class="title">Tempo</h2><p class="text">3 fotografie.</p></div><button class="back" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">← Catalogo</button></div><div class="grid" id="timeGrid"></div></div></section>
-<section class="gallery" id="nvs"><div class="inner"><div class="gallery-head"><div><div class="label">Catalogo · Natura vs Città</div><h2 class="title">Natura vs Città</h2><p class="text">12 fotografie in 6 coppie.</p></div><button class="back" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">← Catalogo</button></div><div class="pairs" id="vsGrid"></div></div></section>
 
-<section class="track" id="tracking"><div class="inner"><div class="label">Il mio ordine · Tracking</div><h2 class="title">Segui il tuo ordine.</h2><p class="text">Apri il link personale ricevuto via email oppure inserisci ID ordine e token di tracciamento. Ogni ordine ha un token unico.</p><div class="trackbox"><div class="trackrow"><input id="trackId" placeholder="ID ordine"><input id="trackToken" placeholder="Token personale"></div><button class="trackbtn" onclick="trackOrder()">Controlla ordine</button><div id="trackResult" class="trackresult"></div></div></div></section>
+<style>
+.order-verification{margin:14px 0 18px;padding:14px 15px;background:#fffdf9;border:1px solid rgba(91,64,50,.18);border-radius:12px;color:#3d281d;font:12px/1.5 Arial,sans-serif}
+.verification-title{font-weight:700;text-transform:uppercase;letter-spacing:1.2px;font-size:10px;color:#5b4032;margin-bottom:8px}
+.verification-row{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid rgba(91,64,50,.10)}
+.verification-row:last-child{border-bottom:0}
+.verification-row .v-name{font-weight:700}
+.verification-row .v-format{color:#756357;text-align:right}
+</style>
 
-<div class="orderbar" id="orderBar"><div><div class="count" id="orderCount">0 fotografie</div><div class="total" id="orderTotal">€0,00</div></div><button onclick="openOrder()">Il mio carrello / ordine</button></div>
 
-<div class="modal" id="orderModal"><div class="modalbox"><div class="mhead"><div><div class="label">Il mio carrello</div><h2>Il mio ordine</h2></div><button class="x" onclick="closeOrder()">×</button></div><div class="list" id="orderList"></div><div class="totals"><div>Subtotale: <b id="subTotal">€0,00</b></div><div>Spedizione: <b id="shippingTotal">€0,00</b></div><div class="totalbig">Totale: <span id="grandTotal">€0,00</span></div></div><form class="form" onsubmit="sendOrder(event)"><input id="customerName" required placeholder="Nome e cognome"><input id="customerEmail" required type="email" placeholder="Email"><input id="customerStreet" placeholder="Via e numero civico"><input id="customerZip" placeholder="CAP"><input id="customerCity" placeholder="Città"><select id="deliveryType" onchange="recalc()"><option value="Ritiro">Ritiro</option><option value="Spedizione">Spedizione</option></select><textarea id="customerNote" placeholder="Note sull'ordine"></textarea><div class="pay"><strong>Metodo di pagamento</strong><label><input type="radio" name="payment" value="BONIFICO" checked> Bonifico bancario</label><label><input type="radio" name="payment" value="CONTANTI"> Contanti al ritiro</label><label><input type="radio" name="payment" value="PAGAMENTO_ONLINE"> Pagamento online</label><div class="note">Il sito registra il metodo scelto. Il pagamento è considerato confermato solo quando il sistema restituisce esplicitamente lo stato PAGATO.</div></div><button class="submit" type="submit">Invia ordine e ricevi conferma</button><div class="note">Riceverai una email con numero ordine, articoli, totale e stato della richiesta.</div></form></div></div>
+<style id="professional-order-summary">
+.order-modal-pro{width:min(760px,100%);padding:32px}
+.order-subtitle{margin-top:8px;color:#756357;font:13px/1.55 Arial,sans-serif;max-width:560px}
+.order-summary-card{margin:22px 0 16px;background:#fffdf9;border:1px solid rgba(91,64,50,.18);border-radius:18px;overflow:hidden}
+.summary-heading{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:#efe6db;border-bottom:1px solid rgba(91,64,50,.13);font:11px Arial,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:#5b4032;font-weight:700}
+.summary-badge{font-size:10px;letter-spacing:.8px;padding:6px 9px;border:1px solid rgba(91,64,50,.2);border-radius:999px;background:#faf7f1}
+.order-list-pro{padding:6px 18px}
+.order-line-pro{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:13px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(91,64,50,.10)}
+.order-line-pro:last-child{border-bottom:0}
+.order-index{font:10px Arial,sans-serif;letter-spacing:1px;color:#765848}
+.order-photo-name{font:700 14px/1.25 Arial,sans-serif;color:#2f211a}
+.order-photo-format{margin-top:4px;font:12px Arial,sans-serif;color:#756357}
+.order-photo-price{font:700 14px Arial,sans-serif;color:#5b4032;white-space:nowrap}
+.empty-order{padding:22px 0;color:#756357;text-align:center;font:13px Arial,sans-serif}
+.summary-total{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;background:#2f211a;color:#fff}
+.summary-total span{font:11px Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase}
+.summary-total strong{font:24px Georgia,serif;color:#efe6db}
+.payment-block{margin-top:4px}
+.payment-block label{display:block;margin-bottom:7px;font:10px Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:#765848}
+.payment-block select{width:100%;border:1px solid rgba(91,64,50,.18);background:#fff;border-radius:11px;padding:13px;font:14px Arial,sans-serif;color:#30241e}
+@media(max-width:560px){
+  .order-modal-pro{padding:22px}
+  .order-line-pro{grid-template-columns:34px minmax(0,1fr) auto;gap:9px}
+  .order-photo-name{font-size:13px}
+  .order-photo-price{font-size:13px}
+}
+</style>
 
-<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()"><button class="x" onclick="closeLightbox()">×</button><img id="lbImg" alt=""><div class="cap" id="lbCap"></div></div>
+
+<style id="order-button-fix">
+#openOrder{cursor:pointer!important;pointer-events:auto!important;position:relative;z-index:1600}
+#openOrder:disabled{opacity:.55;cursor:not-allowed}
+</style>
+
+
+<style id="order-polished">
+.order-bar{position:fixed;right:22px;left:auto;bottom:22px;z-index:99999;width:auto;max-width:calc(100% - 32px);min-width:250px;transform:translateY(0);padding:10px 10px 10px 15px;border:1px solid rgba(216,195,173,.28);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(47,33,26,.98);color:#fff;box-shadow:0 16px 42px rgba(35,23,17,.28);transition:transform .42s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease;backdrop-filter:blur(8px)}
+.order-bar.active{transform:translateY(0)}
+.order-bar-info{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
+.order-bar-label{font:10px Arial,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:#efe6db}
+.order-bar-info strong{font:700 11px Arial,sans-serif;color:#d8c3ad}
+.order-bar-total{font:700 17px Georgia,serif;color:#fff;white-space:nowrap}
+.order-button{border:0;background:#d8c3ad;color:#2f211a;padding:10px 13px;border-radius:10px;font:bold 9px Arial,sans-serif;letter-spacing:1.1px;white-space:nowrap;cursor:pointer;transition:background .2s ease,transform .2s ease}
+.order-button:hover{background:#fff;transform:translateY(-1px)}
+.order-button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:560px){.order-bar{right:12px;bottom:12px;z-index:99999;min-width:0;width:calc(100% - 24px);padding:9px 9px 9px 12px}.order-bar-info{gap:7px}.order-bar-label{font-size:9px}.order-bar-info strong{font-size:10px}.order-bar-total{font-size:15px}.order-button{padding:9px 10px;font-size:8px}}
+.order-checkout{width:min(820px,100%);padding:30px;background:#faf7f1}
+.checkout-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}
+.checkout-head p{font:13px/1.5 Arial,sans-serif;color:#756357;margin-top:8px}
+.checkout-selected{background:#fffdf9;border:1px solid rgba(91,64,50,.15);border-radius:16px;overflow:hidden;margin-bottom:18px}
+.checkout-section-title{display:flex;justify-content:space-between;align-items:center;font:10px Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:#5b4032;font-weight:700;margin-bottom:11px}
+.checkout-selected>.checkout-section-title{padding:14px 16px;margin:0;background:#efe6db;border-bottom:1px solid rgba(91,64,50,.12)}
+.checkout-count{min-width:25px;height:25px;padding:0 7px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#5b4032;color:#fff;font-size:10px}
+.checkout-photo-list{padding:5px 16px}
+.checkout-photo-thumb{width:58px;height:58px;border-radius:8px;overflow:hidden;flex:0 0 58px;background:#eee2d3;border:1px solid #d8c5ae}.checkout-photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:1!important;filter:none!important}.checkout-photo-info{min-width:0;flex:1}.checkout-photo-price{font-weight:800;white-space:nowrap;margin-left:auto}.checkout-photo-detail{font-size:.78rem;color:#6b5547;margin-top:3px}.checkout-photo-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(91,64,50,.09)}
+.checkout-photo-row:last-child{border-bottom:0}
+.checkout-photo-num{font:10px Arial,sans-serif;color:#765848;letter-spacing:1px}
+.checkout-photo-title{font:700 13px Arial,sans-serif;color:#2f211a}
+.checkout-photo-detail{margin-top:3px;font:11px Arial,sans-serif;color:#756357}
+.checkout-photo-price{font:700 13px Arial,sans-serif;color:#5b4032;white-space:nowrap}
+.checkout-empty{padding:18px 0;text-align:center;font:12px Arial,sans-serif;color:#756357}
+.checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.checkout-block{background:#fffdf9;border:1px solid rgba(91,64,50,.15);border-radius:16px;padding:16px}
+.checkout-fields{display:flex;flex-direction:column;gap:8px}
+.checkout-fields input,.checkout-fields textarea{width:100%;border:1px solid rgba(91,64,50,.16);background:#fff;border-radius:10px;padding:11px 12px;font:13px Arial,sans-serif;color:#30241e;outline:none}
+.checkout-fields textarea{min-height:65px;resize:vertical}
+.two-fields{display:grid;grid-template-columns:110px 1fr;gap:8px}
+.payment-choice{display:flex;flex-direction:column;gap:8px}
+.payment-choice label{display:flex;align-items:center;gap:9px;padding:11px 12px;border:1px solid rgba(91,64,50,.14);border-radius:10px;background:#fff;font:12px Arial,sans-serif;color:#3d281d;cursor:pointer}
+.payment-choice label:has(input:checked){border-color:#54745a;background:#dce8dd}
+.payment-choice input{accent-color:#54745a}
+.payment-status{margin-top:10px;font:11px/1.4 Arial,sans-serif;color:#756357}
+.checkout-bottom{margin-top:16px;padding:16px 18px;background:#2f211a;border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:15px;color:#fff}
+.total-label{display:block;font:9px Arial,sans-serif;letter-spacing:1.6px;text-transform:uppercase;color:#d8c3ad;margin-bottom:2px}
+#orderTotal{font:25px Georgia,serif;color:#fff}
+.checkout-submit{border:0;background:#54745a;color:#fff;padding:13px 18px;border-radius:11px;font:bold 10px Arial,sans-serif;letter-spacing:1.2px}
+.checkout-submit:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:650px){
+  .order-bar{bottom:12px;padding:10px 10px 10px 14px}
+  .order-bar-label{font-size:9px;letter-spacing:1px}
+  .order-bar-total{font-size:16px}
+  .order-button{padding:11px 12px;font-size:9px}
+  .checkout-grid{grid-template-columns:1fr}
+  .order-checkout{padding:20px}
+  .checkout-bottom{align-items:stretch;flex-direction:column}
+  .checkout-submit{width:100%}
+}
+</style>
+
+
+<style id="catalog-animations">
+/* Animazioni raffinate e leggere */
+@keyframes fadeUpPro{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes softScale{
+  from{opacity:0;transform:scale(.97)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes selectedPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(84,116,90,.18)}
+  50%{box-shadow:0 0 0 7px rgba(84,116,90,0)}
+}
+@keyframes checkPop{
+  0%{opacity:0;transform:scale(.55)}
+  70%{transform:scale(1.15)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes barIn{
+  from{opacity:0;transform:translate(-50%,130px)}
+  to{opacity:1;transform:translate(-50%,0)}
+}
+@keyframes modalIn{
+  from{opacity:0;transform:translateY(28px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes rowIn{
+  from{opacity:0;transform:translateX(-10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* Entrata progressiva delle sezioni */
+section{
+  animation:fadeUpPro .8s ease both;
+  animation-timeline:view();
+  animation-range:entry 0% cover 18%;
+}
+
+/* Fotografie: comparsa morbida e hover */
+.card,.photo-card{
+  animation:softScale .7s ease both;
+  animation-timeline:view();
+  animation-range:entry 0% cover 16%;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s ease,border-color .35s ease;
+}
+.card:hover,.photo-card:hover{
+  transform:translateY(-7px);
+  box-shadow:0 24px 55px rgba(47,33,26,.18);
+}
+.card img,.photo-card img{
+  transition:transform .8s cubic-bezier(.2,.8,.2,1),filter .5s ease;
+}
+.card:hover img,.photo-card:hover img{transform:scale(1.025);filter:saturate(1.04)}
+
+/* Selezione foto: feedback immediato */
+.card.selected,.photo-card.selected{
+  border-color:#54745a!important;
+  box-shadow:0 0 0 2px rgba(84,116,90,.35),0 20px 55px rgba(47,33,26,.14);
+  animation:selectedPulse 1.8s ease-in-out infinite;
+}
+
+/* Barra ordine */
+.order-bar.active{animation:barIn .55s cubic-bezier(.2,.8,.2,1) both}
+.order-button{transition:transform .25s ease,background .25s ease,box-shadow .25s ease}
+.order-button:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(0,0,0,.18)}
+.order-button:active{transform:translateY(0) scale(.98)}
+
+/* Popup */
+.modal.active .modal-content{animation:modalIn .45s cubic-bezier(.2,.8,.2,1) both}
+
+/* Righe del riepilogo */
+.checkout-photo-row{animation:rowIn .35s ease both}
+.checkout-photo-row:nth-child(2){animation-delay:.03s}
+.checkout-photo-row:nth-child(3){animation-delay:.06s}
+.checkout-photo-row:nth-child(4){animation-delay:.09s}
+.checkout-photo-row:nth-child(5){animation-delay:.12s}
+.checkout-photo-row:nth-child(6){animation-delay:.15s}
+.checkout-photo-row:nth-child(7){animation-delay:.18s}
+.checkout-photo-row:nth-child(8){animation-delay:.21s}
+.checkout-photo-row:nth-child(9){animation-delay:.24s}
+.checkout-photo-row:nth-child(10){animation-delay:.27s}
+
+/* Pulsante conferma */
+.checkout-submit{transition:transform .25s ease,filter .25s ease,box-shadow .25s ease}
+.checkout-submit:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 22px rgba(84,116,90,.25)}
+.checkout-submit:not(:disabled):active{transform:scale(.98)}
+
+/* Campi cliente e pagamenti */
+.checkout-fields input,.checkout-fields textarea,.payment-choice label{
+  transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease,background .25s ease;
+}
+.checkout-fields input:focus,.checkout-fields textarea:focus{
+  border-color:#765848;
+  box-shadow:0 0 0 3px rgba(118,88,72,.10);
+  transform:translateY(-1px);
+}
+.payment-choice label:hover{transform:translateX(3px);border-color:#765848}
+.payment-choice label:has(input:checked){
+  box-shadow:0 0 0 2px rgba(84,116,90,.13);
+}
+
+/* Riduce le animazioni per chi le disabilita a livello sistema */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+
+
+<style id="info-menu-styles">
+.info-menu-button{
+  position:fixed;top:17px;right:5vw;z-index:5000;width:44px;height:44px;
+  border:1px solid rgba(91,64,50,.20);border-radius:12px;background:rgba(250,247,241,.94);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  box-shadow:0 7px 24px rgba(47,33,26,.10);backdrop-filter:blur(12px);
+  transition:transform .3s ease,background .3s ease,box-shadow .3s ease;
+}
+.info-menu-button span{display:block;width:18px;height:1.5px;background:#5b4032;transition:transform .3s ease,opacity .3s ease}
+.info-menu-button:hover{transform:translateY(-2px);background:#fff;box-shadow:0 10px 28px rgba(47,33,26,.15)}
+.info-menu-button.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.info-menu-button.open span:nth-child(2){opacity:0}
+.info-menu-button.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.info-drawer{
+  position:fixed;inset:0 0 0 auto;width:min(470px,92vw);z-index:4900;
+  background:#faf7f1;color:#30241e;box-shadow:-20px 0 70px rgba(30,20,14,.20);
+  transform:translateX(105%);transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  overflow-y:auto;border-left:1px solid rgba(91,64,50,.14);
+}
+.info-drawer.open{transform:translateX(0)}
+.info-drawer-inner{padding:82px 34px 45px;position:relative}
+.info-drawer-close{position:absolute;right:24px;top:24px;border:0;background:transparent;color:#5b4032;font-size:30px;cursor:pointer}
+.info-drawer h2{font:400 42px Georgia,serif;color:#2f211a;margin:8px 0 24px}
+.info-nav{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:30px;padding-bottom:22px;border-bottom:1px solid rgba(91,64,50,.14)}
+.info-nav a{padding:8px 11px;border:1px solid rgba(91,64,50,.16);border-radius:999px;text-decoration:none;font:9px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#5b4032;transition:.25s}
+.info-nav a:hover{background:#5b4032;color:#fff}
+.info-content section{padding:22px 0;border-bottom:1px solid rgba(91,64,50,.11)}
+.info-kicker{font:9px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#765848}
+.info-content h3{font:27px Georgia,serif;font-weight:400;color:#2f211a;margin:6px 0 8px}
+.info-content p{font:13px/1.65 Arial,sans-serif;color:#756357}
+.social-links{display:flex;gap:8px;margin-top:13px}
+.social-links a{padding:9px 13px;border-radius:999px;background:#efe6db;color:#5b4032;text-decoration:none;font:10px Arial,sans-serif;letter-spacing:1px}
+@media(max-width:650px){
+  .info-menu-button{top:12px;right:18px}
+  .info-drawer-inner{padding:72px 22px 35px}
+}
+</style>
+
+
+<style id="photo-clarity-fix">
+/* Fotografie senza patina/velo bianco */
+.card img,.photo-card img,.photo-image img{
+  opacity:1!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  background:transparent!important;
+}
+.card::before,.card::after,
+.photo-card::before,.photo-card::after,
+.photo-image::before,.photo-image::after{
+  opacity:0!important;
+  background:none!important;
+  content:none!important;
+}
+.card:hover img,.photo-card:hover img,.photo-image img{
+  filter:none!important;
+}
+</style>
+
+<style id="order-popup-scroll-fix">
+#orderPanel{overflow-y:auto!important;padding:20px!important;box-sizing:border-box}
+#orderPanel .modal-content{max-height:calc(100vh - 40px);overflow-y:auto;box-sizing:border-box}
+#orderPanel .checkout-photo-list{max-height:260px;overflow-y:auto}
+@media(max-width:560px){#orderPanel{padding:10px!important}#orderPanel .modal-content{max-height:calc(100vh - 20px);padding:20px!important}}
+</style>
+
+<style id="format-boxes">
+.format-select{appearance:none;-webkit-appearance:none;width:100%;box-sizing:border-box;background:#fffaf3;border:1px solid #b99a7d;border-radius:8px;padding:9px 32px 9px 10px;color:#4b3022;font:inherit;font-size:13px;cursor:pointer;transition:.2s;box-shadow:0 1px 0 rgba(90,59,43,.08);}
+.format-select:hover{border-color:#6b4935;background:#f8efe4;}
+.format-select:focus{outline:none;border-color:#5a3b2b;box-shadow:0 0 0 3px rgba(90,59,43,.12);}
+.format-select option{background:#fffaf3;color:#3d281d;}
+</style>
+<style id="lntdv-final-enhancements">.tracking-section{padding:70px 5vw;background:#efe6db;border-top:1px solid rgba(91,64,50,.14)}.tracking-box{max-width:900px;margin:24px auto 0;background:#fffdf9;border:1px solid #d8c6b4;border-radius:20px;padding:24px;box-shadow:0 16px 45px rgba(47,33,26,.10)}.tracking-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.tracking-form input{width:100%;padding:13px;border:1px solid #d3bda9;border-radius:10px;background:#fff;font:12px Arial;color:#3d281d}.tracking-form button{border:0;border-radius:10px;padding:13px 18px;background:#5b4032;color:#fff;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}.tracking-result{margin-top:18px;display:none;padding:18px;background:#faf7f1;border:1px solid #d8c6b4;border-radius:14px;font:13px Arial;color:#3d281d}.tracking-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:16px}.tracking-step{padding:12px 7px;text-align:center;border-radius:10px;background:#e2d5c7;color:#78675c;font:9px Arial;letter-spacing:.6px;text-transform:uppercase;transition:.35s}.tracking-step.on{background:#54745a;color:#fff}.tracking-step.current{outline:2px solid #54745a;outline-offset:2px}.tracking-link{display:inline-block;margin-top:12px;color:#5b4032;font:bold 11px Arial;text-decoration:none}.card.selected{border-color:rgba(84,116,90,.65);box-shadow:0 12px 35px rgba(84,116,90,.14)}@media(max-width:700px){.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}}</style></head>
+<body><header><div class="brand">EDVINAS DRAGONI</div><h1>La nostra terra da vicino</h1><div class="intro">Tutte le 25 fotografie nella stessa home page, senza divisioni in gallerie. Sotto ogni fotografia compare soltanto una piccola nota dell'argomento.</div><div class="legend"><span>Natura · 13</span><span>Tempo · 5</span><span>Natura vs Città · 7</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
+  <span style="display:inline-block;padding:10px 18px;border:1px solid #cdb8a5;border-radius:999px;background:#fbf6ef;color:#5a3b2b;font:600 11px Arial,sans-serif;letter-spacing:.7px;text-transform:uppercase;box-shadow:0 4px 14px rgba(61,40,29,.06)">Seleziona la foto e il formato desiderato</span>
+</div><section class="grid"><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="01" alt="LNTDV-001" draggable="false"><div class="meta"><div class="print-choice"><label for="format-1">Modalità di stampa</label><select id="format-1" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-001</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="02" alt="LNTDV-002" draggable="false"><div class="meta"><div class="print-choice"><label for="format-2">Modalità di stampa</label><select id="format-2" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-002</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="03" alt="LNTDV-003" draggable="false"><div class="meta"><div class="print-choice"><label for="format-3">Modalità di stampa</label><select id="format-3" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-003</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="04" alt="LNTDV-004" draggable="false"><div class="meta"><div class="print-choice"><label for="format-4">Modalità di stampa</label><select id="format-4" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-004</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="05" alt="LNTDV-005" draggable="false"><div class="meta"><div class="print-choice"><label for="format-5">Modalità di stampa</label><select id="format-5" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-005</strong><span>Tempo</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="06" alt="LNTDV-006" draggable="false"><div class="meta"><div class="print-choice"><label for="format-6">Modalità di stampa</label><select id="format-6" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-006</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="07" alt="LNTDV-007" draggable="false"><div class="meta"><div class="print-choice"><label for="format-7">Modalità di stampa</label><select id="format-7" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-007</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="08" alt="LNTDV-008" draggable="false"><div class="meta"><div class="print-choice"><label for="format-8">Modalità di stampa</label><select id="format-8" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-008</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="09" alt="LNTDV-009" draggable="false"><div class="meta"><div class="print-choice"><label for="format-9">Modalità di stampa</label><select id="format-9" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-009</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="10" alt="LNTDV-010" draggable="false"><div class="meta"><div class="print-choice"><label for="format-10">Modalità di stampa</label><select id="format-10" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-010</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="11" alt="LNTDV-011" draggable="false"><div class="meta"><div class="print-choice"><label for="format-11">Modalità di stampa</label><select id="format-11" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-011</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="12" alt="LNTDV-012" draggable="false"><div class="meta"><div class="print-choice"><label for="format-12">Modalità di stampa</label><select id="format-12" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-012</strong><span>Tempo</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="13" alt="LNTDV-013" draggable="false"><div class="meta"><div class="print-choice"><label for="format-13">Modalità di stampa</label><select id="format-13" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-013</strong><span>Tempo</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="14" alt="LNTDV-014" draggable="false"><div class="meta"><div class="print-choice"><label for="format-14">Modalità di stampa</label><select id="format-14" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-014</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="15" alt="LNTDV-015" draggable="false"><div class="meta"><div class="print-choice"><label for="format-15">Modalità di stampa</label><select id="format-15" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-015</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="16" alt="LNTDV-016" draggable="false"><div class="meta"><div class="print-choice"><label for="format-16">Modalità di stampa</label><select id="format-16" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-016</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="17" alt="LNTDV-017" draggable="false"><div class="meta"><div class="print-choice"><label for="format-17">Modalità di stampa</label><select id="format-17" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-017</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="18" alt="LNTDV-018" draggable="false"><div class="meta"><div class="print-choice"><label for="format-18">Modalità di stampa</label><select id="format-18" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-018</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="19" alt="LNTDV-019" draggable="false"><div class="meta"><div class="print-choice"><label for="format-19">Modalità di stampa</label><select id="format-19" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-019</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="20" alt="LNTDV-020" draggable="false"><div class="meta"><div class="print-choice"><label for="format-20">Modalità di stampa</label><select id="format-20" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-020</strong><span>Tempo</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="21" alt="LNTDV-021" draggable="false"><div class="meta"><div class="print-choice"><label for="format-21">Modalità di stampa</label><select id="format-21" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-021</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="22" alt="LNTDV-022" draggable="false"><div class="meta"><div class="print-choice"><label for="format-22">Modalità di stampa</label><select id="format-22" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-022</strong><span>Tempo</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="23" alt="LNTDV-023" draggable="false"><div class="meta"><div class="print-choice"><label for="format-23">Modalità di stampa</label><select id="format-23" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-023</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="24" alt="LNTDV-024" draggable="false"><div class="meta"><div class="print-choice"><label for="format-24">Modalità di stampa</label><select id="format-24" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-024</strong><span>Natura</span><small>Orientamento: orizzontale</small></div></article><article class="card"><span class="selection-check" aria-hidden="true">✓</span><img src="" data-lntdv-photo="25" alt="LNTDV-025" draggable="false"><div class="meta"><div class="print-choice"><label for="format-25">Modalità di stampa</label><select id="format-25" class="format-select" aria-label="Modalità di stampa"><option value="">Seleziona formato</option><option value="Stampa fotografica">Stampa fotografica — €40</option><option value="Forex">Forex — €50</option><option value="File digitale in alta risoluzione">Stampa digitale ad alta qualità — €25</option></select></div><strong>LNTDV-025</strong><span>Natura vs Città</span><small>Orientamento: orizzontale</small></div></article></section></main>
+
+
+
+
+<button id="infoMenuButton" class="info-menu-button" type="button" aria-label="Apri informazioni" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+
+<aside id="infoDrawer" class="info-drawer" aria-hidden="true">
+  <div class="info-drawer-inner">
+    <button id="infoDrawerClose" class="info-drawer-close" type="button" aria-label="Chiudi">×</button>
+    <div class="section-label">Edvinas Dragoni</div>
+    <h2>Informazioni</h2>
+
+    <nav class="info-nav">
+      <a href="#info-social">Social</a>
+      <a href="#info-about">Chi sono</a>
+      <a href="#info-exhibition">La mostra</a>
+      <a href="#info-project">Il progetto</a>
+      <a href="#info-origin">La nascita del progetto</a>
+      <a href="#info-work">Il lavoro</a>
+    </nav>
+
+    <div class="info-content">
+      <section id="info-social">
+        <span class="info-kicker">01 · Social</span>
+        <h3>Segui il progetto</h3>
+        <p>Qui puoi collegare i canali social ufficiali di Edvinas Dragoni e seguire gli aggiornamenti del progetto.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </section>
+
+      <section id="info-about">
+        <span class="info-kicker">02 · Chi sono</span>
+        <h3>Edvinas Dragoni</h3>
+        <p>Fotografo e autore del progetto <em>La nostra terra da vicino</em>.</p>
+      </section>
+
+      <section id="info-exhibition">
+        <span class="info-kicker">03 · La mostra</span>
+        <h3>La nostra terra da vicino</h3>
+        <p>La mostra presenta una selezione di fotografie dedicate al rapporto tra territorio, natura, tempo e trasformazione del paesaggio.</p>
+      </section>
+
+      <section id="info-project">
+        <span class="info-kicker">04 · Il progetto</span>
+        <h3>Uno sguardo sul territorio</h3>
+        <p>Il progetto nasce dall'osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati.</p>
+      </section>
+
+      <section id="info-origin">
+        <span class="info-kicker">05 · La nascita</span>
+        <h3>Da dove nasce</h3>
+        <p>Il lavoro nasce dal desiderio di fermare lo sguardo sul territorio e costruire, attraverso la fotografia, una memoria visiva del rapporto tra ambiente e presenza umana.</p>
+      </section>
+
+      <section id="info-work">
+        <span class="info-kicker">06 · Il lavoro</span>
+        <h3>Il percorso fotografico</h3>
+        <p>La ricerca ha portato alla realizzazione e alla selezione di 25 fotografie, organizzate attorno a tre direzioni: <strong>Natura</strong>, <strong>Tempo</strong> e <strong>Natura vs Città</strong>. Ogni immagine è parte di un racconto più ampio sul modo in cui osserviamo e viviamo il territorio.</p>
+      </section>
+    </div>
+  </div>
+</aside>
+
+<div class="order-bar" id="orderBar">
+  <div class="order-bar-info">
+    <span class="order-bar-label">Il mio ordine</span>
+    <strong id="orderBarCount">0 foto</strong>
+    <span class="order-bar-total" id="orderBarTotal">€0,00</span>
+  </div>
+  <button class="order-button" id="openOrder" type="button">VEDI ORDINE →</button>
+</div>
+
+<div class="modal" id="orderPanel" aria-hidden="true">
+  <div class="modal-content order-checkout">
+    <div class="checkout-head">
+      <div>
+        <div class="section-label">Ordine fotografia</div>
+        <h2 class="modal-title">Il mio ordine</h2>
+        <p>Controlla le tue scelte e completa i dati per inviare l'ordine.</p>
+      </div>
+      <button class="close-modal" id="closeOrder" type="button" aria-label="Chiudi">×</button>
+    </div>
+
+    <div class="checkout-selected">
+      <div class="checkout-section-title">
+        <span>Fotografie selezionate</span>
+        <span id="summaryCount" class="checkout-count">0</span>
+      </div>
+      <div id="orderList" class="checkout-photo-list">
+        <div class="checkout-empty">Nessuna fotografia selezionata.</div>
+      </div>
+    </div>
+
+    <div class="checkout-grid">
+      <section class="checkout-block">
+        <div class="checkout-section-title">I tuoi dati</div>
+        <div class="checkout-fields">
+          <input id="customerName" type="text" placeholder="Nome e cognome *" required>
+          <input id="customerEmail" type="email" placeholder="Email *" required>
+          <input id="customerStreet" type="text" placeholder="Via e numero civico">
+          <div class="two-fields">
+            <input id="customerZip" type="text" placeholder="CAP">
+            <input id="customerCity" type="text" placeholder="Città">
+          </div>
+          <textarea id="customerNote" placeholder="Note sull'ordine (facoltativo)"></textarea>
+        </div>
+      </section>
+
+      <section class="checkout-block">
+        <div class="checkout-section-title">Pagamento</div>
+        <div class="payment-choice">
+          <label><input type="radio" name="checkoutPayment" value="Carta"> <span>Carta</span></label>
+          <label><input type="radio" name="checkoutPayment" value="Apple Pay"> <span>Apple Pay</span></label>
+          <label><input type="radio" name="checkoutPayment" value="Google Pay"> <span>Google Pay</span></label>
+          <label><input type="radio" name="checkoutPayment" value="Bonifico bancario"> <span>Bonifico bancario</span></label>
+        </div>
+        <div id="paymentStatus" class="payment-status"></div>
+      </section>
+    </div>
+
+    <div class="checkout-bottom">
+      <div>
+        <span class="total-label">Totale</span>
+        <strong id="orderTotal">€0,00</strong>
+      </div>
+      <button class="send-order checkout-submit" id="completePayment" type="button">CONFERMA E INVIA ORDINE</button>
+    </div>
+  </div>
+</div>
+
+<section class="tracking-section" id="tracking"><div class="inner"><div class="section-label">TRACCIABILITÀ · IL MIO ORDINE</div><h2 class="section-title">Segui il tuo ordine.</h2><p class="section-intro">Usa l'ID ordine e il token personale ricevuti via email. Il link della mail li inserisce automaticamente.</p><div class="tracking-box"><div class="tracking-form"><input id="trackingOrderId" type="text" placeholder="ID ordine"><input id="trackingToken" type="text" placeholder="Token personale"><button type="button" id="trackingCheck">VERIFICA ORDINE</button></div><div id="trackingResult" class="tracking-result"></div></div></div></section><footer>Catalogo fotografico · La nostra terra da vicino · Edvinas Dragoni<br>Le fotografie non sono link cliccabili.</footer>
+
+<div class="collection-notice" aria-label="Informazione sulla raccolta">
+  <span class="asterisk">*</span>
+  <span>La raccolta verrà effettuata fino al <strong>15 ottobre</strong> e durante tutto il periodo di esposizione.</span>
+</div>
+
 <script>
-const PRICES={"Stampa fotografica":40,"Forex":50,"Digitale alta risoluzione":25};
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
-const nature=[["Natura 01","images/natura-01.jpg"],["Natura 02","images/natura-02.jpg"],["Natura 03","images/natura-03.jpg"],["Natura 04","images/natura-04.jpg"],["Natura 05","images/natura-05.jpg"],["Natura 06","images/natura-06.jpg"],["Natura 07","images/natura-07.jpg"],["Natura 08","images/natura-08.jpg"],["Natura 09","images/natura-09.jpg"],["Natura 10","images/natura-10.jpg"]];
-const time=[["Tempo 01","images/tempo-01.jpg"],["Tempo 02","images/tempo-02.jpg"],["Tempo 03","images/tempo-03.jpg"]];
-const nvs=[["Natura vs Città 01","images/nvs-01-natura.jpg","images/nvs-01-citta.jpg"],["Natura vs Città 02","images/nvs-02-natura.jpg","images/nvs-02-citta.jpg"],["Natura vs Città 03","images/nvs-03-natura.jpg","images/nvs-03-citta.jpg"],["Natura vs Città 04","images/nvs-04-natura.jpg","images/nvs-04-citta.jpg"],["Natura vs Città 05","images/nvs-05-natura.jpg","images/nvs-05-citta.jpg"],["Natura vs Città 06","images/nvs-06-natura.jpg","images/nvs-06-citta.jpg"]];
-let cart=JSON.parse(localStorage.getItem("lntdvCart")||"[]"), shippingPrice=10;
-const euro=n=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n);
-function save(){localStorage.setItem("lntdvCart",JSON.stringify(cart))}
-function setOrientation(img){const box=img.closest(".card"),out=box?.querySelector("[data-orientation]");if(!out)return;const vertical=img.naturalHeight>img.naturalWidth;out.textContent=vertical?"Verticale":"Orizzontale";out.dataset.value=vertical?"verticale":"orizzontale"}
-function card([title,src],i){const safe=src.replace(/[^a-zA-Z0-9]/g,"");return `<article class="card"><div class="pic reveal" onclick="openLightbox('${src}','${title.replace(/'/g,"&#39;")}')"><img src="${src}" alt="${title}" loading="lazy" onload="setOrientation(this)"></div><div class="info"><div class="num">Fotografia ${String(i+1).padStart(2,"0")}</div><h3>${title}</h3><div class="orientation" data-orientation>Orientamento in rilevamento…</div><div class="format-title">Scegli il formato</div><div class="formats">${Object.entries(PRICES).map(([f,p])=>`<div class="fmt"><input type="radio" name="f-${safe}" id="${safe}-${f}" onchange="addToCart('${title.replace(/'/g,"&#39;")}','${src}','${f}',${p})"><label for="${safe}-${f}"><span>${f}</span><span class="price">${euro(p)}</span></label></div>`).join("")}</div></div></article>`}function render(){natureGrid.innerHTML=nature.map(card).join("");timeGrid.innerHTML=time.map(card).join("");vsGrid.innerHTML=nvs.map((x,i)=>`<div class="pair"><h3>${x[0]}</h3><div class="pairgrid">${card([x[0]+" — Natura",x[1]],i)}${card([x[0]+" — Città",x[2]],i+1)}</div></div>`).join("");updateBar();setTimeout(()=>document.querySelectorAll(".pic.reveal").forEach(el=>el.classList.remove("reveal")),1100)}function addToCart(title,src,format,price){const old=cart.find(x=>x.src===src);if(old){old.format=format;old.price=price}else cart.push({title,src,format,price,qty:1});save();updateBar()}
-function updateBar(){const qty=cart.reduce((s,x)=>s+(x.qty||1),0),sub=cart.reduce((s,x)=>s+x.price*(x.qty||1),0);orderCount.textContent=qty+" "+(qty===1?"fotografia":"fotografie");orderTotal.textContent=euro(sub);orderBar.classList.toggle("show",cart.length>0)}
-function recalc(){const sub=cart.reduce((s,x)=>s+x.price*(x.qty||1),0),ship=deliveryType.value==="Spedizione"?shippingPrice:0;subTotal.textContent=euro(sub);shippingTotal.textContent=euro(ship);grandTotal.textContent=euro(sub+ship)}
-function openOrder(){if(!cart.length)return;orderList.innerHTML=cart.map((x,i)=>`<div class="item"><b>${i+1}. ${x.title}</b><br>${x.format} · ${euro(x.price)} · quantità ${x.qty||1}<br><button type="button" onclick="removeItem(${i})" style="margin-top:6px;border:0;background:#5b4032;color:#fff;border-radius:6px;padding:5px 8px;font:10px Arial">Rimuovi</button></div>`).join("");recalc();orderModal.classList.add("open")}
-function removeItem(i){cart.splice(i,1);save();updateBar();if(cart.length)openOrder();else closeOrder()}
-function closeOrder(){orderModal.classList.remove("open")}
-async function sendOrder(e){e.preventDefault();if(!cart.length)return;const payment=document.querySelector('input[name="payment"]:checked')?.value||"BONIFICO";const customer={name:customerName.value.trim(),email:customerEmail.value.trim(),street:customerStreet.value.trim(),zip:customerZip.value.trim(),city:customerCity.value.trim(),note:customerNote.value.trim()};const subtotal=cart.reduce((s,x)=>s+x.price*(x.qty||1),0),shipping=deliveryType.value==="Spedizione"?shippingPrice:0,total=subtotal+shipping;const payload={customer,items:cart,total:subtotal,deliveryType:deliveryType.value,paymentMethod:payment,paymentStatus:"RICEVUTO"};const btn=e.target.querySelector(".submit");btn.disabled=true;btn.textContent="Invio in corso…";try{const r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});const data=await r.json();if(!data.ok)throw new Error(data.error||"Errore");localStorage.setItem("lntdvLastOrder",JSON.stringify({orderId:data.orderId,token:data.trackingToken}));alert("Ordine inviato correttamente. Numero ordine: "+data.orderId+"\nRiceverai la conferma via email.");cart=[];save();updateBar();closeOrder();e.target.reset();trackId.value=data.orderId;trackToken.value=data.trackingToken;trackOrder()}catch(err){console.error(err);alert("Non è stato possibile inviare l'ordine. Riprova oppure contatta info.lanostraterradavicino@gmail.com.")}finally{btn.disabled=false;btn.textContent="Invia ordine e ricevi conferma"}}
-async function trackOrder(){const id=trackId.value.trim(),token=trackToken.value.trim();if(!id||!token){alert("Inserisci ID ordine e token personale.");return}trackResult.style.display="block";trackResult.innerHTML="Ricerca ordine…";try{const r=await fetch(APPS_SCRIPT_URL+"?action=track&orderId="+encodeURIComponent(id)+"&token="+encodeURIComponent(token));const d=await r.json();if(!d.ok)throw new Error(d.error||"Ordine non trovato");const states=["RICEVUTO","IN_LAVORAZIONE","PRONTO_AL_RITIRO","CONSEGNATO"],idx=states.indexOf(d.status);trackResult.innerHTML=`<b>Ordine ${d.orderId}</b><br>Stato: <strong>${d.label}</strong><br>Totale: ${euro(Number(d.total||0))}<div class="steps">${states.map((s,i)=>`<div class="step ${i<=idx?"on":""}">${d.labels[s]}</div>`).join("")}</div>`; }catch(err){trackResult.innerHTML="<b>Ordine non trovato.</b><br>Controlla ID ordine e token personale."}}
-function openLightbox(src,title){lbImg.src=src;lbCap.textContent=title;lightbox.classList.add("open")}function closeLightbox(){lightbox.classList.remove("open")}
-async function loadConfig(){try{const r=await fetch(APPS_SCRIPT_URL+"?action=config");const d=await r.json();if(d.ok)shippingPrice=Number(d.shippingPrice||0)}catch(e){}}
-render();loadConfig();
-const params=new URLSearchParams(location.search);const qId=params.get("ordine")||"";const qToken=params.get("token")||"";const last=JSON.parse(localStorage.getItem("lntdvLastOrder")||"null");if(qId&&qToken){trackId.value=qId;trackToken.value=qToken;setTimeout(trackOrder,250)}else if(last&&last.orderId&&last.token){trackId.value=last.orderId;trackToken.value=last.token}
+(function(){
+  const cards = Array.from(document.querySelectorAll('.card'));
+  cards.forEach((card, index) => {
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('aria-pressed','false');
+
+    function toggle(){
+      const selected = card.classList.toggle('selected');
+      card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      const total = document.querySelectorAll('.card.selected').length;
+      const summary = document.getElementById('selectionSummary');
+      if(summary) summary.textContent = total ? (total === 1 ? '1 fotografia selezionata' : total + ' fotografie selezionate') : 'Nessuna fotografia selezionata';
+    }
+
+    card.addEventListener('click', function(e){
+      if(e.target.closest('select,option,input,button,a')) return;
+      toggle();
+    });
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
+})();
 </script>
-<script id="tracking-script">(function(){const u="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";const f=document.getElementById("trackingForm"),id=document.getElementById("trackId"),t=document.getElementById("trackToken"),r=document.getElementById("trackResult");function esc(x){return String(x||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}async function run(){if(!id.value.trim()||!t.value.trim()){r.innerHTML="<b>Inserisci ID ordine e token personale.</b>";return}r.innerHTML="Verifica in corso…";try{const q=u+"?action=track&orderId="+encodeURIComponent(id.value.trim())+"&token="+encodeURIComponent(t.value.trim());const d=await (await fetch(q,{cache:"no-store"})).json();if(!d.ok)throw Error();const st=["RICEVUTO","IN_LAVORAZIONE","PRONTO_AL_RITIRO","CONSEGNATO"],n=st.indexOf(d.status);r.innerHTML="<div><b>ID ordine:</b> "+esc(d.orderId)+"</div><div style='font:26px Georgia;margin:8px 0 14px'>"+esc(d.label)+"</div><div>Totale: <b>€"+Number(d.total||0).toFixed(2).replace(".",",")+"</b></div><div class='tracking-steps'>"+st.map((x,i)=>"<div class='tracking-step "+(i<=n?"on":"")+"'>"+esc(d.labels[x]||x)+"</div>").join("")+"</div>"}catch(e){r.innerHTML="<b>Ordine non trovato.</b><br>Controlla ID e token personale."}}f&&f.addEventListener("submit",e=>{e.preventDefault();run()});const p=new URLSearchParams(location.search);if(p.get("ordine")&&p.get("token")){id.value=p.get("ordine");t.value=p.get("token");setTimeout(()=>{document.getElementById("tracking").scrollIntoView({behavior:"smooth"});run()},300)}})();</script></body>
-</html>
+<script>
+(function(){
+  const prices={
+    "Stampa fotografica":40,
+    "Forex":50,
+    "File digitale in alta risoluzione":25
+  };
+
+  const panel=document.getElementById("orderPanel");
+  const openBtn=document.getElementById("openOrder");
+  const closeBtn=document.getElementById("closeOrder");
+  const list=document.getElementById("orderList");
+  const totalEl=document.getElementById("orderTotal");
+  const countEl=document.getElementById("summaryCount");
+  const bar=document.getElementById("orderBar");
+  const barCount=document.getElementById("orderBarCount");
+  const barTotal=document.getElementById("orderBarTotal");
+  const complete=document.getElementById("completePayment");
+  const status=document.getElementById("paymentStatus");
+  const customerName=document.getElementById("customerName");
+  const customerEmail=document.getElementById("customerEmail");
+  const customerStreet=document.getElementById("customerStreet");
+  const customerZip=document.getElementById("customerZip");
+  const customerCity=document.getElementById("customerCity");
+  const customerNote=document.getElementById("customerNote");
+  const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
+
+  function getPayment(){
+    const checked=document.querySelector('input[name="checkoutPayment"]:checked');
+    return checked ? checked.value : "";
+  }
+
+  function getItems(){
+    return Array.from(document.querySelectorAll(".card.selected")).map(function(card){
+      const codeEl=card.querySelector(".meta strong");
+      const formatEl=card.querySelector(".format-select");
+      const code=codeEl ? codeEl.textContent.trim() : "Fotografia";
+      const format=formatEl ? formatEl.value : "";
+      const price=Object.prototype.hasOwnProperty.call(prices,format) ? prices[format] : 0;
+      const imageEl=card.querySelector("img");
+      const image=imageEl ? imageEl.getAttribute("src") : "";
+      return {card,code,format,price,image};
+    });
+  }
+
+  function escapeHtml(value){
+    return String(value==null ? "" : value).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function updatePayment(){
+    const items=getItems();
+    const payment=getPayment();
+    const completeFormats=items.length>0 && items.every(function(item){return !!item.format;});
+    const ready=items.length>0 && completeFormats && !!payment &&
+      !!customerName.value.trim() && !!customerEmail.value.trim();
+
+    if(complete) complete.disabled=!ready;
+
+    if(!items.length) status.textContent="Seleziona almeno una fotografia.";
+    else if(!completeFormats) status.textContent="Seleziona la modalità di stampa per ogni fotografia.";
+    else if(!customerName.value.trim() || !customerEmail.value.trim()) status.textContent="Inserisci nome ed email per ricevere la conferma.";
+    else if(!payment) status.textContent="Seleziona il metodo di pagamento.";
+    else status.textContent="Ordine pronto. La conferma email viene inviata dal sistema ordini.";
+  }
+
+  function refreshOrder(){
+    const items=getItems();
+    if(!list || !totalEl) return;
+
+    if(countEl) countEl.textContent=String(items.length);
+
+    if(!items.length){
+      list.innerHTML='<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
+    }else{
+      list.innerHTML=items.map(function(item,index){
+        return '<div class="checkout-photo-row">'+
+          '<div class="checkout-photo-num">'+String(index+1).padStart(2,"0")+'</div>'+
+          '<div class="checkout-photo-thumb">'+(item.image ? '<img src="'+escapeHtml(item.image)+'" alt="'+escapeHtml(item.code)+'" draggable="false">' : '')+'</div>'+
+          '<div class="checkout-photo-info"><div class="checkout-photo-title">'+escapeHtml(item.code)+'</div>'+
+          '<div class="checkout-photo-detail">'+escapeHtml(item.format || "Modalità non selezionata")+'</div></div>'+
+          '<div class="checkout-photo-price">€'+item.price.toFixed(2).replace(".",",")+'</div>'+
+          '</div>';
+      }).join("");
+    }
+
+    const total=items.reduce(function(sum,item){return sum+item.price;},0);
+    totalEl.textContent="€"+total.toFixed(2).replace(".",",");
+    if(barCount) barCount.textContent=items.length+" "+(items.length===1 ? "foto" : "foto");
+    if(barTotal) barTotal.textContent="€"+total.toFixed(2).replace(".",",");
+    if(bar) bar.classList.add("active");
+
+    updatePayment();
+  }
+
+  function openOrderModal(){
+    if(!panel) return;
+    refreshOrder();
+    panel.classList.add("active");
+    panel.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+  }
+
+  function closeOrderModal(){
+    if(!panel) return;
+    panel.classList.remove("active");
+    panel.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  }
+
+  if(openBtn) openBtn.addEventListener("click",function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    /* Prima porta davvero l'utente in fondo al catalogo, poi apre il riepilogo finale. */
+    const target = document.getElementById("orderPanel") || document.querySelector("footer");
+    if(target){
+      target.scrollIntoView({behavior:"smooth", block:"end"});
+    }else{
+      window.scrollTo({top:document.documentElement.scrollHeight, behavior:"smooth"});
+    }
+    window.setTimeout(function(){
+      openOrderModal();
+    },420);
+  });
+
+  if(closeBtn) closeBtn.addEventListener("click",function(e){
+    e.preventDefault();
+    closeOrderModal();
+  });
+
+  if(panel) panel.addEventListener("click",function(e){
+    if(e.target===panel) closeOrderModal();
+  });
+
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape") closeOrderModal();
+  });
+
+  document.addEventListener("change",function(e){
+    if(e.target && e.target.classList.contains("format-select")){
+      const card=e.target.closest(".card");
+      if(card && !card.classList.contains("selected")){
+        card.classList.add("selected");
+        card.setAttribute("aria-pressed","true");
+      }
+      refreshOrder();
+      return;
+    }
+    if(e.target && e.target.name==="checkoutPayment"){
+      updatePayment();
+    }
+  });
+
+  document.addEventListener("click",function(e){
+    if(e.target && e.target.closest(".card")){
+      setTimeout(refreshOrder,0);
+    }
+  });
+
+  [customerName,customerEmail].forEach(function(input){
+    if(input) input.addEventListener("input",updatePayment);
+  });
+
+  if(complete) complete.addEventListener("click",async function(){
+    const items=getItems();
+    const payment=getPayment();
+
+    if(!items.length || items.some(function(item){return !item.format;}) ||
+       !payment || !customerName.value.trim() || !customerEmail.value.trim()){
+      updatePayment();
+      return;
+    }
+
+    const total=items.reduce(function(sum,item){return sum+item.price;},0);
+    const payload={
+      paymentMethod:payment,
+      paymentStatus:"RICEVUTO",
+      customer:{
+        name:customerName.value.trim(),
+        email:customerEmail.value.trim(),
+        street:customerStreet ? customerStreet.value.trim() : "",
+        zip:customerZip ? customerZip.value.trim() : "",
+        city:customerCity ? customerCity.value.trim() : "",
+        note:customerNote ? customerNote.value.trim() : ""
+      },
+      items:items.map(function(item){
+        return {title:item.code,format:item.format,price:item.price};
+      }),
+      total:total,
+      deliveryType:"Ritiro gratuito presso Milano"
+    };
+
+    complete.disabled=true;
+    status.textContent="Invio ordine in corso…";
+
+    try{
+      await fetch(APPS_SCRIPT_URL,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+        body:"payload="+encodeURIComponent(JSON.stringify(payload))
+      });
+      status.innerHTML="<strong>Ordine ricevuto.</strong><br>Riceverai via email l'ID ordine e il token personale per il tracking.<br><a class="tracking-link" href="#tracking">Vai al tracking →</a>";
+    }catch(err){
+      complete.disabled=false;
+      status.textContent="Errore nell'invio dell'ordine. Riprova tra poco.";
+    }
+  });
+
+  window.refreshOrder=refreshOrder;
+  refreshOrder();
+})();
+</script>
+<script>document.addEventListener('contextmenu',e=>e.preventDefault(),{capture:true});document.addEventListener('dragstart',e=>e.preventDefault(),{capture:true});document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if((e.ctrlKey||e.metaKey)&&['s','u','p','c'].includes(k))e.preventDefault();if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(e.key)))e.preventDefault()},{capture:true});</script>
+
+
+
+
+
+<script id="info-menu-script">
+(function(){
+  function initInfoMenu(){
+    var btn=document.getElementById("infoMenuButton");
+    var drawer=document.getElementById("infoDrawer");
+    var close=document.getElementById("infoDrawerClose");
+    if(!btn||!drawer)return;
+    function open(){
+      drawer.classList.add("open");btn.classList.add("open");
+      btn.setAttribute("aria-expanded","true");drawer.setAttribute("aria-hidden","false");
+    }
+    function shut(){
+      drawer.classList.remove("open");btn.classList.remove("open");
+      btn.setAttribute("aria-expanded","false");drawer.setAttribute("aria-hidden","true");
+    }
+    btn.addEventListener("click",function(){drawer.classList.contains("open")?shut():open();});
+    if(close)close.addEventListener("click",shut);
+    drawer.querySelectorAll("a[href^='#']").forEach(function(a){
+      a.addEventListener("click",function(){setTimeout(shut,180);});
+    });
+    document.addEventListener("keydown",function(e){if(e.key==="Escape")shut();});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initInfoMenu);else initInfoMenu();
+})();
+</script>
+
+<script src="assets/photo01.js"></script><script src="assets/photo02.js"></script><script src="assets/photo03.js"></script><script src="assets/photo04.js"></script><script src="assets/photo05.js"></script><script src="assets/photo06.js"></script><script src="assets/photo07.js"></script><script src="assets/photo08.js"></script><script src="assets/photo09.js"></script><script src="assets/photo10.js"></script><script src="assets/photo11.js"></script><script src="assets/photo12.js"></script><script src="assets/photo13.js"></script><script src="assets/photo14.js"></script><script src="assets/photo15.js"></script><script src="assets/photo16.js"></script><script src="assets/photo17.js"></script><script src="assets/photo18.js"></script><script src="assets/photo19.js"></script><script src="assets/photo20.js"></script><script src="assets/photo21.js"></script><script src="assets/photo22.js"></script><script src="assets/photo23.js"></script><script src="assets/photo24.js"></script><script src="assets/photo25.js"></script><script id="lntdv-photo-loader">(function(){function load(){document.querySelectorAll("[data-lntdv-photo]").forEach(function(img){var n=img.getAttribute("data-lntdv-photo"),v=window["LNTDV_PHOTO_"+n];if(v)img.src=v;});}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load);else load();})();</script><script id="lntdv-tracking">(function(){const API="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec",id=document.getElementById("trackingOrderId"),token=document.getElementById("trackingToken"),result=document.getElementById("trackingResult"),button=document.getElementById("trackingCheck"),states=["RICEVUTO","IN_LAVORAZIONE","PRONTO_AL_RITIRO","CONSEGNATO"],labels={RICEVUTO:"Ricevuto",IN_LAVORAZIONE:"In lavorazione",PRONTO_AL_RITIRO:"Pronto al ritiro",CONSEGNATO:"Consegnato"};function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function run(){const oid=id.value.trim(),tok=token.value.trim();if(!oid||!tok){result.style.display="block";result.innerHTML="<b>Inserisci ID ordine e token personale.</b>";return}result.style.display="block";result.innerHTML="Verifica in corso…";const cb="lntdvTrack_"+Date.now();window[cb]=function(d){try{if(!d||!d.ok)throw Error();const idx=states.indexOf(d.status);result.innerHTML="<div style='font:10px Arial;letter-spacing:1px;text-transform:uppercase;color:#765848'>Ordine verificato</div><div style='font:24px Georgia;margin:6px 0 10px;color:#4b2f22'>"+esc(d.orderId)+"</div><div style='font:18px Georgia'><b>"+esc(d.label)+"</b></div><div style='margin-top:7px'>Totale ordine: <b>€"+Number(d.total||0).toFixed(2).replace(".",",")+"</b></div><div class='tracking-steps'>"+states.map((st,i)=>"<div class='tracking-step "+(i<=idx?"on ":"")+(i===idx?"current":"")+"'>"+labels[st]+"</div>").join("")+"</div>"}catch(e){result.innerHTML="<b>Ordine non trovato.</b><br>Controlla ID e token ricevuti via email."}try{delete window[cb]}catch(e){}};const sc=document.createElement("script");sc.src=API+"?action=track&orderId="+encodeURIComponent(oid)+"&token="+encodeURIComponent(tok)+"&callback="+cb+"&_="+Date.now();sc.onerror=()=>result.innerHTML="<b>Servizio di tracking momentaneamente non raggiungibile.</b><br>Riprova tra poco.";document.body.appendChild(sc);setTimeout(()=>sc.parentNode&&sc.parentNode.removeChild(sc),15000)}button&&button.addEventListener("click",run);const q=new URLSearchParams(location.search),qid=q.get("ordine"),qt=q.get("token");if(qid&&qt){id.value=qid;token.value=qt;setTimeout(()=>{document.getElementById("tracking").scrollIntoView({behavior:"smooth",block:"center"});run()},450)}})();</script></body></html>
