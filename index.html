@@ -640,7 +640,8 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     </div>
   </div>
 </div>
-\n<div class="order-bar" id="orderBar">
+
+<div class="order-bar" id="orderBar">
   <div class="order-bar-info">
     <span class="order-bar-label">Il mio ordine</span>
     <strong id="orderBarCount">0 foto</strong>
@@ -744,7 +745,8 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     const ready=items.length>0 && items.every(x=>!!x.format) && !!getPayment() && !!document.getElementById("customerName").value.trim() && !!document.getElementById("customerEmail").value.trim();
     complete.disabled=!ready;
     paymentStatus.textContent=!items.length?"Seleziona almeno una fotografia.":items.some(x=>!x.format)?"Seleziona il formato per ogni fotografia.":(!document.getElementById("customerName").value.trim()||!document.getElementById("customerEmail").value.trim())?"Inserisci nome ed email per ricevere la conferma.":!getPayment()?"Seleziona il metodo di pagamento.":"Ordine pronto per l'invio.";
-  }\n  function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+  }
+  function openOrder(){refresh();panel.classList.add("active");panel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
   function closeOrder(){panel.classList.remove("active");panel.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
   cards.forEach(card=>{
@@ -878,7 +880,11 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     img.classList.toggle("auto-rotated",!!deg);
   }
 
-  // Ogni nuovo ingresso parte sempre da una selezione vuota: nessun carrello persistente.\n  selectionOrder=[];\n  Object.keys(quantities).forEach(k=>delete quantities[k]);\n  cards.forEach(card=>{card.classList.remove("selected");card.setAttribute("aria-pressed","false");});\n  summary.classList.remove("active");
+  // Ogni nuovo ingresso parte sempre da una selezione vuota: nessun carrello persistente.
+  selectionOrder=[];
+  Object.keys(quantities).forEach(k=>delete quantities[k]);
+  cards.forEach(card=>{card.classList.remove("selected");card.setAttribute("aria-pressed","false");});
+  summary.classList.remove("active");
   bar.classList.remove("active");
   cards.forEach(card=>{
     const id=card.dataset.photo,img=card.querySelector("img");
