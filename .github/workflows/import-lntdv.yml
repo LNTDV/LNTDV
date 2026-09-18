@@ -1,0 +1,41 @@
+name: Publish LNTDV catalog
+
+on:
+  push:
+    paths:
+      - ".github/workflows/import-lntdv.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download catalog from OneDrive
+        env:
+          SOURCE: "https://1drv.ms/u/c/3aa23e29b315a91f/IQAruC04qXd8QJExbUuL-Q65AZdx36KtaVclKlg9DcSKiDw?e=FVbYOJ&download=1"
+        run: |
+          curl -L --fail --retry 3 --retry-all-errors "$SOURCE" -o index.html
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          if "<html" not in s.lower() or "<body" not in s.lower():
+              raise SystemExit("OneDrive non ha restituito un HTML valido")
+          print("Catalogo scaricato:", len(s), "byte")
+          PY
+
+      - name: Apply requested features
+        run: python scripts/patch_lntdv.py
+
+      - name: Commit and publish
+        run: |
+          git config user.name "LNTDV Website Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish LNTDV photo catalog with order tracking"
+          git push
