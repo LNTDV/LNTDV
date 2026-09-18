@@ -831,7 +831,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   document.getElementById("completePayment").addEventListener("click",async()=>{
     const items=getItems(),delivery=getDelivery(),name=document.getElementById("customerName").value.trim(),email=document.getElementById("customerEmail").value.trim();
     const photosTotal=items.reduce((a,x)=>a+x.price*x.quantity,0),fee=delivery==="Spedizione"?(promoApplied?0:10):0,total=photosTotal+fee;
-    if(!items.length||items.some(x=>!x.format)||!payment||!name||!email){refresh();return;}
+    if(!items.length||items.some(x=>!x.format)||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
     const payload={orderId,customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",shipping:fee,promotion:promoApplied?"Spedizione gratuita sopra €150":"",total};
     complete.disabled=true;paymentStatus.textContent="Invio ordine in corso…";
