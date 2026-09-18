@@ -1,0 +1,22 @@
+name: Import catalogo LNTDV
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scarica catalogo fornito
+        run: curl -L --fail --retry 3 "https://1drv.ms/u/c/3aa23e29b315a91f/IQAruC04qXd8QJExbUuL-Q65AZdx36KtaVclKlg9DcSKiDw?e=FVbYOJ&download=1" -o index.html
+      - name: Applica funzioni ordine e tracking
+        run: python3 scripts/patch_catalog.py
+      - name: Pubblica index.html
+        run: |
+          git config user.name "LNTDV"
+          git config user.email "info.lanostraterradavicino@gmail.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Importa catalogo completo con ordine tracking e pagamenti"
+          git push
