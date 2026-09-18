@@ -689,7 +689,15 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 
 <script>
 (function(){
-  const basePrices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
+  const basePrices=Object.freeze({
+    "Stampa fotografica":40,
+    "Forex":50,
+    "File digitale in alta risoluzione":25
+  });
+  // REGOLA PREZZI: ogni foto viene conteggiata singolarmente.
+  // Stampa fotografica = €40, Forex = €50, Digitale = €25.
+  // Nessun bundle: Forex + Digitale = €75.
+  function priceForFormat(format){ return Number(basePrices[String(format||"").trim()]||0); }
   // Prezzi reali per formato. Il totale viene sempre calcolato come prezzo × quantità.
   // Esempio: Forex €50 + Digitale €25 = €75.
   const orientation={"001":"Orizzontale","002":"Orizzontale","003":"Verticale","004":"Orizzontale","005":"Orizzontale","006":"Verticale","007":"Verticale","008":"Verticale","009":"Verticale","010":"Orizzontale","011":"Verticale","012":"Orizzontale","013":"Verticale","014":"Verticale","015":"Verticale","016":"Verticale","017":"Verticale","018":"Verticale","019":"Orizzontale","020":"Orizzontale","021":"Orizzontale","022":"Orizzontale","023":"Orizzontale","024":"Orizzontale","025":"Orizzontale"};
@@ -710,7 +718,15 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       const card=document.querySelector('.card[data-photo="'+id+'"]');
       if(!card)return null;
       const format=card.querySelector(".format-select")?.value||"";
-      return {id,code:"LNTDV-"+id,format,orientation:orientation[id]||"Orizzontale",price:basePrices[format]||0,quantity:Math.max(1,Number(quantities[id]||1)),image:card.querySelector("img")?.src||""};
+      return {
+        id,
+        code:"LNTDV-"+id,
+        format,
+        orientation:orientation[id]||"Orizzontale",
+        price:priceForFormat(format),
+        quantity:Math.max(1,Number(quantities[id]||1)),
+        image:card.querySelector("img")?.src||""
+      };
     }).filter(Boolean);
   }
   function updateSelectionText(n){
@@ -722,10 +738,16 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     // Totale fotografico: ogni riga usa esclusivamente il prezzo del formato selezionato.
     // Forex €50 + Digitale €25 = €75; nessun bundle cumulativo modifica il prezzo.
     const photos=items.reduce((sum,x)=>{
-      x.price=basePrices[x.format]||0;
-      return sum+(x.price*x.quantity);
+      const unitPrice=priceForFormat(x.format);
+      x.price=unitPrice;
+      return sum+(unitPrice*x.quantity);
     },0);
-    if(!(photos>150 && delivery==="Spedizione")) promoApplied=false; const fee=delivery==="Spedizione"?(promoApplied?0:10):0, total=photos+fee;
+
+    // TOTALE: fotografie + eventuale spedizione.
+    // Ritiro = solo fotografie. Spedizione = +€10, oppure €0 se promozione applicata.
+    if(!(photos>150 && delivery==="Spedizione")) promoApplied=false;
+    const fee=(delivery==="Spedizione") ? (promoApplied ? 0 : 10) : 0;
+    const total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
     const copyCount=items.reduce((a,x)=>a+x.quantity,0);
@@ -835,7 +857,9 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
 
   document.getElementById("completePayment").addEventListener("click",async()=>{
     const items=getItems(),delivery=getDelivery(),name=document.getElementById("customerName").value.trim(),email=document.getElementById("customerEmail").value.trim();
-    const photosTotal=items.reduce((a,x)=>a+x.price*x.quantity,0),fee=delivery==="Spedizione"?(promoApplied?0:10):0,total=photosTotal+fee;
+    const photosTotal=items.reduce((a,x)=>a+(priceForFormat(x.format)*x.quantity),0);
+    const fee=delivery==="Spedizione" ? (promoApplied ? 0 : 10) : 0;
+    const total=photosTotal+fee;
     if(!items.length||items.some(x=>!x.format)||!name||!email){refresh();return;}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
     const payload={orderId,customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),deliveryType:delivery==="Spedizione"?(promoApplied?"Spedizione · GRATUITA":"Spedizione · €10"):"Ritiro gratuito presso Milano",shipping:fee,promotion:promoApplied?"Spedizione gratuita sopra €150":"",total};
