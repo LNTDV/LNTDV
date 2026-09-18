@@ -783,10 +783,13 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       return sum+(unitPrice*x.quantity);
     },0);
 
-    // TOTALE: fotografie + eventuale spedizione.
-    // Ritiro = solo fotografie. Spedizione = +€10, oppure €0 se promozione applicata.
-    if(!(photos>150 && delivery==="Spedizione")) promoApplied=false;
-    const fee=(delivery==="Spedizione") ? (promoApplied ? 0 : 10) : 0;
+    // TOTALE UNICO DEL RIEPILOGO: fotografie + spedizione.
+    // La promozione riguarda SOLO la spedizione e si applica se le fotografie superano €150.
+    const eligiblePromo=photos>PROMO_THRESHOLD && delivery==="Spedizione";
+    if(!eligiblePromo) promoApplied=false;
+    const shippingBeforePromo=delivery==="Spedizione" ? 10 : 0;
+    const fee=(delivery==="Spedizione" && promoApplied) ? 0 : shippingBeforePromo;
+    const discount=(delivery==="Spedizione" && promoApplied) ? shippingBeforePromo : 0;
     const total=photos+fee;
     updateSelectionText(items.length);
     countEl.textContent=items.length;
@@ -797,7 +800,12 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
     else{
       list.innerHTML=items.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb"><img src="'+esc(x.image)+'" alt="'+esc(x.code)+'"></div><div><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation)+'<span class="dot"></span>'+esc(x.format||"Formato da selezionare")+'</div><div class="qty-controls" data-qty="'+esc(x.id)+'"><button type="button" class="qty-minus" aria-label="Diminuisci copie">−</button><span class="qty-value">'+x.quantity+'</span><button type="button" class="qty-plus" aria-label="Aumenta copie">+</button></div></div><div class="checkout-photo-price">€'+(x.price*x.quantity).toFixed(2).replace(".",",")+'</div></div>').join("");
     }
-    list.insertAdjacentHTML("beforeend",'<div class="checkout-delivery-line"><span>'+(delivery==="Spedizione"?"Spedizione":"Ritiro gratuito")+'</span><strong>€'+fee.toFixed(2).replace(".",",")+'</strong></div>');
+    const summaryLines=[
+      '<div class="checkout-delivery-line"><span>Subtotale fotografie</span><strong>€'+photos.toFixed(2).replace(".",",")+'</strong></div>',
+      '<div class="checkout-delivery-line"><span>'+(delivery==="Spedizione"?"Spedizione":"Ritiro gratuito")+'</span><strong>€'+fee.toFixed(2).replace(".",",")+'</strong></div>'
+    ];
+    if(discount>0) summaryLines.push('<div class="checkout-delivery-line" style="color:#4f6d54"><span>Promozione · spedizione gratuita</span><strong>−€'+discount.toFixed(2).replace(".",",")+'</strong></div>');
+    list.insertAdjacentHTML("beforeend",summaryLines.join(""));
     totalEl.textContent="€"+total.toFixed(2).replace(".",",");
     updatePromo(photos,delivery);
     if(deliveryNote) deliveryNote.textContent=delivery==="Spedizione"?"Spedizione in Italia · €10,00.":"Ritiro gratuito da concordare a Milano.";
@@ -907,9 +915,10 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       orderId,
       customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},
       items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:priceForFormat(x.format),quantity:x.quantity})),
-      total:photosTotal,
-      deliveryType:delivery,
-      promotion:(promoApplied&&delivery==="Spedizione")?"Spedizione gratuita":"",
+      total:total,
+      baseTotal:photosTotal,
+      shippingFee:fee,
+      promotion:(promoApplied&&delivery==="Spedizione")?"Spedizione gratuita":"", 
       paymentMethod:"Ordine online",
       paymentStatus:"IN_ATTESA_DI_PAGAMENTO",
       trackingToken
@@ -972,18 +981,25 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
   const promoSummary=document.getElementById("promoSummary");
   // Gestione della promozione solo sulla spedizione, mai sul prezzo delle fotografie.
   function updatePromo(photos,delivery){
-    const eligible=photos>150 && delivery==="Spedizione";
+    const eligible=photos>PROMO_THRESHOLD && delivery==="Spedizione";
     const box=document.getElementById("promoSummary");
     const price=document.getElementById("promoSummaryPrice");
     const note=document.getElementById("promoNote");
     const accept=document.getElementById("promoAccept");
+    const decline=document.getElementById("promoDecline");
     if(!box)return;
     box.classList.toggle("active",delivery==="Spedizione");
-    if(price) price.textContent=eligible ? "Spedizione: €0,00" : "Spedizione: €10,00";
-    if(note) note.textContent=eligible ? "Ordine idoneo: puoi applicare la spedizione gratuita." : "La spedizione gratuita si applica oltre €150.";
-    if(accept) accept.disabled=!eligible;
-    if(accept) accept.onclick=()=>{ if(eligible){ promoApplied=true; refresh(); } };
-    const decline=document.getElementById("promoDecline");
+    if(price) price.textContent=promoApplied && eligible ? "Spedizione: €0,00" : "Spedizione: €10,00";
+    if(note) note.textContent=promoApplied && eligible
+      ? "Promozione applicata: la spedizione è gratuita. Il totale qui sotto è già aggiornato."
+      : eligible
+        ? "Ordine idoneo: premi il pulsante per applicare la spedizione gratuita."
+        : "La spedizione gratuita si applica oltre €150.";
+    if(accept){
+      accept.disabled=!eligible;
+      accept.textContent=promoApplied && eligible ? "PROMOZIONE APPLICATA ✓" : "APPLICA SPEDIZIONE GRATUITA";
+      accept.onclick=()=>{ if(eligible){ promoApplied=true; refresh(); } };
+    }
     if(decline) decline.onclick=()=>{ promoApplied=false; refresh(); };
   }
 })();
