@@ -3,6 +3,7 @@
   const KEY="lntdv_cart_v3";
   const ORDER_KEY="lntdv_last_order_v3";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
+  const ORIENTATIONS={};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
   const $=id=>document.getElementById(id);
   const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
@@ -14,11 +15,12 @@
       const code=card.querySelector(".meta strong")?.textContent.trim()||"Fotografia";
       const select=card.querySelector(".format-select");
       const format=select?.value||"";
-      return {code,format,price:prices[format]||0,image:card.querySelector("img")?.src||""};
+      const orientation=(card.querySelector("[data-orientation]")?.dataset.value||card.querySelector("[data-orientation]")?.textContent||"").trim();
+      return {code,format,price:prices[format]||0,image:card.querySelector("img")?.src||"",orientation};
     });
   }
   function total(a){return a.reduce((s,x)=>s+x.price,0)}
-  function save(){write(KEY,items().map(x=>({code:x.code,format:x.format})))}
+  function save(){write(KEY,items().map(x=>({code:x.code,format:x.format,orientation:x.orientation})))}
   function restore(){
     const saved=read(KEY); if(!Array.isArray(saved))return;
     document.querySelectorAll(".card").forEach(card=>{
@@ -26,6 +28,7 @@
       const hit=saved.find(x=>x.code===code); if(!hit)return;
       card.classList.add("selected"); card.setAttribute("aria-pressed","true");
       const s=card.querySelector(".format-select"); if(s)s.value=hit.format||"";
+      const o=card.querySelector("[data-orientation]"); if(o&&hit.orientation){o.textContent=hit.orientation==='verticale'?'Verticale':hit.orientation==='orizzontale'?'Orizzontale':hit.orientation;o.dataset.value=hit.orientation;}
     });
   }
   function refresh(){
@@ -53,7 +56,7 @@
     const a=items(),p=document.querySelector('input[name="checkoutPayment"]:checked')?.value||"", email=$("customerEmail").value.trim();
     if(!a.length||a.some(x=>!x.format)||!p||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),t=total(a),button=$("completePayment");
-    const payload={orderId,paymentMethod:p,paymentStatus:"DA_VERIFICARE",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,price:x.price})),total:t,deliveryType:"Ritiro gratuito presso Milano",requestedTracking:true};
+    const payload={orderId,paymentMethod:p,paymentStatus:"DA_VERIFICARE",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price})),total:t,deliveryType:"Ritiro gratuito presso Milano",requestedTracking:true};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
       await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"payload="+encodeURIComponent(JSON.stringify(payload))});
