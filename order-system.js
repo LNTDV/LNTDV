@@ -63,7 +63,7 @@
     if($("orderTotal"))$("orderTotal").textContent=euro(t);
     const promoNote=pinfo.promo!==null && a.length>0 ? "Promo: "+a.length+" foto — "+euro(pinfo.promo) : "";
     const promoEl=$("lntdvPromo");
-    if(promoEl) promoEl.textContent=promoNote;
+    if(promoEl) promoEl.textContent=pinfo.promo!==null && a.length>0 ? ("Promo applicata: "+a.length+" foto — "+euro(pinfo.promo)) : "Promo: 1 foto €50 · 2 foto €80 · 3 foto €120";
     if($("orderList"))$("orderList").innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,"0")+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'">':"")+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+" · ":"")+esc(x.format||"Modalità non selezionata")+'</div></div><div class="checkout-photo-price">'+euro(x.price)+'</div></div>').join(""):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("customerEmail")?.value.trim()||"");
     const ok=a.length&&a.every(x=>x.format)&&payment&&$("customerName")?.value.trim()&&validEmail;
