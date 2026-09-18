@@ -175,7 +175,7 @@ function ensureHeader_(sheet) {
 }
 
 function ensureSettings_(sheet) {
-  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,6,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); }
+  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,7,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); }
 }
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
