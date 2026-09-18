@@ -737,10 +737,25 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       return;
     }
     const script=document.createElement("script");
-    script.src=asset.src+"?v="+Date.now();
+    script.src=asset.src+"?v=20260918-"+Date.now();
     script.onload=apply;
-    script.onerror=()=>{img.removeAttribute("src");img.dataset.photoMissing="true";};
+    script.onerror=()=>{
+      const fallback=document.createElement("script");
+      fallback.src="https://raw.githubusercontent.com/LNTDV/LNTDV/main/assets/photo"+String(Number(id)).padStart(2,"0")+".js?v=20260918-"+Date.now();
+      fallback.onload=apply;
+      fallback.onerror=()=>{img.removeAttribute("src");img.dataset.photoMissing="true";};
+      document.head.appendChild(fallback);
+    };
     document.head.appendChild(script);
+    img.addEventListener("error",()=>{
+      if(img.dataset.photoFallbackTried==="1")return;
+      img.dataset.photoFallbackTried="1";
+      const fallback=document.createElement("script");
+      fallback.src="https://raw.githubusercontent.com/LNTDV/LNTDV/main/assets/photo"+String(Number(id)).padStart(2,"0")+".js?v=20260918-"+Date.now();
+      fallback.onload=apply;
+      fallback.onerror=()=>{img.dataset.photoMissing="true";};
+      document.head.appendChild(fallback);
+    },{once:false});
   }
   cards.forEach(setPhotoSource);
   const bar=document.getElementById("orderBar"),barCount=document.getElementById("orderBarCount"),barTotal=document.getElementById("orderBarTotal");
