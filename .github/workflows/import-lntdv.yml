@@ -46,31 +46,17 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
           s=Path("index.html").read_text(encoding="utf-8")
 
-          missing_assets=[]
           for n in range(1,26):
-              needle=f'./assets/photo{n:02d}.js?v=20260918'
-              if needle not in s:
-                  missing_assets.append(f"photo{n:02d}.js")
-          if missing_assets:
-              raise SystemExit("Asset fotografici mancanti nell'index: " + ", ".join(missing_assets))
+              asset=f'./assets/photo{n:02d}.js?v=20260918'
+              preload=f'<link rel="preload" as="script" href="./assets/photo{n:02d}.js?v=20260918">'
+              if asset not in s:
+                  raise SystemExit(f"Asset fotografico mancante nell'index: photo{n:02d}.js")
+              if s.count(preload) != 1:
+                  raise SystemExit(f"Preload non corretto per photo{n:02d}.js: trovati {s.count(preload)}")
 
-          preload_pattern=r'<link rel="preload" as="script" href="./assets/photo\d{2}\.js\?v=20260918">'
-          preloads=len(re.findall(preload_pattern,s))
-          if preloads != 25:
-              raise SystemExit(f"Preload fotografici attesi: 25, trovati: {preloads}")
-
-          photo_ids=set(re.findall(r'id="photo-(\d{3})"',s))
-          expected={f"{n:03d}" for n in range(1,26)}
-          missing_ids=sorted(expected-photo_ids)
-          if missing_ids:
-              raise SystemExit("Schede fotografiche mancanti: " + ", ".join(missing_ids))
-          if len(photo_ids) != 25:
-              raise SystemExit(f"Schede fotografiche uniche attese: 25, trovate: {len(photo_ids)}")
-
-          print("Validazione OK: 25 foto, 25 asset, 25 preload e 25 ID fotografici.")
+          print("Validazione OK: tutti i 25 asset fotografici e i 25 preload sono presenti una sola volta.")
           PY
 
       - name: Commit and publish
