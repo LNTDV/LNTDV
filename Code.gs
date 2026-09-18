@@ -38,6 +38,8 @@ function doPost(e) {
     const trackingToken = /^[A-Z0-9]{24,80}$/.test(suppliedTrackingToken) ? suppliedTrackingToken : Utilities.getUuid().replace(/-/g,'').toUpperCase();
     const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
     const itemText = items.map((x, i) => `${i + 1}. ${x.title || 'Fotografia'} — ${x.orientation || 'Orientamento non specificato'} — ${x.format || 'Formato non specificato'} — €${Number(x.price || 0).toFixed(2)}`).join('\n');
+    const existing = sheet.getDataRange().getValues().findIndex((r, i) => i > 0 && String(r[1]) === orderId);
+    if (existing > 0) return json_({ok:true, orderId:orderId, trackingToken:String(sheet.getRange(existing + 1, 16).getValue() || trackingToken), paymentStatus:String(sheet.getRange(existing + 1, 15).getValue() || paymentStatus), subtotal:Number(sheet.getRange(existing + 1, 9).getValue() || subtotal), shipping:Number(sheet.getRange(existing + 1, 10).getValue() || shipping), total:Number(sheet.getRange(existing + 1, 11).getValue() || total), duplicate:true});
     const row = sheet.getLastRow() + 1;
     sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', true, paymentStatus === 'PAGATO' ? 'PAGATO' : receivedStatus, trackingToken]);
     sheet.getRange(row, 14).insertCheckboxes().setValue(false);
@@ -68,7 +70,8 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText}); }
+  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || ''}); }
+  if (p.action === 'confirm') return confirmOrder_(p.orderId || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
   if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
@@ -375,4 +378,19 @@ function onOrderCheckboxEdit_(e) {
   } catch (err) {
     console.error(err);
   }
+}
+
+
+function confirmOrder_(orderId, token, email, callback) {
+  orderId = String(orderId || '').trim();
+  token = String(token || '').trim().toUpperCase();
+  email = String(email || '').trim().toLowerCase();
+  if (!orderId || !token) return json_({ok:false,error:'ID ordine e token obbligatori.'}, callback);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'}, callback);
+  const values = sheet.getDataRange().getValues();
+  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId && String(r[15] || '').toUpperCase() === token && (!email || String(r[6] || '').toLowerCase() === email));
+  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'}, callback);
+  const row = values[index];
+  return json_({ok:true,received:true,orderId:String(row[1]),email:String(row[6] || ''),status:String(row[14] || 'RICEVUTO'),total:Number(row[10] || 0)}, callback);
 }
