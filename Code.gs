@@ -58,6 +58,7 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText}); }
   if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
+  if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
@@ -161,7 +162,7 @@ function getSettings_() {
   const data = sh.getDataRange().getValues();
   const out = {};
   data.slice(1).forEach(r => { if (r[0]) out[String(r[0])] = r[1]; });
-  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE')};
+  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE'), xpayApiKey:String(out.xpayApiKey || ''), xpayEnvironment:String(out.xpayEnvironment || 'TEST').toUpperCase()};
 }
 
 function ensureHeader_(sheet) {
@@ -171,7 +172,7 @@ function ensureHeader_(sheet) {
 }
 
 function ensureSettings_(sheet) {
-  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,4,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE']]); sheet.setFrozenRows(1); }
+  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,6,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['xpayApiKey',''],['xpayEnvironment','TEST']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); }
 }
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
@@ -213,4 +214,96 @@ function trackOrder_(orderId, email, token, callback) {
     total:Number(row[10] || 0),
     labels:{RICEVUTO:'Ricevuto',IN_LAVORAZIONE:'In lavorazione',PRONTO_AL_RITIRO:'Pronto al ritiro',CONSEGNATO:'Consegnato'}
   }, callback);
+}
+
+
+/**
+ * Verifica server-side dello stato di un ordine su Nexi XPay.
+ * La X-Api-Key resta nel foglio Impostazioni di Apps Script e non viene mai
+ * esposta al browser del cliente.
+ *
+ * Richiesta protetta:
+ *   ?action=xpayVerify&orderId=LNTDV-...&key=<adminKey>
+ */
+function verifyXpayOrder_(orderId, key) {
+  const cfg = getSettings_();
+  orderId = String(orderId || '').trim();
+  key = String(key || '').trim();
+  if (!orderId || !key || key !== cfg.adminKey) {
+    return json_({ok:false, error:'Accesso non autorizzato.'});
+  }
+  if (!cfg.xpayApiKey) {
+    return json_({ok:false, error:'XPay API Key non configurata nelle Impostazioni.'});
+  }
+  if (!/^LNTDV-[A-Z0-9-]{6,80}$/.test(orderId)) {
+    return json_({ok:false, error:'ID ordine non valido.'});
+  }
+
+  const endpoint = cfg.xpayEnvironment === 'PROD'
+    ? 'https://xpay.nexigroup.com/api/phoenix-0.0/psp/api/v1/orders/'
+    : 'https://xpaysandbox.nexigroup.com/api/phoenix-0.0/psp/api/v1/orders/';
+
+  const correlationId = Utilities.getUuid();
+  const response = UrlFetchApp.fetch(endpoint + encodeURIComponent(orderId), {
+    method:'get',
+    muteHttpExceptions:true,
+    headers:{
+      'X-Api-Key': cfg.xpayApiKey,
+      'Correlation-Id': correlationId
+    }
+  });
+
+  const code = response.getResponseCode();
+  const raw = response.getContentText();
+  let data = {};
+  try { data = JSON.parse(raw || '{}'); } catch (_) {}
+
+  if (code < 200 || code >= 300) {
+    return json_({ok:false, httpStatus:code, correlationId:correlationId, error:data.message || data.description || raw || 'Errore XPay.'});
+  }
+
+  const order = data.order || {};
+  const operations = Array.isArray(data.operations) ? data.operations : [];
+  const successful = operations.filter(op =>
+    ['EXECUTED','AUTHORIZED'].includes(String(op.operationResult || '').toUpperCase()) &&
+    ['AUTHORIZATION','CAPTURE'].includes(String(op.operationType || '').toUpperCase())
+  );
+  const paid = successful.length > 0;
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) throw new Error('Foglio Ordini non trovato.');
+  const values = sheet.getDataRange().getValues();
+  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId);
+  if (index < 1) return json_({ok:false, error:'Ordine LNTDV non trovato.', xpay:data});
+
+  const row = values[index];
+  const expectedTotal = Number(row[10] || 0);
+  const xpayAmount = Number(order.amount || 0) / 100;
+  const amountOk = !isNaN(xpayAmount) && Math.abs(xpayAmount - expectedTotal) < 0.01;
+
+  if (paid && amountOk) {
+    const current = String(row[14] || '').toUpperCase();
+    if (current !== 'PAGATO') {
+      sheet.getRange(index + 1, 15).setValue('PAGATO');
+      sheet.getRange(index + 1, 14).setValue(true);
+      const customerEmail = String(row[6] || '');
+      if (customerEmail) {
+        const paymentCircuit = successful[successful.length - 1].paymentCircuit || 'XPay';
+        const body = 'Gentile ' + String(row[2] || '') + ',\n\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' risulta confermato da Nexi XPay.\n\nTotale pagato: €' + expectedTotal.toFixed(2) + '\nMetodo: ' + paymentCircuit + '\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino';
+        MailApp.sendEmail({to:customerEmail, subject:'Pagamento confermato ' + orderId + ' — La Nostra Terra da Vicino', body:body});
+      }
+    }
+  }
+
+  return json_({
+    ok:true,
+    orderId:orderId,
+    paid:paid && amountOk,
+    amountOk:amountOk,
+    expectedAmount:expectedTotal,
+    xpayAmount:xpayAmount,
+    operationResult:successful.length ? successful[successful.length - 1].operationResult : null,
+    paymentCircuit:successful.length ? (successful[successful.length - 1].paymentCircuit || null) : null,
+    correlationId:correlationId
+  });
 }
