@@ -915,6 +915,7 @@ footer{padding:24px 18px;text-align:center;border-top:1px solid var(--line);back
       orderId,
       customer:{name,email,street:document.getElementById("customerStreet").value.trim(),zip:document.getElementById("customerZip").value.trim(),city:document.getElementById("customerCity").value.trim(),note:document.getElementById("customerNote").value.trim()},
       items:items.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:priceForFormat(x.format),quantity:x.quantity})),
+      deliveryType:delivery,
       total:total,
       baseTotal:photosTotal,
       shippingFee:fee,
