@@ -755,11 +755,15 @@
     setImportant(stage,'display','flex');
     setImportant(stage,'align-items','center');
     setImportant(stage,'justify-content','center');
-    setImportant(stage,'overflow','hidden');
+    setImportant(stage,'overflow','visible');
     setImportant(stage,'margin','0');
     setImportant(stage,'border-radius','14px');
     setImportant(stage,'background','transparent');
-    setImportant(stage,'aspect-ratio',orientation==='vertical'?'3 / 4':'4 / 3');
+    setImportant(stage,'aspect-ratio','auto');
+    setImportant(stage,'height','auto');
+    setImportant(stage,'line-height','0');
+    setImportant(stage,'border','2px solid #6b4734');
+    setImportant(stage,'box-sizing','border-box');
 
     // Neutral image defaults: no crop, no stretch, no filters.
     setImportant(img,'display','block');
@@ -773,17 +777,17 @@
     setImportant(img,'transition','none');
     setImportant(img,'margin','0 auto');
     if(orientation==='vertical'){
-      setImportant(img,'width','auto');
+      setImportant(img,'width','100%');
       setImportant(img,'height','auto');
       setImportant(img,'max-width','100%');
-      setImportant(img,'max-height','100%');
+      setImportant(img,'max-height','none');
       setImportant(img,'transform','none');
       setImportant(img,'transform-origin','center center');
     }else{
       setImportant(img,'width','100%');
       setImportant(img,'height','auto');
       setImportant(img,'max-width','100%');
-      setImportant(img,'max-height','100%');
+      setImportant(img,'max-height','none');
       setImportant(img,'transform','none');
       setImportant(img,'transform-origin','center center');
     }
@@ -809,7 +813,11 @@
       setImportant(choice,'order','0');
       setImportant(choice,'position','relative');
       setImportant(choice,'z-index','3');
-      setImportant(choice,'margin','0 0 10px');
+      setImportant(choice,'margin','0 0 12px');
+      setImportant(choice,'padding','10px 11px');
+      setImportant(choice,'border','1px solid #d8c6b4');
+      setImportant(choice,'border-radius','11px');
+      setImportant(choice,'background','#fcfaf7');
     }
     const select=card.querySelector('.format-select');
     if(select){
@@ -834,6 +842,13 @@
   }
 
   function renderAll(){
+    const grids=document.querySelectorAll('.grid, section.grid, section.catalog');
+    grids.forEach(grid=>{
+      setImportant(grid,'display','grid');
+      setImportant(grid,'grid-template-columns','1fr');
+      setImportant(grid,'gap','22px');
+      setImportant(grid,'width','100%');
+    });
     document.querySelectorAll('.grid .card, .catalog .card, .card').forEach(renderCard);
   }
 
