@@ -66,6 +66,8 @@
   function refresh(){
     ensureCheckoutOptions();
     const a=items(),pinfo=pricing(a),t=pinfo.total;
+    const orderBar=$("orderBar");
+    if(orderBar){ orderBar.classList.toggle("show", a.length>0); orderBar.setAttribute("aria-hidden", a.length>0 ? "false" : "true"); }
     if($("summaryCount"))$("summaryCount").textContent=a.length;
     if($("orderBarCount"))$("orderBarCount").textContent=a.length+" foto";
     if($("orderBarTotal"))$("orderBarTotal").textContent=euro(t);
