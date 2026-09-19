@@ -91,11 +91,14 @@ jobs:
               p=Path(f"images/natura-{n:02d}.jpg")
               if not p.exists() or p.stat().st_size < 1000:
                   raise SystemExit(f"Foto mancante o vuota: {p}")
-              pat=rf'<img\b[^>]*src="\.\/images\/natura-{n:02d}\.jpg"[^>]*alt="LNTDV-{n:03d}"'
-              if not re.search(pat,s,re.I):
-                  pat=rf'<img\b[^>]*alt="LNTDV-{n:03d}"[^>]*src="\.\/images\/natura-{n:02d}\.jpg"'
-                  if not re.search(pat,s,re.I):
-                      raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
+              tags=re.findall(r'<img\\b[^>]*>',s,re.I)
+              ok=any(
+                  re.search(r'\\balt=["\\\']LNTDV-'+f'{n:03d}'+r'["\\\']',t,re.I)
+                  and re.search(r'\\bsrc=["\\\']\\.\\/images\\/natura-'+f'{n:02d}'+r'\\.jpg["\\\']',t,re.I)
+                  for t in tags
+              )
+              if not ok:
+                  raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
 
           if "data:image/" in s:
               raise SystemExit("Sono rimaste immagini Base64 inline nel catalogo.")
