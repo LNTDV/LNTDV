@@ -91,10 +91,10 @@ jobs:
               p=Path(f"images/natura-{n:02d}.jpg")
               if not p.exists() or p.stat().st_size < 1000:
                   raise SystemExit(f"Foto mancante o vuota: {p}")
-              tags=re.findall(r'<img\\b[^>]*>',s,re.I)
+              tags=re.findall(r'<img\b[^>]*>',s,re.I)
               ok=any(
-                  re.search(r'\\balt=["\\\']LNTDV-'+f'{n:03d}'+r'["\\\']',t,re.I)
-                  and re.search(r'\\bsrc=["\\\']\\.\\/images\\/natura-'+f'{n:02d}'+r'\\.jpg["\\\']',t,re.I)
+                  re.search(r'\balt=["\\\']LNTDV-'+f'{n:03d}'+r'["\\\']',t,re.I)
+                  and re.search(r'\bsrc=["\\\']\.\/images\\/natura-'+f'{n:02d}'+r'\\.jpg["\\\']',t,re.I)
                   for t in tags
               )
               if not ok:
