@@ -687,72 +687,194 @@
 /* LNTDV FINAL PHOTO/FORMAT STABILITY FIX — 2026-09-19 07:54 */
 (function(){
   'use strict';
-  // Do not rotate portrait cards with CSS: orientation is metadata, not a 90° transform.
-  function fixCard(card){
-    const img=card.querySelector('img');
+
+  // RENDERING CATALOGO DEFINITIVO:
+  // - una sola immagine per scheda, sempre collegata al JPG del relativo codice
+  // - contenitore con rapporto coerente (4:3 orizzontale / 3:4 verticale)
+  // - nessun crop
+  // - verticale ruotata una sola volta, via CSS, dentro un contenitore dedicato
+  // - selettore formato sempre sotto la fotografia
+  // - niente Base64, niente filtri, niente effetti scroll-driven
+
+  const ORIENTATION_VERTICAL=new Set(['003','006','007','008','009','011','013','014','015','016','018']);
+
+  function getCode(card){
+    const strong=card.querySelector('.meta strong');
+    const raw=(strong?.textContent||card.querySelector('img')?.alt||'').trim();
+    const m=raw.match(/LNTDV-(\d{3})/i);
+    return m?m[1]:'';
+  }
+
+  function getOrientation(card,code){
+    const small=(card.querySelector('.meta small')?.textContent||'').trim().toLowerCase();
+    const declared=ORIENTATION_VERTICAL.has(code)||/verticale|vertical/.test(small);
+    return declared?'vertical':'horizontal';
+  }
+
+  function ensureImage(card,code){
+    if(!code)return null;
+    let img=card.querySelector('img');
+    const expected='./images/natura-'+code.replace(/^0/,'').padStart(2,'0')+'.jpg';
+    // Build the filename from the three-digit catalog code.
+    const n=String(parseInt(code,10)).padStart(2,'0');
+    const expectedSrc='./images/natura-'+n+'.jpg';
+    if(!img){
+      img=document.createElement('img');
+      img.alt='LNTDV-'+code;
+      card.insertBefore(img,card.querySelector('.meta')||null);
+    }
+    img.alt='LNTDV-'+code;
+    img.draggable=false;
+    img.loading=parseInt(code,10)<=2?'eager':'lazy';
+    img.decoding='async';
+    img.setAttribute('data-orientation',getOrientation(card,code));
+    const current=img.getAttribute('src')||'';
+    const clean=current.split('?')[0];
+    if(clean!==expectedSrc){
+      img.setAttribute('src',expectedSrc+'?v=20260919-final-photo');
+      delete img.dataset.lntdvImageError;
+    }else if(!/[?&]v=20260919-final-photo(?:&|$)/.test(current)){
+      img.setAttribute('src',expectedSrc+'?v=20260919-final-photo');
+    }
+    return img;
+  }
+
+  function setImportant(el,prop,value){
+    el.style.setProperty(prop,value,'important');
+  }
+
+  function renderCard(card){
+    if(!(card instanceof HTMLElement))return;
+    const code=getCode(card);
+    if(!code)return;
+
+    const orientation=getOrientation(card,code);
+    card.dataset.orientation=orientation;
+
+    const img=ensureImage(card,code);
     if(!img)return;
-    img.style.transform='none';
-    img.style.objectFit='contain';
-    img.style.background='transparent';
-    img.style.width='100%';
-    img.style.height='auto';
-    img.style.aspectRatio='auto';
-    img.style.imageOrientation='from-image';
-    card.classList.remove('photo-vertical','photo-horizontal');
-  }
-  function fix(){document.querySelectorAll('.card').forEach(fixCard)}
-  function formatLayout(){
-    document.querySelectorAll('.format-select').forEach(s=>{
-      s.style.display='block';s.style.visibility='visible';s.style.width='100%';s.style.minHeight='44px';
-      s.style.fontSize='14px';s.style.lineHeight='1.2';
-      const card=s.closest('.card'); if(card){const box=card.querySelector('.print-choice');if(box){box.style.display='block';box.style.visibility='visible'}}
-    });
-  }
-  function noAccidentalReload(){
-    // Prevent stale reload handlers from reacting to image/format changes.
-    document.querySelectorAll('img').forEach(img=>{
-      img.addEventListener('error',()=>{img.dataset.lntdvImageError='1'}, {once:true});
-    });
-  }
-  const run=()=>{fix();formatLayout();noAccidentalReload()};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-  window.addEventListener('load',run,{once:true});
-  new MutationObserver(run).observe(document.body,{childList:true,subtree:true});
-})();
 
+    let stage=img.parentElement;
+    if(!stage||!stage.classList.contains('lntdv-photo-stage')){
+      stage=document.createElement('div');
+      stage.className='lntdv-photo-stage';
+      img.parentNode?.insertBefore(stage,img);
+      stage.appendChild(img);
+    }
 
-/* LNTDV FINAL PHOTO/FORMAT HARD FIX v2026-09-19 */
-(function(){
-  'use strict';
-  function fix(){
-    document.querySelectorAll('.grid .card').forEach(card=>{
-      const img=card.querySelector('img');
-      if(img){
-        img.style.transform='none';
-        img.style.objectFit='contain';
-        img.style.width='100%';
-        img.style.height='auto';
-        img.style.aspectRatio='auto';
-        img.style.imageOrientation='from-image';
-      }
-      const meta=card.querySelector('.meta');
-      const choice=card.querySelector('.print-choice');
-      if(meta && choice && choice.parentElement!==meta) meta.prepend(choice);
-      if(choice){
-        choice.style.display='block';
-        choice.style.visibility='visible';
-        choice.style.width='100%';
-      }
-      const select=card.querySelector('.format-select');
-      if(select){
-        select.style.display='block';
-        select.style.visibility='visible';
-        select.style.width='100%';
-      }
-    });
+    const meta=card.querySelector('.meta');
+    const choice=card.querySelector('.print-choice');
+
+    // The card is a strict vertical stack: photo -> format -> metadata.
+    setImportant(card,'display','flex');
+    setImportant(card,'flex-direction','column');
+    setImportant(card,'align-items','stretch');
+    setImportant(card,'min-width','0');
+    setImportant(stage,'order','1');
+    setImportant(stage,'width','100%');
+    setImportant(stage,'box-sizing','border-box');
+    setImportant(stage,'display','flex');
+    setImportant(stage,'align-items','center');
+    setImportant(stage,'justify-content','center');
+    setImportant(stage,'overflow','hidden');
+    setImportant(stage,'margin','0');
+    setImportant(stage,'border-radius','14px');
+    setImportant(stage,'background','transparent');
+    setImportant(stage,'aspect-ratio',orientation==='vertical'?'3 / 4':'4 / 3');
+
+    // Neutral image defaults: no crop, no stretch, no filters.
+    setImportant(img,'display','block');
+    setImportant(img,'object-fit','contain');
+    setImportant(img,'object-position','center center');
+    setImportant(img,'filter','none');
+    setImportant(img,'-webkit-filter','none');
+    setImportant(img,'opacity','1');
+    setImportant(img,'mix-blend-mode','normal');
+    setImportant(img,'image-orientation','none');
+    setImportant(img,'transition','none');
+    setImportant(img,'margin','0 auto');
+    if(orientation==='vertical'){
+      setImportant(img,'width','auto');
+      setImportant(img,'height','auto');
+      setImportant(img,'max-width','100%');
+      setImportant(img,'max-height','100%');
+      setImportant(img,'transform','rotate(90deg)');
+      setImportant(img,'transform-origin','center center');
+    }else{
+      setImportant(img,'width','100%');
+      setImportant(img,'height','auto');
+      setImportant(img,'max-width','100%');
+      setImportant(img,'max-height','100%');
+      setImportant(img,'transform','none');
+      setImportant(img,'transform-origin','center center');
+    }
+
+    // Keep the format selector inside .meta, but force .meta itself below the photo.
+    if(meta){
+      setImportant(meta,'order','2');
+      setImportant(meta,'width','100%');
+      setImportant(meta,'min-width','0');
+      setImportant(meta,'box-sizing','border-box');
+      setImportant(meta,'display','flex');
+      setImportant(meta,'flex-direction','column');
+      setImportant(meta,'align-items','stretch');
+      setImportant(meta,'overflow','visible');
+      setImportant(meta,'position','relative');
+      setImportant(meta,'z-index','2');
+    }
+    if(choice){
+      setImportant(choice,'display','block');
+      setImportant(choice,'visibility','visible');
+      setImportant(choice,'width','100%');
+      setImportant(choice,'box-sizing','border-box');
+      setImportant(choice,'order','0');
+      setImportant(choice,'position','relative');
+      setImportant(choice,'z-index','3');
+      setImportant(choice,'margin','0 0 10px');
+    }
+    const select=card.querySelector('.format-select');
+    if(select){
+      setImportant(select,'display','block');
+      setImportant(select,'visibility','visible');
+      setImportant(select,'width','100%');
+      setImportant(select,'min-width','0');
+      setImportant(select,'min-height','48px');
+      setImportant(select,'height','48px');
+      setImportant(select,'box-sizing','border-box');
+      setImportant(select,'appearance','auto');
+      setImportant(select,'-webkit-appearance','auto');
+      setImportant(select,'opacity','1');
+      setImportant(select,'transform','none');
+    }
+
+    const check=card.querySelector('.selection-check');
+    if(check){
+      setImportant(check,'position','absolute');
+      setImportant(check,'z-index','10');
+    }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fix,{once:true});
-  else fix();
-  window.addEventListener('load',fix,{once:true});
-  new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
+
+  function renderAll(){
+    document.querySelectorAll('.grid .card, .catalog .card, .card').forEach(renderCard);
+  }
+
+  function start(){
+    renderAll();
+    // Older catalog scripts observe child-list changes. Re-apply one frame later
+    // so their legacy inline styles cannot leave a portrait rotated incorrectly.
+    setTimeout(renderAll,0);
+    requestAnimationFrame(renderAll);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',start,{once:true});
+  }else{
+    start();
+  }
+  window.addEventListener('load',renderAll,{once:true});
+
+  const observer=new MutationObserver(function(){
+    renderAll();
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
 })();
