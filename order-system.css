@@ -257,3 +257,57 @@ img[id^="photo-"]{
 /* Non ruotare o ritagliare le fotografie: verticale resta verticale, orizzontale resta orizzontale. */
 .catalog img,.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;image-orientation:from-image!important;transform:none!important;}
 .card:hover img,.photo-card:hover img,.pic:hover img,.catalog img:hover{transform:none!important;}
+
+
+/* LNTDV FINAL ORDER PANEL STATE — 2026-09-19 06:00
+   The checkout is a modal only after the customer intentionally opens it.
+   It is never visible on initial page load or when no photo is selected.
+*/
+#orderPanel[aria-hidden="true"]{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderPanel:not(.active)[aria-hidden="true"]{
+  display:none!important;
+}
+#orderPanel.active[aria-hidden="false"]{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* The persistent control is a button/pill, not a side card or checkout sheet. */
+#orderBar[aria-hidden="true"]{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#orderBar[aria-hidden="false"]{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:calc(100vw - 20px)!important;
+  height:auto!important;
+  padding:9px 12px!important;
+  border-radius:999px!important;
+  box-sizing:border-box!important;
+}
+#orderBar .order-button{
+  border:0!important;
+  cursor:pointer!important;
+}
+@media(max-width:560px){
+  #orderBar[aria-hidden="false"]{
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    max-width:calc(100vw - 20px)!important;
+    padding:8px 11px!important;
+    border-radius:999px!important;
+  }
+}
