@@ -13,7 +13,7 @@ orientation_map = {
 }
 
 # Elimina preload massivi e vecchi src Base64: il browser deve caricare veri JPG.
-s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', '', s, flags=re.I)
+s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', '', s, flags=re.I)\n\n# Elimina definitivamente le vecchie regole di rotazione automatica.\ns = re.sub(r'transform\\s*:\\s*rotate\\([^;}]*(?:\\);?)', '', s, flags=re.I)
 s = re.sub(r'\s+src=["\']data:image/[^"\']+["\']', '', s, flags=re.I)
 
 # Ogni fotografia usa esclusivamente il proprio file JPG.
