@@ -1,6 +1,11 @@
 const SHEET_NAME = 'Ordini';
 const SETTINGS_SHEET = 'Impostazioni';
 const OWNER_EMAIL = 'info.lanostraterradavicino@gmail.com';
+const COPYSHOP_EMAIL = 'tps.samuele@gmail.com';
+const COPYSHOP_SENT_COLUMN = 21;
+const DELIVERY_DATE_COLUMN = 22;
+const COPYSHOP_STATUS_COLUMN = 23;
+const COPYSHOP_LAST_MESSAGE_COLUMN = 24;
 const SITE_URL = 'https://lntdv.it/';
 const PAYMENT_CONFIRMATION_COLUMN = 20;
 
@@ -13,6 +18,7 @@ function setup() {
   formatOrders_(orders);
   formatSettings_(settings);
   ensureOrderEditTrigger_();
+  ensureCopyshopReplyTrigger_();
 }
 
 function doPost(e) {
@@ -28,7 +34,8 @@ function doPost(e) {
     if (!items.length) throw new Error('Nessuna fotografia selezionata.');
     if (!customer.name || !customer.email) throw new Error('Nome ed email sono obbligatori.');
     const deliveryType = String(payload.deliveryType || payload.pickup || 'Ritiro');
-    const shipping = deliveryType.toLowerCase().includes('sped') ? Number(payload.shippingFee ?? cfg.shippingPrice ?? 0) : 0;
+    const photoCount = items.reduce((n, x) => n + Math.max(1, Number(x.quantity) || 1), 0);
+    const shipping = photoCount > 2 ? 10 : 0;
     const subtotal = Number(payload.baseTotal ?? Math.max(0, Number(payload.total || 0) - shipping));
     const total = Number(payload.total ?? (subtotal + shipping));
     const suppliedOrderId = String(payload.orderId || '').trim();
@@ -193,17 +200,17 @@ function getSettings_() {
 }
 
 function ensureHeader_(sheet) {
-  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Spedizione','Totale','Modalità consegna','Note','Ricezione ordine','Stato','Token tracking','','','', 'Pagamento confermato'];
+  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Consegna','Totale','Modalità consegna','Note','Ricezione ordine','Stato','Token tracking','','','', 'Pagamento confermato','Copisteria inviata','Data consegna Arese','Stato copisteria','Ultima mail copisteria'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers); else sheet.getRange(1,1,1,headers.length).setValues([headers]);
   sheet.setFrozenRows(1);
-  if (sheet.getMaxColumns() < PAYMENT_CONFIRMATION_COLUMN) sheet.insertColumnsAfter(sheet.getMaxColumns(), PAYMENT_CONFIRMATION_COLUMN - sheet.getMaxColumns());
+  if (sheet.getMaxColumns() < COPYSHOP_LAST_MESSAGE_COLUMN) sheet.insertColumnsAfter(sheet.getMaxColumns(), COPYSHOP_LAST_MESSAGE_COLUMN - sheet.getMaxColumns());
 }
 
 function ensureSettings_(sheet) {
   if (sheet.getLastRow() === 0) { sheet.getRange(1,1,8,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
 }
 
-function formatOrders_(sheet) { sheet.getRange(1,1,1,PAYMENT_CONFIRMATION_COLUMN).setFontWeight('bold'); sheet.autoResizeColumns(1,PAYMENT_CONFIRMATION_COLUMN); if (sheet.getLastRow() > 1) { sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,PAYMENT_CONFIRMATION_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); } }
+function formatOrders_(sheet) { sheet.getRange(1,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).setFontWeight('bold'); sheet.autoResizeColumns(1,COPYSHOP_LAST_MESSAGE_COLUMN); if (sheet.getLastRow() > 1) { sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,PAYMENT_CONFIRMATION_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,COPYSHOP_SENT_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); } }
 function formatSettings_(sheet) { sheet.getRange(1,1,1,2).setFontWeight('bold'); sheet.autoResizeColumns(1,2); }
 function json_(obj, callback) { const data = JSON.stringify(obj); if (callback && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) return ContentService.createTextOutput(callback + '(' + data + ');').setMimeType(ContentService.MimeType.JAVASCRIPT); return ContentService.createTextOutput(data).setMimeType(ContentService.MimeType.JSON); }
 
@@ -363,6 +370,54 @@ function shipmentStatus_(orderId, email, token, callback) {
  * invia automaticamente la mail all'indirizzo già registrato nell'ordine.
  * Il trigger installabile consente a Apps Script di usare MailApp.
  */
+function ensureCopyshopReplyTrigger_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const triggers = ScriptApp.getProjectTriggers();
+  const exists = triggers.some(t => t.getHandlerFunction() === 'processCopyshopEmails_');
+  if (!exists) ScriptApp.newTrigger('processCopyshopEmails_').timeBased().everyMinutes(5).create();
+}
+
+function sendCopyshopOrderEmail_(row) {
+  const orderId = String(row[1] || '');
+  const customer = String(row[2] || '');
+  const email = String(row[6] || '');
+  const orderText = String(row[7] || '');
+  const total = Number(row[10] || 0).toFixed(2);
+  const delivery = String(row[11] || '');
+  const body = `ORDINE LNTDV DA PRODURRE\\n\\nID ordine: ${orderId}\\nCliente: ${customer}\\nEmail cliente: ${email}\\n\\n${orderText}\\n\\nTotale: €${total}\\nModalità consegna: ${delivery}\\n\\nPer automatizzare il tracking, rispondere mantenendo l'ID ordine nell'oggetto e indicando una delle fasi: ORDINE RICEVUTO, IN STAMPA, STAMPA COMPLETATA, ORDINE PRONTO.\\n\\nLa Nostra Terra da Vicino`;
+  MailApp.sendEmail({to:COPYSHOP_EMAIL,subject:`LNTDV ${orderId} — ORDINE DA PRODURRE`,body});
+}
+
+function processCopyshopEmails_() {
+  const threads = GmailApp.search('in:anywhere newer_than:30d LNTDV-');
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+  const values = sheet.getDataRange().getValues();
+  threads.forEach(thread => thread.getMessages().forEach(msg => {
+    const messageId = String(msg.getId() || '');
+    const subject = String(msg.getSubject() || '');
+    const body = String(msg.getPlainBody() || '');
+    const hay = (subject + '\\n' + body).toUpperCase();
+    const idMatch = hay.match(/LNTDV-[A-Z0-9-]{6,80}/);
+    if (!idMatch) return;
+    const orderId = idMatch[0];
+    const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId);
+    if (index < 1) return;
+    const rowNumber = index + 1;
+    const already = String(sheet.getRange(rowNumber,COPYSHOP_LAST_MESSAGE_COLUMN).getValue() || '');
+    if (already === messageId) return;
+    let status = '';
+    if (/ORDINE\\s+PRONTO|PRONTO\\s+PER\\s+IL\\s+RITIRO|STAMPA\\s+COMPLETATA|COMPLETATA/.test(hay)) status = 'PRONTO_AL_RITIRO';
+    else if (/IN\\s+STAMPA|STAMPA\\s+IN\\s+CORSO/.test(hay)) status = 'IN_LAVORAZIONE';
+    else if (/ORDINE\\s+RICEVUTO|RICEZIONE\\s+ORDINI|RICEVUTO/.test(hay)) status = 'RICEVUTO';
+    if (!status) return;
+    sheet.getRange(rowNumber,COPYSHOP_STATUS_COLUMN).setValue(status);
+    sheet.getRange(rowNumber,COPYSHOP_LAST_MESSAGE_COLUMN).setValue(messageId);
+    sheet.getRange(rowNumber,15).setValue(status);
+    if (status !== 'RICEVUTO') sendStatusEmail_(sheet.getRange(rowNumber,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).getValues()[0], status);
+  }));
+}
+
 function ensureOrderEditTrigger_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const triggers = ScriptApp.getProjectTriggers();
@@ -388,6 +443,8 @@ function onOrderCheckboxEdit_(e) {
       if (currentStatus === 'PAGATO') return;
       sheet.getRange(rowNumber, 15).setValue('PAGATO');
       sendPaymentConfirmationEmail_(values);
+      sendCopyshopOrderEmail_(values);
+      sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).setValue(true);
       return;
     }
     const currentStatus = String(values[14] || 'NUOVO').toUpperCase();
@@ -408,6 +465,14 @@ function sendPaymentConfirmationEmail_(row) {
   const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
   const body = 'Gentile ' + name + ',\\n\\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' è stato ricevuto e verificato.\\n\\nIl tuo ordine è confermato.\\n\\nTotale pagato: €' + total + '\\nID ordine: ' + orderId + '\\n\\nPuoi seguire lo stato del tuo ordine qui:\\n' + trackingUrl + '\\n\\nEdvinas Dragoni\\nLa Nostra Terra da Vicino\\n\\n© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.';
   if (row[6]) MailApp.sendEmail({to:String(row[6]),subject:'Pagamento ricevuto e ordine confermato ' + orderId + ' — La Nostra Terra da Vicino',body});
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const rowNumber = sheet.getDataRange().getValues().findIndex((r,i)=>i>0 && String(r[1])===orderId)+1;
+    if (rowNumber > 1 && !sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).getValue()) {
+      sendCopyshopOrderEmail_(sheet.getRange(rowNumber,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).getValues()[0]);
+      sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).setValue(true);
+    }
+  } catch (_) {}
 }
 
 
