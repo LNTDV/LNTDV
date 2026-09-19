@@ -1,0 +1,78 @@
+name: Apply catalog orientation fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-catalog-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fix catalog
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+
+          old = "Tutte le 25 fotografie nella stessa home page, senza divisioni in gallerie. Sotto ogni fotografia compare soltanto una piccola nota dell'argomento."
+          new = "Un racconto del territorio tra natura, tempo e città."
+          if old in s:
+              s = s.replace(old, new, 1)
+
+          for n in (3, 13, 14, 16, 17):
+              marker = f'alt="LNTDV-{n:03d}"'
+              pos = s.find(marker)
+              if pos == -1:
+                  raise SystemExit(f"ID non trovato: {marker}")
+              end = s.find("</article>", pos)
+              block = s[pos:end]
+              block = block.replace("Orientamento: orizzontale", "Orientamento: verticale", 1)
+              s = s[:pos] + block + s[end:]
+
+          css = r'''
+          <style id="lntdv-orientation-fix">
+          /* Correzione delle cinque fotografie verticali del catalogo. */
+          .card:has(img[alt="LNTDV-003"]),
+          .card:has(img[alt="LNTDV-013"]),
+          .card:has(img[alt="LNTDV-014"]),
+          .card:has(img[alt="LNTDV-016"]),
+          .card:has(img[alt="LNTDV-017"]){overflow:hidden}
+          .card:has(img[alt="LNTDV-003"]) img,
+          .card:has(img[alt="LNTDV-013"]) img,
+          .card:has(img[alt="LNTDV-014"]) img,
+          .card:has(img[alt="LNTDV-016"]) img,
+          .card:has(img[alt="LNTDV-017"]) img{
+            width:139.925%!important;
+            max-width:none!important;
+            height:auto!important;
+            aspect-ratio:auto!important;
+            object-fit:initial!important;
+            transform:rotate(90deg) translateY(-100%)!important;
+            transform-origin:top left!important;
+            margin-bottom:39.925%!important;
+          }
+          </style>
+          '''
+          if 'id="lntdv-orientation-fix"' not in s:
+              s = s.replace("</head>", css + "</head>", 1)
+
+          p.write_text(s, encoding="utf-8")
+          PY
+
+      - name: Commit and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Correggi orientamento foto e sottotitolo catalogo" || true
+          git rm .github/workflows/apply-catalog-fix.yml
+          git commit -m "Rimuovi workflow temporaneo catalogo"
+          git push
