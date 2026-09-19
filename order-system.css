@@ -251,3 +251,9 @@ img[id^="photo-"]{
 .card:hover img,.photo-card:hover img,.pic:hover img{
   transform:none!important;
 }
+
+
+/* LNTDV — ORIENTAMENTO FOTOGRAFIE: rispetta l'orientamento EXIF/originale */
+/* Non ruotare o ritagliare le fotografie: verticale resta verticale, orizzontale resta orizzontale. */
+.catalog img,.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;image-orientation:from-image!important;transform:none!important;}
+.card:hover img,.photo-card:hover img,.pic:hover img,.catalog img:hover{transform:none!important;}
