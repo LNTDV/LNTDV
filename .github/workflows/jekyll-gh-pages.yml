@@ -22,6 +22,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate JPG photo assets from source bundles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, re
+          out = Path("images")
+          out.mkdir(exist_ok=True)
+          for n in range(1, 26):
+              src = Path(f"assets/photo{n:02d}.js")
+              dst = out / f"natura-{n:02d}.jpg"
+              if not src.exists():
+                  raise SystemExit(f"Asset sorgente mancante: {src}")
+              text = src.read_text(encoding="utf-8")
+              m = re.search(r'data:image/jpeg;base64,([A-Za-z0-9+/=]+)', text)
+              if not m:
+                  raise SystemExit(f"Immagine Base64 non trovata in {src}")
+              data = base64.b64decode(m.group(1), validate=True)
+              if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
+                  raise SystemExit(f"JPG non valido o vuoto: {src}")
+              dst.write_bytes(data)
+          print("Pages: generati 25 JPG in images/.")
+          PY
+
       - name: Assemble published catalog
         run: |
           rm -f index.html
@@ -32,15 +55,28 @@ jobs:
           python scripts/fix_photo_loading.py
           python - <<'PY'
           from pathlib import Path
+          import re
           s=Path("index.html").read_text(encoding="utf-8")
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          expected={f"{n:03d}" for n in range(1,26)}
+          if ids != expected:
+              raise SystemExit(f"Codici foto errati: {sorted(ids)}")
           for n in range(1,26):
-              asset=f'./assets/photo{n:02d}.js?v=20260918'
-              preload=f'<link rel="preload" as="script" href="./assets/photo{n:02d}.js?v=20260918">'
-              if asset not in s:
-                  raise SystemExit(f"Asset fotografico mancante: photo{n:02d}.js")
-              if s.count(preload) != 1:
-                  raise SystemExit(f"Preload non corretto: photo{n:02d}.js")
-          print("Pages build: catalogo assemblato con 25 asset e 25 preload.")
+              p=Path(f"images/natura-{n:02d}.jpg")
+              if not p.exists() or p.stat().st_size < 1000:
+                  raise SystemExit(f"Foto mancante o vuota: {p}")
+              pat=rf'<img\b[^>]*src="\.\/images\/natura-{n:02d}\.jpg"[^>]*alt="LNTDV-{n:03d}"'
+              if not re.search(pat,s,re.I):
+                  pat=rf'<img\b[^>]*alt="LNTDV-{n:03d}"[^>]*src="\.\/images\/natura-{n:02d}\.jpg"'
+                  if not re.search(pat,s,re.I):
+                      raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
+          if "data:image/" in s:
+              raise SystemExit("Sono rimaste immagini Base64 inline nel catalogo.")
+          if re.search(r'transform\s*:\s*rotate\(',s,re.I):
+              raise SystemExit("Trovata rotazione CSS automatica.")
+          if "order-system.js" not in s or "order-system.css" not in s:
+              raise SystemExit("Motore ordine esterno non collegato.")
+          print("Pages build: catalogo validato con 25 JPG, senza Base64 e senza rotazioni CSS.")
           PY
 
       - name: Setup Pages
@@ -58,7 +94,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: \${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
