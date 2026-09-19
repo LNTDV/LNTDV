@@ -46,12 +46,9 @@
   function totals(list){
     const count=list.reduce((n,x)=>n+x.quantity,0);
     const normal=list.reduce((n,x)=>n+x.price*x.quantity,0);
-    let promo=null;
-    if(count===1) promo=50;
-    else if(count===2) promo=80;
-    else if(count===3) promo=120;
-    const subtotal=promo==null?normal:promo;
-    const shipping=count>2?SHIPPING:0;
+    const promo=null;
+    const subtotal=normal;
+    const shipping=count>0?SHIPPING:0;
     return {count,normal,subtotal,promo,shipping,total:subtotal+shipping};
   }
 
