@@ -25,3 +25,179 @@
  .grid .card .print-choice{width:100%!important;padding:0!important;background:transparent!important;border:0!important}
  .grid .card .format-select{width:100%!important;min-height:58px!important;height:58px!important;font-size:16px!important;border:2px solid #6b4734!important;border-radius:14px!important}
 }
+
+/* LNTDV — MOBILE / DESKTOP FINAL PROPORTIONS — 2026-09-19
+   Foto leggermente più contenuta; intestazione più presente; selettore
+   della stessa identica larghezza della foto, senza pannello beige esterno.
+*/
+.grid .card{
+  box-sizing:border-box!important;
+}
+
+.grid .card .lntdv-photo-stage{
+  box-sizing:border-box!important;
+}
+
+.grid .card .meta{
+  box-sizing:border-box!important;
+}
+
+.grid .card .print-choice{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:8px 0 0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .print-choice label{
+  display:block!important;
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0 38px 0 13px!important;
+  border:1px solid #b99a7d!important;
+  border-radius:10px!important;
+  background:#fffaf3!important;
+  color:#4b3022!important;
+  font:15px/48px Arial,sans-serif!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+}
+
+@media(max-width:700px){
+  header{
+    padding:34px 16px 30px!important;
+  }
+  header .brand{
+    font-size:13px!important;
+    letter-spacing:3px!important;
+  }
+  header h1{
+    font-size:clamp(40px,7.8vw,54px)!important;
+    line-height:1.05!important;
+    margin:16px 0 13px!important;
+  }
+  header .intro{
+    font-size:13px!important;
+    line-height:1.45!important;
+  }
+  header .legend{
+    margin-top:15px!important;
+    gap:7px!important;
+  }
+  header .legend span{
+    padding:6px 9px!important;
+    font-size:9px!important;
+  }
+
+  main{
+    padding-left:0!important;
+    padding-right:0!important;
+    padding-top:22px!important;
+  }
+
+  #selectionSummary{
+    margin:0 0 16px!important;
+    padding:0 4%!important;
+  }
+
+  #selectionSummary > span{
+    max-width:100%!important;
+    padding:9px 14px!important;
+    font-size:10px!important;
+  }
+
+  .grid{
+    width:92%!important;
+    max-width:92%!important;
+    margin:0 auto!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:22px!important;
+  }
+
+  .grid .card{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    border:1px solid #6b4734!important;
+    border-radius:12px!important;
+    background:transparent!important;
+  }
+
+  .grid .card .lntdv-photo-stage > img,
+  .grid .card .lntdv-photo-stage img{
+    width:100%!important;
+    height:auto!important;
+    max-width:100%!important;
+    max-height:none!important;
+    object-fit:contain!important;
+    border-radius:11px!important;
+  }
+
+  .grid .card .meta{
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  .grid .card .print-choice{
+    width:100%!important;
+    margin:7px 0 0!important;
+    padding:0!important;
+  }
+
+  .grid .card .format-select{
+    width:100%!important;
+    height:48px!important;
+    min-height:48px!important;
+    max-height:48px!important;
+    border:1px solid #b99a7d!important;
+    border-radius:10px!important;
+    font-size:15px!important;
+    line-height:48px!important;
+  }
+
+  .grid .card .meta>strong,
+  .grid .card .meta>span,
+  .grid .card .meta>small{
+    margin-top:6px!important;
+  }
+}
+
+@media(min-width:701px){
+  .grid .card .format-select{
+    height:48px!important;
+    min-height:48px!important;
+    max-height:48px!important;
+  }
+}
+
