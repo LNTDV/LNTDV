@@ -7,7 +7,7 @@
   const QTY_KEY="lntdv_order_quantities_v1";
   let BANK_IBAN="";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
-  const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec";
+  const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwYI8raiMQ830nMMtRm3FQueXv2a9vbrdH3SJkg7csqGEdnd1vIKS1Y1-jwjJvCPBA/exec";
   const $=id=>document.getElementById(id);
   const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -139,7 +139,7 @@
   const CART_KEY='lntdv_cart_v4';
   const LAST_ORDER_KEY='lntdv_last_order_v4';
   const TRACKING_KEY='lntdv_tracking_orders_v2';
-  const ENDPOINT='https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec';
+  const ENDPOINT='https://script.google.com/macros/s/AKfycbwYI8raiMQ830nMMtRm3FQueXv2a9vbrdH3SJkg7csqGEdnd1vIKS1Y1-jwjJvCPBA/exec';
   const PRICES={'Stampa fotografica':40,'Forex':50,'File digitale in alta risoluzione':25};
   const COUNT_FIX_VERSION='20260919f';
   const SHIPPING=10;
