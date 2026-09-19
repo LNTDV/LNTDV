@@ -9,12 +9,12 @@
     '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
 
   function setupImage(img,index){
-    img.loading = index < 2 ? "eager" : "lazy";
+    img.loading = "eager";
     img.decoding = "async";
     img.style.setProperty("transform","none","important");
     img.style.setProperty("rotate","none","important");
     img.style.setProperty("image-orientation","from-image","important");
-    if(index === 0) img.fetchPriority = "high";
+    img.fetchPriority = index === 0 ? "high" : "auto";
     if(!img.getAttribute("width") || !img.getAttribute("height")){
       const vertical=img.dataset.orientation==="vertical";
       img.setAttribute("width",vertical?"800":"1200");
@@ -57,18 +57,11 @@
   }
 
   function preloadNearViewport(){
-    if(!("IntersectionObserver" in window)) return;
-    const images=Array.from(document.querySelectorAll('.card img[loading="eager"]'));
-    const io=new IntersectionObserver(function(entries,observer){
-      entries.forEach(function(entry){
-        if(!entry.isIntersecting) return;
-        const img=entry.target;
-        img.loading="eager";
-        if(img.dataset.src && !img.getAttribute("src")) img.src=img.dataset.src;
-        observer.unobserve(img);
-      });
-    },{rootMargin:"1000px 0px",threshold:0.01});
-    images.forEach(function(img){io.observe(img);});
+    // Su iOS Safari/Chrome tutte le foto devono avere src reale ed essere eager.
+    document.querySelectorAll(".card img").forEach(function(img){
+      img.loading="eager";
+      if(img.dataset.src && !img.getAttribute("src")) img.src=img.dataset.src;
+    });
   }
 
   function updateSelectionSummary(){
