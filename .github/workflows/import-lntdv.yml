@@ -148,6 +148,28 @@ jobs:
           print("Identità SEO LNTDV consolidata.")
           PY
 
+      - name: Enforce exact LNTDV identity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path("index.html").read_text(encoding="utf-8")
+          css=Path("assets/css/site-generated.css").read_text(encoding="utf-8") if Path("assets/css/site-generated.css").exists() else ""
+          text=html+"\\n"+css
+          if re.search(r"\\bLNDV\\b", text, re.I):
+              raise SystemExit("ERRORE: trovata la sigla errata LNDV nella build finale.")
+          required=[
+              "LNTDV – La Nostra Terra Da Vicino",
+              "LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni",
+              'alternateName":"LNTDV"',
+              'https://lntdv.it/'
+          ]
+          for item in required:
+              if item not in html:
+                  raise SystemExit(f"ERRORE: segnale identità mancante: {item}")
+          print("IDENTITÀ ESATTA LNTDV: OK — nessun LNDV nella build finale.")
+          PY
+
       - name: Validate HTML, photos, CSS, scripts and order hooks
         run: |
           python - <<'PY'
