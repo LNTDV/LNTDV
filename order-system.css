@@ -380,3 +380,18 @@ img[id^="photo-"]{
   }
   .grid .card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
 }
+
+
+/* LNTDV — FORMAT SELECTION UX CSS v2026-09-19 */
+/* Il formato scelto è il punto di selezione della fotografia. Feedback breve e morbido, non lampeggiante. */
+.card.selected,.photo-card.selected{animation:none!important;}
+.card.lntdv-format-selected,.photo-card.lntdv-format-selected{
+  animation:lntdvSoftFormat .9s cubic-bezier(.22,.8,.28,1) both!important;
+}
+@keyframes lntdvSoftFormat{
+  0%{box-shadow:0 0 0 0 rgba(84,116,90,0);}
+  45%{box-shadow:0 0 0 6px rgba(84,116,90,.16);}
+  100%{box-shadow:0 0 0 2px rgba(84,116,90,.30),0 18px 45px rgba(47,33,26,.12);}
+}
+/* Nessun filtro sulla fotografia: il file sorgente resta fedele all'originale. */
+.grid .card img,.card img,.photo-card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
