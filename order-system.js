@@ -330,7 +330,7 @@
       baseTotal:t.subtotal,
       shippingFee:t.shipping,
       total:t.total,
-      promotion:t.promo!==null?'Promozione dedicata: 1 foto €50, 2 foto €80, 3 foto €120':'',
+      promotion:'',
       deliveryType:deliveryValue(),
       requestedTracking:true,
       notificationEmail:'info.lanostraterradavicino@gmail.com',
