@@ -130,7 +130,7 @@ s += """
 """
 
 # Load exactly one external order engine after the generated catalog.
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919e">
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919f">
 <script id="lntdv-external-order-system" src="./order-system.js?v=20260919d"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
@@ -296,3 +296,5 @@ img[alt^="LNTDV-"]{
 
 p.write_text(s,encoding="utf-8")
 print("Final rendering overrides written:",len(s),"bytes")
+
+# PRINT ORIENTATION HARD FIX 2026-09-19\n# The external CSS now forces natural image dimensions and print-safe orientation.\n
