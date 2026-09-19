@@ -1,4 +1,7 @@
 from pathlib import Path
+import re
+
+# LNTDV MODULAR PERFORMANCE MODULES 2026-09-19
 
 p=Path("index.html")
 s=p.read_text(encoding="utf-8")
@@ -334,6 +337,26 @@ orientation_css = r'''
 </style>
 '''
 s += "\n" + orientation_css
+# Performance: make image decoding non-blocking at build time. First four images stay eager.
+img_count=0
+def _img_attrs(m):
+    global img_count
+    tag=m.group(0)
+    if re.search(r'\\bloading=',tag,re.I):
+        return tag
+    i=img_count; img_count+=1
+    tag=tag[:-1] + (' loading="eager" fetchpriority="high" decoding="async">' if i==0 else ' loading="eager" decoding="async">' if i<4 else ' loading="lazy" fetchpriority="low" decoding="async">')
+    return tag
+s=re.sub(r'<img\\b[^>]*>',_img_attrs,s,flags=re.I)
+
+# External modules: CSS and JS are intentionally separate from the catalog markup.
+module_css='''<link rel="stylesheet" href="./assets/css/performance.css?v=20260919"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260919">'''
+module_js='''<script defer src="./assets/js/performance.js?v=20260919"></script><script defer src="./assets/js/catalog-performance.js?v=20260919"></script>'''
+if 'assets/css/performance.css' not in s:
+    s=s.replace('</head>',module_css+'</head>',1)
+if 'assets/js/performance.js' not in s:
+    s=s.replace('</body>',module_js+'</body>',1)
+
 p.write_text(s,encoding="utf-8")
 print("Final rendering overrides written:",len(s),"bytes")
 
