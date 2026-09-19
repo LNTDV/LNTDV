@@ -9,7 +9,7 @@
     '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
 
   function setupImage(img,index){
-    img.loading = index < 3 ? "eager" : "lazy";
+    img.loading = "eager";
     img.decoding = "async";
     if(index === 0) img.fetchPriority = "high";
     if(!img.getAttribute("width") || !img.getAttribute("height")){
@@ -55,7 +55,7 @@
 
   function preloadNearViewport(){
     if(!("IntersectionObserver" in window)) return;
-    const images=Array.from(document.querySelectorAll(".card img[loading='lazy']"));
+    const images=Array.from(document.querySelectorAll(".card img[loading="eager"]"));
     const io=new IntersectionObserver(function(entries,observer){
       entries.forEach(function(entry){
         if(!entry.isIntersecting) return;
