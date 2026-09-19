@@ -47,9 +47,7 @@
         <option value="Copisteria — Viale Romagna 43, 20133 Milano">Copisteria — Viale Romagna 43, 20133 Milano</option>
         <option value="Biblioteca di Arese — data da concordare">Biblioteca di Arese — data da concordare</option>
       </select>
-      <div style="font-size:12px;line-height:1.45;margin-top:7px;opacity:.78">Ritiro gratuito. Quando l'ordine sarà pronto riceverai una email con la conferma e le indicazioni per il ritiro.</div>
-      <div id="lntdvBankBox" style="margin-top:12px;padding:12px;border:1px solid #d8c5ae;border-radius:10px;background:#fff"><div style="font-weight:700;margin-bottom:7px">Pagamento tramite bonifico</div><div style="font-size:13px;line-height:1.55">IBAN: <strong id="lntdvBankIban">Caricamento…</strong><br>Causale: <strong id="lntdvBankCausale">verrà indicata dopo l’invio dell’ordine</strong></div><div style="font-size:12px;opacity:.78;margin-top:7px">Prima registriamo l’ordine. Subito dopo riceverai la ricevuta dell’ordine e i dati per il bonifico.</div></div>
-    </div>`;
+      <div style="font-size:12px;line-height:1.45;margin-top:7px;opacity:.78">Ritiro gratuito. Quando l'ordine sarà pronto riceverai una email con la conferma e le indicazioni per il ritiro.</div></div>`;
     button.parentNode.insertBefore(wrap,button);
   }
   function save(){write(KEY,items().map(x=>({code:x.code,format:x.format,orientation:x.orientation,quantity:x.quantity})))}
