@@ -485,8 +485,73 @@ section{
 .site-security strong{font-weight:700}
 footer>small{display:block;margin-top:5px;font-size:10px;color:#7a6254}
 </style>
-</head>
-<body><header><div class="brand">EDVINAS DRAGONI</div><h1>La Nostra Terra Da Vicino</h1><div class="intro">Un viaggio tra Natura, Tempo e Città</div><div class="legend"><span>Natura · 13</span><span>Tempo · 5</span><span>Natura vs Città · 7</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
+<style id="lntdv-responsive-preloader-20260919">
+/* LNTDV — caricamento iniziale + compatibilità responsive */
+html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{min-width:0;overflow-x:hidden}
+#lntdv-preloader{
+  position:fixed;inset:0;z-index:2147483647;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;background:#4b2f22;color:#f4eadf;
+  opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease;
+}
+#lntdv-preloader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.lntdv-loader-inner{text-align:center;width:min(360px,88vw)}
+.lntdv-loader-mark{font:800 12px Arial,sans-serif;letter-spacing:4px;text-transform:uppercase}
+.lntdv-loader-title{margin:12px 0 18px;font:400 clamp(26px,7vw,42px) Georgia,serif}
+.lntdv-loader-track{height:2px;width:100%;background:rgba(244,234,223,.22);overflow:hidden;border-radius:99px}
+.lntdv-loader-bar{height:100%;width:35%;background:#d8c3ad;border-radius:99px;animation:lntdvLoad 1.15s ease-in-out infinite}
+.lntdv-loader-status{margin-top:12px;font:10px Arial,sans-serif;letter-spacing:1.2px;color:#d8c3ad}
+@keyframes lntdvLoad{0%{transform:translateX(-120%)}50%{transform:translateX(170%)}100%{transform:translateX(320%)}}
+@media(prefers-reduced-motion:reduce){.lntdv-loader-bar{animation:none;width:100%}}
+@media(max-width:900px){
+  header{padding:42px 16px 32px}
+  main{width:100%;padding:24px 14px 90px}
+  .grid{gap:16px}
+  .card{min-width:0}
+}
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr!important}
+  .card{border-radius:14px}
+  .photo-wrap{border-radius:11px}
+  .meta{padding:12px 12px 14px}
+  .order-bar{left:12px!important;right:12px!important;width:auto!important;min-width:0!important;max-width:none!important}
+  .order-button{min-height:44px}
+  .info-menu-button{top:max(12px,env(safe-area-inset-top));right:12px;width:44px;height:44px}
+  .info-drawer{width:min(470px,100vw)}
+  .info-drawer-inner{padding:76px 20px 34px}
+  .info-drawer h2{font-size:34px}
+  .checkout-fields input,.checkout-fields textarea,.format-select,.payment-choice label{font-size:16px!important}
+  .format-select{min-height:48px!important;height:auto!important}
+}
+@media(max-width:420px){
+  header{padding:36px 13px 28px}
+  h1{font-size:clamp(32px,11vw,46px)}
+  .intro{font-size:14px}
+  main{padding-left:10px;padding-right:10px}
+  .grid{gap:12px}
+  .legend{gap:6px}
+  .legend span{padding:6px 8px;font-size:9px}
+  .order-bar{bottom:max(10px,env(safe-area-inset-bottom));padding:8px!important}
+  .order-bar-info{min-width:0}
+  .order-bar-total{font-size:14px!important}
+  .order-button{padding:10px!important}
+}
+@media(min-width:701px) and (max-width:1100px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@supports not (height:100dvh){
+  #lntdv-preloader{min-height:100vh}
+}
+</style></head>
+<body><div id="lntdv-preloader" role="status" aria-live="polite" aria-label="Caricamento del sito">
+  <div class="lntdv-loader-inner">
+    <div class="lntdv-loader-mark">LNTDV</div>
+    <div class="lntdv-loader-title">La nostra terra da vicino</div>
+    <div class="lntdv-loader-track"><div class="lntdv-loader-bar"></div></div>
+    <div class="lntdv-loader-status">Caricamento della pagina…</div>
+  </div>
+</div><header><div class="brand">EDVINAS DRAGONI</div><h1>La Nostra Terra Da Vicino</h1><div class="intro">Un viaggio tra Natura, Tempo e Città</div><div class="legend"><span>Natura · 13</span><span>Tempo · 5</span><span>Natura vs Città · 7</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
   <span style="display:inline-block;padding:10px 18px;border:1px solid #cdb8a5;border-radius:999px;background:#fbf6ef;color:#5a3b2b;font:600 11px Arial,sans-serif;letter-spacing:.7px;text-transform:uppercase;box-shadow:0 4px 14px rgba(61,40,29,.06)">Seleziona la foto e il formato desiderato</span>
 </div><section class="grid"><article class="card" data-orientation="horizontal">
 <span class="selection-check" aria-hidden="true">✓</span>
@@ -1561,7 +1626,23 @@ footer>small{display:block;margin-top:5px;font-size:10px;color:#7a6254}
 </script>
 
 <link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919g">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919e"></script></body></html>
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919e"></script><script id="lntdv-preloader-script">
+(function(){
+  var loader=document.getElementById("lntdv-preloader");
+  if(!loader)return;
+  var start=Date.now(), hidden=false;
+  function hide(){
+    if(hidden)return;
+    hidden=true;
+    var elapsed=Date.now()-start;
+    var wait=Math.max(0,350-elapsed);
+    setTimeout(function(){loader.classList.add("is-hidden");setTimeout(function(){loader.remove()},450)},wait);
+  }
+  if(document.readyState==="complete") hide();
+  else window.addEventListener("load",hide,{once:true});
+  setTimeout(hide,10000);
+})();
+</script></body></html>
 <style id="lntdv-photo-final-clean">
 .catalog img,.card img,.pic img,img[id^="photo-"]{
   filter:none!important;-webkit-filter:none!important;opacity:1!important;
