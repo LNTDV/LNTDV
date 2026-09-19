@@ -395,3 +395,13 @@ img[id^="photo-"]{
 }
 /* Nessun filtro sulla fotografia: il file sorgente resta fedele all'originale. */
 .grid .card img,.card img,.photo-card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
+
+
+/* LNTDV FINAL PHOTO/FORMAT STABILITY FIX — 2026-09-19 07:54 */
+.card.photo-vertical>img,.card.photo-horizontal>img{transform:none!important;object-position:center;}
+.card.photo-vertical>img{object-fit:contain!important;background:#f4eadf;}
+.card.photo-horizontal>img{object-fit:cover!important;}
+.print-choice{display:block!important;visibility:visible!important;position:relative;z-index:4;margin-top:8px;padding:12px!important;}
+.print-choice label{display:block!important;visibility:visible!important;}
+.format-select{display:block!important;visibility:visible!important;width:100%!important;min-height:44px!important;font-size:14px!important;line-height:1.2!important;appearance:auto;-webkit-appearance:auto;}
+@media(max-width:700px){.grid{grid-template-columns:1fr;gap:18px}.card img{aspect-ratio:auto;max-height:72vh;object-fit:contain!important}.print-choice{margin-top:10px}.format-select{min-height:46px!important;padding:11px 12px!important;font-size:14px!important}.meta{padding:12px 13px 15px}}

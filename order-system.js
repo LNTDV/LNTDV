@@ -714,3 +714,38 @@
   window.addEventListener('load',apply,{once:true});
   new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});
 })();
+
+/* LNTDV FINAL PHOTO/FORMAT STABILITY FIX — 2026-09-19 07:54 */
+(function(){
+  'use strict';
+  // Do not rotate portrait cards with CSS: orientation is metadata, not a 90° transform.
+  const vertical = new Set(['LNTDV-003','LNTDV-006','LNTDV-007','LNTDV-008','LNTDV-009','LNTDV-011','LNTDV-013','LNTDV-014','LNTDV-015','LNTDV-016','LNTDV-018']);
+  function fixCard(card){
+    const code=(card.querySelector('.meta strong')?.textContent||'').trim();
+    const img=card.querySelector('img');
+    if(!img)return;
+    img.style.transform='none';
+    img.style.objectFit=vertical.has(code)?'contain':'cover';
+    img.style.background='#f4eadf';
+    card.classList.toggle('photo-vertical',vertical.has(code));
+    card.classList.toggle('photo-horizontal',!vertical.has(code));
+  }
+  function fix(){document.querySelectorAll('.card').forEach(fixCard)}
+  function formatLayout(){
+    document.querySelectorAll('.format-select').forEach(s=>{
+      s.style.display='block';s.style.visibility='visible';s.style.width='100%';s.style.minHeight='44px';
+      s.style.fontSize='14px';s.style.lineHeight='1.2';
+      const card=s.closest('.card'); if(card){const box=card.querySelector('.print-choice');if(box){box.style.display='block';box.style.visibility='visible'}}
+    });
+  }
+  function noAccidentalReload(){
+    // Prevent stale reload handlers from reacting to image/format changes.
+    document.querySelectorAll('img').forEach(img=>{
+      img.addEventListener('error',()=>{img.dataset.lntdvImageError='1'}, {once:true});
+    });
+  }
+  const run=()=>{fix();formatLayout();noAccidentalReload()};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+  window.addEventListener('load',run,{once:true});
+  new MutationObserver(run).observe(document.body,{childList:true,subtree:true});
+})();
