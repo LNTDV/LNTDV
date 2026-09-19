@@ -81,7 +81,7 @@ s=s.replace('''      total:total,
 if 'id="lntdv-tracking-script"' not in s:
     js='''<script id="lntdv-tracking-script">
 (function(){
-  const endpoint="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
+  const endpoint="https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec";
   const oi=document.getElementById("trackingOrderId"),ti=document.getElementById("trackingToken"),b=document.getElementById("trackingButton"),m=document.getElementById("trackingMessage"),r=document.getElementById("trackingResult"),rid=document.getElementById("trackingResultId"),rl=document.getElementById("trackingResultLabel"),tot=document.getElementById("trackingTotal"),states=["RICEVUTO","IN_LAVORAZIONE","PRONTO_AL_RITIRO","CONSEGNATO"];
   function verify(){
     const order=(oi?.value||"").trim(),token=(ti?.value||"").trim();
