@@ -1,0 +1,90 @@
+name: LNTDV final publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lntdv-final-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and validate 25 photos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,re
+          out=Path('images'); out.mkdir(exist_ok=True)
+          for n in range(1,26):
+              src=Path(f'assets/photo{n:02d}.js'); dst=out/f'natura-{n:02d}.jpg'
+              text=src.read_text(encoding='utf-8') if src.exists() else ''
+              m=re.search(r'data:image/jpeg;base64,([A-Za-z0-9+/=]+)',text)
+              if m:
+                  data=base64.b64decode(m.group(1),validate=True)
+                  assert len(data)>1000 and data.startswith(b'\xff\xd8\xff'), src
+                  dst.write_bytes(data)
+              assert dst.exists() and dst.stat().st_size>1000
+          print('25 JPG OK')
+          PY
+      - name: Assemble final catalog
+        run: |
+          rm -f index.html
+          for n in $(seq -w 1 14); do cat "catalog/part-$n.html" >> index.html; done
+          python scripts/patch_lntdv.py
+          python scripts/fix_photo_loading.py
+      - name: Finalize no-rotation SEO build
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=re.sub(r'transform\s*:\s*rotate\s*\([^;}]*(?:;|})','transform:none!important;',s,flags=re.I)
+          s=re.sub(r'\bLNDV\b','LNTDV',s,flags=re.I)
+          s=re.sub(r'<title>[\s\S]*?</title>','<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',s,count=1,flags=re.I)
+          for pat in [r'<meta name="description"[^>]*>',r'<meta name="application-name"[^>]*>',r'<meta property="og:[^>]*>',r'<link rel="canonical"[^>]*>',r'<script type="application/ld\+json">[\s\S]*?</script>']:
+              s=re.sub(pat,'',s,flags=re.I)
+          meta='''<meta name="description" content="LNTDV – La Nostra Terra Da Vicino: progetto fotografico di Edvinas Dragoni, un viaggio tra Natura, Tempo e Città.">\n<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">\n<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">\n<meta property="og:title" content="LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni">\n<meta property="og:description" content="Progetto fotografico LNTDV – La Nostra Terra Da Vicino.">\n<meta property="og:url" content="https://lntdv.it/">\n<link rel="canonical" href="https://lntdv.it/">\n<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"LNTDV – La Nostra Terra Da Vicino","alternateName":"LNTDV","url":"https://lntdv.it/","description":"Progetto fotografico di Edvinas Dragoni: un viaggio tra Natura, Tempo e Città."}</script>'''
+          s=s.replace('</head>',meta+'\n</head>',1)
+          styles=re.findall(r'<style\b[^>]*>([\s\S]*?)</style>',s,re.I)
+          css='\n\n'.join(styles)+'\n' if styles else ''
+          css=re.sub(r'transform\s*:\s*rotate\s*\([^;}]*(?:;|})','transform:none!important;',css,flags=re.I)
+          css=re.sub(r'\bLNDV\b','LNTDV',css,flags=re.I)
+          Path('assets/css/site-generated.css').write_text(css,encoding='utf-8')
+          s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>','',s,flags=re.I)
+          link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260919">'
+          if link not in s: s=s.replace('</head>',link+'\n</head>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate final build and order code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8'); css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
+          assert set(re.findall(r'LNTDV-(\d{3})',s))=={f'{n:03d}' for n in range(1,26)}
+          assert 'data:image/' not in s and 'data:image/' not in css
+          assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I)
+          assert not re.search(r'transform\s*:\s*rotate\s*\(',css,re.I)
+          assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
+          assert 'order-system.js' in s and 'order-system.css' in s
+          assert 'function doPost' in Path('Code.gs').read_text(encoding='utf-8')
+          print('FINAL BUILD VALID')
+          PY
+          node --check order-system.js
+      - name: Publish generated files
+        run: |
+          git config user.name "LNTDV Website Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html assets/css/site-generated.css images/natura-*.jpg
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Pubblica build finale senza rotazioni LNTDV"
+          git pull --rebase origin main
+          git push origin HEAD:main
