@@ -62,25 +62,25 @@ if 'id="trackingSection"' not in s:
 '''
     s=s.replace("<footer>",tracking+"<footer>",1)
 
-# CSS consegna/tracking: modulo esterno
+# Modular checkout/tracking assets: no inline phase CSS/JS.
 if 'assets/css/tracking.css' not in s:
-    s=s.replace("<link rel="stylesheet" href="./assets/css/checkout.css?v=20260919">\n",'<link rel="stylesheet" href="./assets/css/tracking.css?v=20260919">\n</head>',1)
+    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/tracking.css?v=20260919">\n</head>',1)
+if 'assets/css/checkout.css' not in s:
+    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/checkout.css?v=20260919">\n</head>',1)
 
-# Il vecchio submit-fix inline viene volutamente disattivato:
-# il carrello unico è gestito da order-system.js, caricato in fondo alla pagina.
-if 'id="lntdv-order-tracking"' not in s:
-    s=s.replace("</head>",css+"</head>",1)
+# Il carrello unico resta nell'engine esterno order-system.js.
+# Il tracking resta nel modulo esterno tracking.js.
+if 'assets/js/tracking.js' not in s:
+    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260919" defer></script>\n</body>',1)
+if 'assets/js/checkout.js' not in s:
+    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260919" defer></script>\n</body>',1)
 
-# Delivery value into payload
+# Delivery value into payload when the legacy payload exists.
 s=s.replace('''      total:total,
       deliveryType:"Ritiro gratuito presso Milano"
     };''','''      total:total,
       deliveryType:(document.querySelector('input[name="deliveryType"]:checked')||{}).value || "Ritiro"
     };''',1)
-
-# Tracking client: modulo JS esterno
-if 'assets/js/tracking.js' not in s:
-    s=s.replace("<script src="./assets/js/checkout.js?v=20260919" defer></script>\n",'<script src="./assets/js/tracking.js?v=20260919" defer></script>\n</body>',1)
 
 # Ultimo override: append the final rendering rules after all earlier catalog CSS.
 # Remove all filters/veils from catalog photographs and preserve their native orientation.
