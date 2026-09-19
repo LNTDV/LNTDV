@@ -1,0 +1,14 @@
+/* LNTDV — fixed format selector geometry
+   Keeps every “Modalità di stampa” block the same height on desktop/mobile.
+   The native <select> remains functional; only its closed control geometry is fixed.
+*/
+.grid .card .meta{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;overflow:visible!important}
+.grid .card .print-choice{box-sizing:border-box!important;width:100%!important;height:96px!important;min-height:96px!important;max-height:96px!important;margin:0 0 10px!important;padding:10px 11px!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:stretch!important;overflow:visible!important;flex:0 0 96px!important}
+.grid .card .print-choice label{box-sizing:border-box!important;display:block!important;flex:0 0 16px!important;height:16px!important;min-height:16px!important;max-height:16px!important;margin:0 0 7px!important;line-height:16px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.grid .card .format-select{box-sizing:border-box!important;display:block!important;flex:0 0 48px!important;width:100%!important;min-width:0!important;max-width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important;padding:0 36px 0 12px!important;line-height:48px!important;font:15px/48px Arial,sans-serif!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;appearance:none!important;-webkit-appearance:none!important;border:1px solid #b99a7d!important;border-radius:10px!important;background-color:#fffaf3!important;background-image:linear-gradient(45deg,transparent 50%,#5a3b2b 50%),linear-gradient(135deg,#5a3b2b 50%,transparent 50%)!important;background-position:calc(100% - 17px) 20px,calc(100% - 11px) 20px!important;background-size:6px 6px,6px 6px!important;background-repeat:no-repeat!important;color:#4b3022!important;opacity:1!important;transform:none!important}
+.grid .card .format-select:focus{outline:2px solid rgba(90,59,43,.22)!important;outline-offset:1px!important}
+.grid .card .format-select option{font:15px Arial,sans-serif!important;line-height:1.2!important;white-space:normal!important;background:#fffaf3!important;color:#3d281d!important}
+@media(max-width:700px){
+  .grid .card .print-choice{height:96px!important;min-height:96px!important;max-height:96px!important;flex-basis:96px!important}
+  .grid .card .format-select{height:48px!important;min-height:48px!important;max-height:48px!important;font-size:16px!important;line-height:48px!important}
+}
