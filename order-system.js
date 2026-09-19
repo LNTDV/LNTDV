@@ -233,6 +233,30 @@
     if(e.target.matches?.('#customerName,#customerEmail,#customerStreet,#customerZip,#customerCity,#customerNote')) render();
   },false);
 
+  // iPhone/Safari HARD FALLBACK: handle checkout controls in capture phase so
+  // another catalog listener cannot cancel the tap before the order system sees it.
+  document.addEventListener('click',function(e){
+    const open=e.target.closest?.('#openOrder');
+    const close=e.target.closest?.('#closeOrder');
+    if(open){ e.preventDefault(); e.stopImmediatePropagation(); openPanel(); return; }
+    if(close){ e.preventDefault(); e.stopImmediatePropagation(); closePanel(); return; }
+  },true);
+
+  document.addEventListener('change',function(e){
+    const select=e.target.closest?.('.format-select');
+    if(!select) return;
+    const card=select.closest('.card');
+    if(!card) return;
+    if(select.value){
+      card.classList.add('selected');
+      card.setAttribute('aria-pressed','true');
+    }else{
+      card.classList.remove('selected');
+      card.setAttribute('aria-pressed','false');
+    }
+    render();
+  },true);
+
   // Native click works with mouse, keyboard and touch on iPhone/Android.
   $('openOrder')?.addEventListener('click',e=>{
     e.preventDefault();
