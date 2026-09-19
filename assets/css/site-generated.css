@@ -671,3 +671,89 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 </style>
+
+
+<style id="lntdv-video-fix-20260919">
+/* Correzione definitiva: riquadri uniformi, foto interamente visibili, orientamento EXIF rispettato. */
+.grid{
+  align-items:start!important;
+}
+.grid .card{
+  height:auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  aspect-ratio:4 / 3!important;
+  height:auto!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  background:#4b2f22!important;
+  position:relative!important;
+}
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{
+  content:none!important;
+  display:none!important;
+}
+.grid .card .lntdv-photo-stage > img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  image-orientation:from-image!important;
+  transform:none!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+.grid .card:hover .lntdv-photo-stage > img,
+.grid .card:focus .lntdv-photo-stage > img{
+  transform:none!important;
+}
+.grid .card .meta{
+  width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+}
+.grid .card .print-choice{
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+.grid .card .format-select{
+  width:100%!important;
+  min-width:0!important;
+  height:48px!important;
+  min-height:48px!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    aspect-ratio:4 / 3!important;
+  }
+  .grid .card .lntdv-photo-stage > img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+  }
+}
+</style>
