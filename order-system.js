@@ -293,8 +293,8 @@
     const trackingToken=token();
     const payload={
       orderId:id,
-      paymentMethod:'Carta',
-      paymentStatus:'DA_CONFERMARE',
+      paymentMethod:'Bonifico bancario',
+      paymentStatus:'IN_ATTESA_DI_PAGAMENTO',
       orderStatus:'ORDINE RICEVUTO',
       customer:{
         name,
