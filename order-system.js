@@ -155,7 +155,7 @@
   function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
   function cards(){return [...document.querySelectorAll('.card')]}
   function selected(){return cards().filter(c=>c.classList.contains('selected'))}
-  function delivery(){return document.querySelector('input[name="checkoutDelivery"]:checked')?.value||document.querySelector('input[name="deliveryType"]:checked')?.value||'Ritiro'}
+  function delivery(){return $('lntdvDelivery')?.value||document.querySelector('input[name="checkoutDelivery"]:checked')?.value||document.querySelector('input[name="deliveryType"]:checked')?.value||'Biblioteca di Arese — data da concordare'}
   function items(){return selected().map(card=>{
     const code=card.querySelector('.meta strong')?.textContent.trim()||'Fotografia';
     const format=card.querySelector('.format-select')?.value||'';
