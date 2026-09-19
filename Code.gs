@@ -21,6 +21,7 @@ function doPost(e) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
     ensureHeader_(sheet);
+    try { ensureCopyshopReplyTrigger_(); } catch (_) {}
     const cfg = getSettings_();
     const customer = payload.customer || {};
     const items = Array.isArray(payload.items) ? payload.items : [];
