@@ -671,3 +671,19 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 </style>
+
+<style id="lntdv-brown-palette-final">
+/* Palette marrone LNTDV */
+:root{--brown:#4b2f22!important;--brown2:#6b4734!important;--cream:#f4eadf!important;--paper:#fbf8f3!important;--line:#d8c6b4!important}
+body{background:#fbf8f3!important;color:#4b2f22!important}
+header{background:#4b2f22!important;color:#f4eadf!important}
+.card{border-color:#d8c6b4!important}
+.card.selected{border-color:#6b4734!important;box-shadow:0 0 0 3px rgba(107,71,52,.22),0 10px 30px rgba(75,47,34,.10)!important}
+.selection-check{background:#6b4734!important}
+.meta span{background:#4b2f22!important;color:#fff!important}
+.print-choice{background:#fcfaf7!important;border-color:#d8c6b4!important}
+.format-select{border-color:#b99a7d!important;color:#4b3022!important;background:#fffaf3!important}
+.format-select:focus{border-color:#5a3b2b!important;box-shadow:0 0 0 3px rgba(90,59,43,.14)!important}
+footer{background:#f4eadf!important;color:#6b4734!important;border-top-color:#d8c6b4!important}
+.collection-notice{background:#efe6db!important;color:#5b4032!important;border-color:rgba(91,64,50,.22)!important}
+</style>
