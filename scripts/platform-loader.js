@@ -7,8 +7,10 @@
   var isAndroid=/Android/i.test(ua);
   var isMac=/Macintosh|Mac OS X/i.test(ua)&&!isIOS;
   var isWindows=/Windows/i.test(ua);
-  var src=isIOS ? "scripts/platform-ios.js" : isAndroid ? "scripts/platform-android.js" : isMac ? "scripts/platform-macos.js" : isWindows ? "scripts/platform-windows.js" : "";
-  if(!src) return;
+  var file=isIOS ? "platform-ios.js" : isAndroid ? "platform-android.js" : isMac ? "platform-macos.js" : isWindows ? "platform-windows.js" : "";
+  if(!file) return;
+  var current=document.currentScript;
+  var src=current ? new URL(file,current.src).href : file;
   var s=document.createElement("script");
   s.src=src;
   s.defer=true;
