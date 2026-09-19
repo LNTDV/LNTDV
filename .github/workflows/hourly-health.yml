@@ -1,6 +1,8 @@
 name: LNTDV hourly health check
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
@@ -74,9 +76,7 @@ jobs:
         run: |
           set +e
           curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbwYI8raiMQ830nMMtRm3FQueXv2a9vbrdH3SJkg7csqGEdnd1vIKS1Y1-jwjJvCPBA/exec?action=config' -o /tmp/apps.json
-          CFG_CURL=$?
           set -e
-
           python - <<'PY'
           import json
           from pathlib import Path
@@ -88,10 +88,9 @@ jobs:
           if isinstance(data, dict) and data.get('ok') is True:
               print("APPS SCRIPT CONFIG OK")
           else:
-              print("AVVISO: l'endpoint config non restituisce JSON valido.")
-              print("Risposta ricevuta (primi 500 caratteri):")
+              print("AVVISO: endpoint config raggiunto ma non restituisce JSON valido.")
               print(raw[:500])
-              print("Il sito pubblico e il catalogo restano verificati; il controllo config non blocca più la pubblicazione.")
+              print("Il controllo del sito non viene bloccato da questo warning.")
           PY
 
       - name: Publish automatic repair if needed
