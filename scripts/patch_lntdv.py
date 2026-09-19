@@ -294,6 +294,46 @@ img[alt^="LNTDV-"]{
 """
 
 
+# FINAL PHOTO ORIENTATION OVERRIDE 2026-09-19
+# Preserve the catalog sequence exactly as authored in catalog/part-01..14.
+# Only the requested orientation is applied to each photo.
+orientation_css = r'''
+<style id="lntdv-photo-orientation-final-20260919">
+.card:has(img[data-orientation="vertical"]) .photo-wrap{
+  aspect-ratio:3/4!important;
+}
+.card:has(img[data-orientation="horizontal"]) .photo-wrap{
+  aspect-ratio:4/3!important;
+}
+.card img[data-orientation="vertical"]{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:rotate(90deg)!important;
+  transform-origin:center center!important;
+  filter:none!important;
+  opacity:1!important;
+}
+.card img[data-orientation="horizontal"]{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+}
+.card:hover img[data-orientation="vertical"],
+.card:hover img[data-orientation="horizontal"]{
+  transform:rotate(90deg)!important;
+}
+.card:hover img[data-orientation="horizontal"]{
+  transform:none!important;
+}
+</style>
+'''
+s += "\n" + orientation_css
 p.write_text(s,encoding="utf-8")
 print("Final rendering overrides written:",len(s),"bytes")
 
