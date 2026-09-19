@@ -130,3 +130,156 @@
   observer.observe(document.body,{childList:true,subtree:true});
   fetch(SCRIPT_URL+"?action=config").then(r=>r.json()).then(x=>{if(x&&x.ok)BANK_IBAN=String(x.iban||"")}).catch(()=>{}).finally(()=>{rememberTrackingFromUrl();restore();refresh()});
 })();
+
+/* LNTDV MOBILE/WORKFLOW OVERRIDE v4
+   One capture handler owns the mobile cart and checkout.
+   It also verifies the order through the Apps Script JSONP endpoint
+   so the UI does not claim success before the row exists in Sheets.
+*/
+(function(){
+  'use strict';
+  const CART_KEY='lntdv_cart_v4';
+  const LAST_ORDER_KEY='lntdv_last_order_v4';
+  const TRACKING_KEY='lntdv_tracking_orders_v2';
+  const ENDPOINT='https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec';
+  const PRICES={'Stampa fotografica':40,'Forex':50,'File digitale in alta risoluzione':25};
+  const SHIPPING=10;
+  let busy=false;
+  const $=id=>document.getElementById(id);
+  const money=n=>'€'+Number(n||0).toFixed(2).replace('.',',');
+  const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function read(k,f){try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?f:v}catch(e){return f}}
+  function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function cards(){return [...document.querySelectorAll('.card')]}
+  function selected(){return cards().filter(c=>c.classList.contains('selected'))}
+  function delivery(){return document.querySelector('input[name="checkoutDelivery"]:checked')?.value||'Ritiro'}
+  function items(){return selected().map(card=>{
+    const code=card.querySelector('.meta strong')?.textContent.trim()||'Fotografia';
+    const format=card.querySelector('.format-select')?.value||'';
+    const image=card.querySelector('img')?.getAttribute('src')||'';
+    const orientation=card.querySelector('.meta small')?.textContent.replace(/^Orientamento:\s*/i,'').trim()||'';
+    return {card,code,format,image,orientation,price:Number(PRICES[format]||0),quantity:1};
+  })}
+  function totals(a){const subtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;return{subtotal,shipping,total:subtotal+shipping}}
+  function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format})))}
+  function restore(){
+    const saved=read(CART_KEY,[]);
+    if(!Array.isArray(saved))return;
+    cards().forEach(card=>{
+      const code=card.querySelector('.meta strong')?.textContent.trim();
+      const hit=saved.find(x=>x&&x.code===code);
+      if(!hit)return;
+      card.classList.add('selected');card.setAttribute('aria-pressed','true');
+      const s=card.querySelector('.format-select');if(s)s.value=hit.format||'';
+    });
+  }
+  function normalizePayment(){
+    const inputs=[...document.querySelectorAll('input[name="checkoutPayment"]')];
+    inputs.forEach(i=>{
+      const label=i.closest('label');
+      const supported=i.value==='Bonifico bancario';
+      if(label)label.style.display=supported?'':'none';
+      i.disabled=!supported;
+      if(supported)i.checked=true;
+    });
+  }
+  function render(){
+    normalizePayment();
+    const a=items(),p=totals(a),bar=$('orderBar');
+    if(bar){const show=a.length>0;bar.classList.toggle('show',show);bar.classList.toggle('active',show);bar.setAttribute('aria-hidden',show?'false':'true')}
+    if($('orderBarCount'))$('orderBarCount').textContent=a.length+' foto';
+    if($('orderBarTotal'))$('orderBarTotal').textContent=money(p.total);
+    if($('summaryCount'))$('summaryCount').textContent=String(a.length);
+    if($('orderTotal'))$('orderTotal').textContent=money(p.total);
+    if($('orderList'))$('orderList').innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div></div><div class="checkout-photo-price">'+money(x.price)+'</div></div>').join(''):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
+    const name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
+    const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const complete=a.length>0&&a.every(x=>!!x.format);
+    const ready=complete&&!!name&&validEmail;
+    if($('completePayment'))$('completePayment').disabled=!ready||busy;
+    if($('paymentStatus')){
+      if(!a.length)$('paymentStatus').textContent='Seleziona almeno una fotografia.';
+      else if(!complete)$('paymentStatus').textContent='Scegli il formato per ogni fotografia.';
+      else if(!name||!validEmail)$('paymentStatus').textContent='Inserisci nome e un indirizzo email valido.';
+      else $('paymentStatus').textContent='Ordine pronto per l’invio.';
+    }
+    saveCart();
+  }
+  function openPanel(){render();const p=$('orderPanel');if(!p)return;p.classList.add('active');p.setAttribute('aria-hidden','false');document.documentElement.classList.add('lntdv-order-open');document.body.classList.add('lntdv-order-open')}
+  function closePanel(){const p=$('orderPanel');if(!p)return;p.classList.remove('active');p.setAttribute('aria-hidden','true');document.documentElement.classList.remove('lntdv-order-open');document.body.classList.remove('lntdv-order-open')}
+  function token(){try{if(window.crypto?.randomUUID)return crypto.randomUUID().replace(/-/g,'').toUpperCase();const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase()}catch(e){return(Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/[^a-z0-9]/gi,'').toUpperCase()}}
+  function orderId(){return'LNTDV-'+Date.now().toString(36).toUpperCase()}
+  function track(id,t){const old=read(TRACKING_KEY,[]);const a=Array.isArray(old)?old.filter(x=>x&&x.orderId!==id):[];a.unshift({orderId:id,token:t,savedAt:new Date().toISOString()});write(TRACKING_KEY,a.slice(0,20))}
+  function jsonpConfirm(id,t,ms){return new Promise((resolve,reject)=>{
+    const cb='__lntdv_confirm_'+Date.now()+'_'+Math.random().toString(36).slice(2),s=document.createElement('script');let done=false;
+    const timer=setTimeout(()=>finish(new Error('timeout')),ms||5000);
+    function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()}
+    function finish(err,data){if(done)return;done=true;cleanup();err?reject(err):resolve(data)}
+    window[cb]=data=>finish(null,data);s.onerror=()=>finish(new Error('network'));
+    s.src=ENDPOINT+'?action=confirm&orderId='+encodeURIComponent(id)+'&token='+encodeURIComponent(t)+'&callback='+encodeURIComponent(cb)+'&_='+Date.now();
+    document.head.appendChild(s);
+  })}
+  async function verify(id,t){
+    for(const wait of [1200,2500,4500,7000]){
+      await new Promise(r=>setTimeout(r,wait));
+      try{const x=await jsonpConfirm(id,t,5000);if(x&&x.ok)return x}catch(e){}
+    }
+    return null;
+  }
+  function post(payload){return new Promise((resolve,reject)=>{
+    const name='lntdv-order-'+Date.now(),iframe=document.createElement('iframe'),form=document.createElement('form');
+    iframe.name=name;iframe.setAttribute('aria-hidden','true');iframe.style.cssText='position:fixed;width:1px;height:1px;border:0;opacity:0;pointer-events:none;left:-9999px;top:-9999px';
+    form.method='POST';form.action=ENDPOINT;form.target=name;form.style.display='none';
+    const input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);
+    document.body.appendChild(iframe);document.body.appendChild(form);
+    let finished=false;
+    const finish=ok=>{if(finished)return;finished=true;setTimeout(()=>{iframe.remove();form.remove()},1200);ok?resolve():reject(new Error('timeout'))};
+    iframe.addEventListener('load',()=>finish(true),{once:true});form.submit();setTimeout(()=>finish(true),9000);
+  })}
+  async function submit(){
+    if(busy)return;
+    render();
+    const a=items(),name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
+    if(!a.length||a.some(x=>!x.format)||!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
+    const p=totals(a),id=orderId(),t=token();
+    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:null,deliveryType:delivery(),requestedTracking:true,trackingToken:t};
+    busy=true;write(LAST_ORDER_KEY,{orderId:id,token:t,email,total:p.total,pending:true,createdAt:new Date().toISOString()});
+    if($('completePayment'))$('completePayment').disabled=true;
+    if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Invio ordine in corso…</strong><br>Verifica della registrazione sul sistema ordini.';
+    try{
+      await post(payload);
+      const confirmed=await verify(id,t);
+      if(!confirmed){
+        busy=false;
+        if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Invio effettuato.</strong><br>La verifica automatica sta ancora attendendo la registrazione. Non premere nuovamente il pulsante.';
+        return;
+      }
+      track(id,t);write(LAST_ORDER_KEY,{...payload,confirmedAt:new Date().toISOString(),pending:false});write(CART_KEY,[]);
+      selected().forEach(c=>{c.classList.remove('selected');c.setAttribute('aria-pressed','false')});
+      if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai la conferma via email. Totale: <strong>'+money(p.total)+'</strong>.';
+      busy=false;render();
+    }catch(e){
+      busy=false;
+      if($('paymentStatus'))$('paymentStatus').textContent='Non è stato possibile inviare l’ordine. Le fotografie restano nel carrello: riprova.';
+      render();
+    }
+  }
+  function rememberUrl(){try{const p=new URLSearchParams(location.search),id=(p.get('ordine')||'').trim(),t=(p.get('token')||'').trim();if(id&&t)track(id,t)}catch(e){}}
+  function init(){
+    document.addEventListener('click',e=>{
+      const open=e.target.closest('#openOrder'),close=e.target.closest('#closeOrder'),send=e.target.closest('#completePayment');
+      if(open){e.preventDefault();e.stopImmediatePropagation();openPanel();return}
+      if(close){e.preventDefault();e.stopImmediatePropagation();closePanel();return}
+      if(send){e.preventDefault();e.stopImmediatePropagation();submit();return}
+      if(e.target.closest('.card')&&!e.target.closest('select,option,input,button,a'))setTimeout(render,0);
+    },true);
+    document.addEventListener('change',e=>{if(e.target.matches('.format-select,input[name="checkoutDelivery"],input[name="checkoutPayment"]'))setTimeout(render,0)});
+    ['customerName','customerEmail','customerStreet','customerZip','customerCity','customerNote'].forEach(id=>$(id)?.addEventListener('input',render));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()});
+    $('orderPanel')?.addEventListener('click',e=>{if(e.target===$('orderPanel'))closePanel()});
+    // Elimina l'aggiunta dinamica precedente che duplicava le opzioni di ritiro.
+    $('lntdvCheckoutOptions')?.remove();
+    restore();rememberUrl();render();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
