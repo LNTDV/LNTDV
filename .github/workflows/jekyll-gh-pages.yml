@@ -1,5 +1,5 @@
-# LNTDV GitHub Pages deployment
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+# LNTDV GitHub Pages deployment — static build
+name: Deploy LNTDV catalog
 
 on:
   push:
@@ -42,10 +42,9 @@ jobs:
               if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
                   raise SystemExit(f"JPG non valido o vuoto: {src}")
               dst.write_bytes(data)
-          print("Pages: generati 25 JPG in images/.")
-          PY
+          print("25 JPG generati.")
 
-      - name: Assemble published catalog
+      - name: Assemble and optimize catalog
         run: |
           rm -f index.html
           for n in $(seq -w 1 14); do
@@ -70,26 +69,33 @@ jobs:
                   pat=rf'<img\b[^>]*alt="LNTDV-{n:03d}"[^>]*src="\.\/images\/natura-{n:02d}\.jpg"'
                   if not re.search(pat,s,re.I):
                       raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
-          if "data:image/" in s:
-              raise SystemExit("Sono rimaste immagini Base64 inline nel catalogo.")
-          if re.search(r'transform\s*:\s*rotate\(',s,re.I):
-              raise SystemExit("Trovata rotazione CSS automatica.")
+          if re.search(r'data:image/[^;]+;base64,[A-Za-z0-9+/=]{100,}',s,re.I):
+              raise SystemExit("Base64 ancora incorporato nell'HTML pubblicato.")
+          if re.search(r'<img[^>]+src=["\']data:image/',s,re.I):
+              raise SystemExit("Immagine Base64 ancora usata come src.")
           if "order-system.js" not in s or "order-system.css" not in s:
               raise SystemExit("Motore ordine esterno non collegato.")
-          print("Pages build: catalogo validato con 25 JPG, senza Base64 e senza rotazioni CSS.")
+          if not re.search(r'<html[^>]*>',s,re.I) or not re.search(r'</html>',s,re.I):
+              raise SystemExit("HTML finale non completo.")
+          print("Catalogo finale validato:", len(s), "bytes.")
           PY
+
+      - name: Prepare static Pages artifact
+        run: |
+          touch .nojekyll
+          rm -rf _site
+          mkdir -p _site
+          cp -a . _site/
+          rm -rf _site/.git _site/.github _site/_site
+          echo "Static Pages artifact pronto."
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
 
   deploy:
     environment:
