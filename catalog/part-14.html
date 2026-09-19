@@ -525,4 +525,27 @@ y02/A+JjeufGRqQeLhE5GcAh4Z+LUjpKkXRstr8tZEck/h9sUsRZJYlnlg4mkTAyT9LFnizxcYlBsi5c
 })();
 </script>
 
+<script id="lntdv-selection-reset">
+(function(){
+  /* LNTDV: reset selezione foto ad ogni nuova apertura della pagina */
+  function resetSelections(){
+    document.querySelectorAll('.card.selected,[aria-pressed="true"]').forEach(function(el){
+      if(el.classList) el.classList.remove('selected');
+      if(el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed','false');
+    });
+    var summary=document.getElementById('selectionSummary');
+    if(summary) summary.textContent='Nessuna fotografia selezionata';
+    var bar=document.getElementById('orderBar');
+    if(bar) bar.classList.remove('active');
+    var count=document.getElementById('orderBarCount');
+    if(count) count.textContent='0 foto';
+    var total=document.getElementById('orderBarTotal');
+    if(total) total.textContent='€0,00';
+    var panel=document.getElementById('orderPanel');
+    if(panel){panel.classList.remove('active');panel.setAttribute('aria-hidden','true');}
+    document.body.style.overflow='';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',resetSelections); else resetSelections();
+})();
+</script>
 </body></html>
