@@ -170,7 +170,9 @@ Segui il tuo ordine:
 ${trackingUrl}
 
 Edvinas Dragoni
-La Nostra Terra da Vicino`;
+La Nostra Terra da Vicino
+
+© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.`;
   MailApp.sendEmail({
     to: String(row[6]),
     subject: `${labels[status]} ${orderId} — La Nostra Terra da Vicino`,
