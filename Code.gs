@@ -313,10 +313,11 @@ function verifyXpayOrder_(orderId, key) {
     if (current !== 'PAGATO') {
       sheet.getRange(index + 1, 15).setValue('PAGATO');
       sheet.getRange(index + 1, 14).setValue(true);
+      sheet.getRange(index + 1, PAYMENT_CONFIRMATION_COLUMN).setValue(true);
       const customerEmail = String(row[6] || '');
       if (customerEmail) {
         const paymentCircuit = successful[successful.length - 1].paymentCircuit || 'XPay';
-        const body = 'Gentile ' + String(row[2] || '') + ',\n\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' risulta confermato da Nexi XPay.\n\nTotale pagato: €' + expectedTotal.toFixed(2) + '\nMetodo: ' + paymentCircuit + '\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino';
+        const body = 'Gentile ' + String(row[2] || '') + ',\n\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' risulta confermato da Nexi XPay.\n\nIl tuo ordine è confermato.\n\nTotale pagato: €' + expectedTotal.toFixed(2) + '\nMetodo: ' + paymentCircuit + '\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino';
         MailApp.sendEmail({to:customerEmail, subject:'Pagamento confermato ' + orderId + ' — La Nostra Terra da Vicino', body:body});
       }
     }
