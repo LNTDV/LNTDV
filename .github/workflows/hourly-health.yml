@@ -29,8 +29,9 @@ jobs:
           import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          styles=re.findall(r'<style\b[^>]*>[\s\S]*?</style>',s,re.I)
+          styles=re.findall(r'<style\b[^>]*>([\s\S]*?)</style>',s,re.I)
           css="\n\n".join(styles)+"\n" if styles else ""
+          css=re.sub(r'<style\b[^>]*>|</style>',"",css,flags=re.I)
           Path("assets/css/site-generated.css").write_text(css,encoding="utf-8")
           s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>',"",s,flags=re.I)
           link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260919">'
