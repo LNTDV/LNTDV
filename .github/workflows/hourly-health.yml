@@ -16,7 +16,7 @@ jobs:
   health:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Rebuild deterministic catalog
         run: |
@@ -24,6 +24,21 @@ jobs:
           for n in $(seq -w 1 14); do cat "catalog/part-$n.html" >> index.html; done
           python scripts/patch_lntdv.py
           python scripts/fix_photo_loading.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          styles=re.findall(r'<style\b[^>]*>[\s\S]*?</style>',s,re.I)
+          css="\n\n".join(styles)+"\n" if styles else ""
+          Path("assets/css/site-generated.css").write_text(css,encoding="utf-8")
+          s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>',"",s,flags=re.I)
+          link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260919">'
+          if link not in s:
+              s=s.replace("</head>",link+"\n</head>",1)
+          p.write_text(s,encoding="utf-8")
+          print("CSS esterno:",len(css),"byte; HTML:",p.stat().st_size,"byte")
+          PY
 
       - name: Validate local catalog
         run: |
@@ -70,7 +85,7 @@ jobs:
         run: |
           git config user.name "LNTDV Health Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html
+          git add index.html assets/css/site-generated.css
           if git diff --cached --quiet; then
             echo "Nessuna correzione necessaria."
             exit 0

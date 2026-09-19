@@ -6,6 +6,24 @@ import re
 p=Path("index.html")
 s=p.read_text(encoding="utf-8")
 
+# Remove legacy inline checkout/tracking implementations.
+# The external order-system.js + tracking.js are the single runtime engines.
+s = re.sub(
+    r'<script>\s*\(function\(\)\{\s*const prices=\{\s*"Stampa fotografica":40,[\s\S]*?</script>\s*(?=<script>document\.addEventListener\(\'contextmenu\')',
+    '',
+    s,
+    count=1,
+    flags=re.I,
+)
+s = re.sub(
+    r'<section class="tracking-section" id="tracking">[\s\S]*?</section>\s*<script id="lntdv-final-functions-script">[\s\S]*?</script>\s*',
+    '',
+    s,
+    count=1,
+    flags=re.I,
+)
+
+
 # Il mio ordine: fisso in basso a destra, anche su smartphone
 s=s.replace('.order-bar{position:fixed;left:22px;right:auto;', '.order-bar{position:fixed;right:22px;left:auto;', 1)
 s=s.replace('.order-bar{position:fixed;right:22px;left:auto;', '.order-bar{position:fixed;right:22px;left:auto;', 1)
@@ -107,7 +125,7 @@ s += """
 
 # Load exactly one external order engine after the generated catalog.
 assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919g">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919e"></script>'''
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919f"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)

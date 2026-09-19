@@ -20,64 +20,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Generate JPG photo assets from source bundles
+      - name: Validate published static catalog
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64, re
-          out = Path("images")
-          out.mkdir(exist_ok=True)
-          for n in range(1, 26):
-              src = Path(f"assets/photo{n:02d}.js")
-              dst = out / f"natura-{n:02d}.jpg"
-              if not src.exists():
-                  raise SystemExit(f"Asset sorgente mancante: {src}")
-              text = src.read_text(encoding="utf-8")
-              m = re.search(r'data:image/jpeg;base64,([A-Za-z0-9+/=]+)', text)
-              if not m:
-                  raise SystemExit(f"Immagine Base64 non trovata in {src}")
-              data = base64.b64decode(m.group(1), validate=True)
-              if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
-                  raise SystemExit(f"JPG non valido o vuoto: {src}")
-              dst.write_bytes(data)
-          print("25 JPG generati.")
-
-      - name: Assemble and optimize catalog
-        run: |
-          rm -f index.html
-          for n in $(seq -w 1 14); do
-            cat "catalog/part-$n.html" >> index.html
-          done
-          python scripts/patch_lntdv.py
-          python scripts/fix_photo_loading.py
           python - <<'PY'
           from pathlib import Path
           import re
           s=Path("index.html").read_text(encoding="utf-8")
-          ids=set(re.findall(r'LNTDV-(\d{3})',s))
           expected={f"{n:03d}" for n in range(1,26)}
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
           if ids != expected:
               raise SystemExit(f"Codici foto errati: {sorted(ids)}")
           for n in range(1,26):
               p=Path(f"images/natura-{n:02d}.jpg")
               if not p.exists() or p.stat().st_size < 1000:
                   raise SystemExit(f"Foto mancante o vuota: {p}")
-              pat=rf'<img\b[^>]*src="\.\/images\/natura-{n:02d}\.jpg"[^>]*alt="LNTDV-{n:03d}"'
-              if not re.search(pat,s,re.I):
-                  pat=rf'<img\b[^>]*alt="LNTDV-{n:03d}"[^>]*src="\.\/images\/natura-{n:02d}\.jpg"'
-                  if not re.search(pat,s,re.I):
-                      raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
-          if re.search(r'data:image/[^;]+;base64,[A-Za-z0-9+/=]{100,}',s,re.I):
-              raise SystemExit("Base64 ancora incorporato nell'HTML pubblicato.")
-          if re.search(r'<img[^>]+src=["\']data:image/',s,re.I):
-              raise SystemExit("Immagine Base64 ancora usata come src.")
-          if "order-system.js" not in s or "order-system.css" not in s:
-              raise SystemExit("Motore ordine esterno non collegato.")
-          if not re.search(r'<html[^>]*>',s,re.I) or not re.search(r'</html>',s,re.I):
-              raise SystemExit("HTML finale non completo.")
-          print("Catalogo finale validato:", len(s), "bytes.")
+          if not Path("assets/css/site-generated.css").exists():
+              raise SystemExit("CSS generato mancante: assets/css/site-generated.css")
+          if "data:image/" in s:
+              raise SystemExit("Base64 inline presente nell'HTML pubblicato.")
+          if s.count('id="orderPanel"') != 1:
+              raise SystemExit("orderPanel duplicato.")
+          if s.count('id="completePayment"') != 1:
+              raise SystemExit("completePayment duplicato.")
+          if s.count('id="trackingSection"') != 1:
+              raise SystemExit("trackingSection duplicato.")
+          print("STATIC CATALOG OK:", len(s), "bytes")
           PY
 
       - name: Prepare static Pages artifact
@@ -85,15 +54,24 @@ jobs:
           touch .nojekyll
           rm -rf _site
           mkdir -p _site
-          cp -a . _site/
-          rm -rf _site/.git _site/.github _site/_site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            --exclude='catalog' \
+            --exclude='scripts' \
+            --exclude='Code.gs' \
+            --exclude='README.md' \
+            --exclude='RESTORE_NOTICE.txt' \
+            --exclude='assets/photo*.js' \
+            ./ _site/
           echo "Static Pages artifact pronto."
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./_site
 
@@ -106,4 +84,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

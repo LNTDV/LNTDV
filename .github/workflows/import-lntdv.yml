@@ -26,7 +26,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Generate JPG photo assets from source bundles
         run: |
@@ -150,7 +150,7 @@ jobs:
         run: |
           git config user.name "LNTDV Website Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html images/natura-*.jpg
+          git add index.html assets/css/site-generated.css images/natura-*.jpg
           git diff --cached --quiet && exit 0
           git commit -m "Build catalogo stabile con 25 JPG validati"
           git pull --rebase origin main
