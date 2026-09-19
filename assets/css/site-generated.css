@@ -671,22 +671,3 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 
-
-
-/* LNTDV FINAL OVERRIDES */
-body{background:#f4eadf!important}
-main{background:#f4eadf!important;max-width:1500px!important}
-.grid{background:#f4eadf!important;align-items:start!important}
-.card{background:#fff!important}
-.lntdv-photo-stage{width:100%;background:#f4eadf;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.lntdv-photo-stage img{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;display:block!important;background:#f4eadf!important}
-@media(min-width:1101px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:26px!important}}
-@media(min-width:701px) and (max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important}}
-@media(max-width:700px){.grid{grid-template-columns:1fr!important;gap:18px!important}}
-
-
-/* LNTDV — cornice marrone richiesta */
-.lntdv-photo-stage{background:#fbf6ef!important;border:3px solid #5a3b2b!important;box-sizing:border-box!important;padding:8px!important}
-.lntdv-photo-stage img{background:#fbf6ef!important}
-.meta strong{display:inline-block!important;align-self:flex-end!important;margin-left:auto!important;padding:7px 11px!important;border:1px solid #5a3b2b!important;border-radius:7px!important;background:#fbf6ef!important;color:#5a3b2b!important}
-.meta small{align-self:flex-end!important;text-align:right!important}
