@@ -11,6 +11,7 @@
     'File digitale in alta risoluzione':25
   };
   const SHIPPING=10;
+  const BANK_TRANSFER={accountHolder:'Giulia Principi',iban:'LU538100SATI55551718',reasonPrefix:'LNTDV'};
   let busy=false;
 
   const $=id=>document.getElementById(id);
@@ -298,8 +299,8 @@
     const trackingToken=token();
     const payload={
       orderId:id,
-      paymentMethod:'',
-      paymentStatus:'NON_RICHIESTO',
+      paymentMethod:'BONIFICO BANCARIO',
+      paymentStatus:'IN_ATTESA_DI_BONIFICO',
       orderStatus:'ORDINE RICEVUTO',
       customer:{
         name,
@@ -341,7 +342,7 @@
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
 
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.<br><br><a href="mailto:info.lanostraterradavicino@gmail.com" class="lntdv-mail-action">Apri Apple Mail</a> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info.lanostraterradavicino@gmail.com" target="_blank" rel="noopener" class="lntdv-mail-action">Apri Gmail</a>';
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le coordinate per il bonifico bancario e il riepilogo dell’ordine.';
       }
 
       resetSelection(false);
