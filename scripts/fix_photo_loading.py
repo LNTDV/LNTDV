@@ -15,11 +15,11 @@ orientation_map = {
 # Elimina preload massivi e vecchi src Base64: il browser deve caricare veri JPG.
 s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', '', s, flags=re.I)
 
-# Elimina definitivamente le vecchie regole di rotazione automatica.
+# Elimina definitivamente le vecchie regole di rotazione automatica e i src Base64.
 s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:\);?)', '', s, flags=re.I)
 s = re.sub(r'\s+src=["\']data:image/[^"\']+["\']', '', s, flags=re.I)
 
-# Ogni fotografia usa esclusivamente il proprio file JPG, prima per codice alt.
+# Ogni fotografia usa esclusivamente il proprio JPG, prima per codice alt.
 for n in range(1, 26):
     code = f"{n:03d}"
     jpg = f"./images/natura-{n:02d}.jpg"
@@ -32,21 +32,21 @@ for n in range(1, 26):
         return tag + m.group(2)
     s = re.sub(pattern, repl, s)
 
-# Fallback: alcune parti storiche possono contenere una foto senza alt corretto.
-# Sostituisce i vecchi src immagine residui nell'ordine delle fotografie.
-photo_counter = 0
-def fallback_img(m):
-    global photo_counter
-    tag = m.group(0)
-    if re.search(r'\balt=["\']LNTDV-\d{3}["\']', tag, re.I):
-        return tag
-    if re.search(r'\bsrc=["\'](?:data:image/|\.\/assets\/photo\d{2}\.js)', tag, re.I):
-        photo_counter += 1
-        if photo_counter <= 25:
-            tag = re.sub(r'\s+src=["\'][^"\']*["\']', '', tag, flags=re.I)
-            tag = tag[:-1] + f' src="./images/natura-{photo_counter:02d}.jpg">'
-    return tag
-s = re.sub(r'<img\b[^>]*>', fallback_img, s, flags=re.I)
+# Fallback robusto: assegna i JPG in ordine ai primi 25 elementi .card che contengono un img.
+# Questo copre le parti storiche in cui l'attributo alt non era coerente.
+card_pattern = re.compile(r'(<(?:div|article|section)[^>]*class=["\'][^"\']*\bcard\b[^"\']*["\'][^>]*>.*?<img\b)([^>]*)(>)', re.I | re.S)
+card_index = 0
+def card_img_fix(m):
+    global card_index
+    if card_index >= 25:
+        return m.group(0)
+    card_index += 1
+    tag_start, attrs, close = m.group(1), m.group(2), m.group(3)
+    attrs = re.sub(r'\s+src=["\'][^"\']*["\']', '', attrs, flags=re.I)
+    attrs = re.sub(r'\s+alt=["\'][^"\']*["\']', '', attrs, flags=re.I)
+    attrs += f' alt="LNTDV-{card_index:03d}" src="./images/natura-{card_index:02d}.jpg"'
+    return tag_start + attrs + close
+s = card_pattern.sub(card_img_fix, s)
 
 # Loading: prime due subito, le altre lazy. Decoding asincrono evita blocchi del rendering.
 def imgfix(m):
