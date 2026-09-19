@@ -128,7 +128,6 @@
   });
   const observer=new MutationObserver(()=>ensureCheckoutOptions());
   observer.observe(document.body,{childList:true,subtree:true});
-  fetch(ENDPOINT+'?action=config').then(r=>r.json()).then(x=>{if(x&&x.ok){BANK_IBAN=String(x.iban||'');BANK_HOLDER=String(x.accountHolder||'Edvinas Dragoni')}}).catch(()=>{});
     fetch(SCRIPT_URL+"?action=config").then(r=>r.json()).then(x=>{if(x&&x.ok)BANK_IBAN=String(x.iban||"")}).catch(()=>{}).finally(()=>{rememberTrackingFromUrl();restore();refresh()});
 })();
 
@@ -291,13 +290,14 @@
       if(send){e.preventDefault();e.stopImmediatePropagation();submit();return}
       if(e.target.closest('.card')&&!e.target.closest('select,option,input,button,a'))setTimeout(render,0);
     },true);
-    document.addEventListener('change',e=>{if(e.target.matches('.format-select,input[name="checkoutDelivery"],input[name="checkoutPayment"]'))setTimeout(render,0)});
+    document.addEventListener('change',e=>{if(e.target.matches('.format-select,input[name="checkoutDelivery"],input[name="deliveryType"],input[name="checkoutPayment"]'))setTimeout(render,0)});
+    document.addEventListener('click',e=>{const q=e.target.closest('.lntdv-qty');if(!q)return;const code=q.dataset.code||'';const delta=parseInt(q.dataset.delta||'0',10)||0;const card=cards().find(c=>(c.querySelector('.meta strong')?.textContent.trim()||'')===code);if(card){card.dataset.quantity=Math.max(1,(parseInt(card.dataset.quantity||'1',10)||1)+delta);render()}},true);
     ['customerName','customerEmail','customerStreet','customerZip','customerCity','customerNote'].forEach(id=>$(id)?.addEventListener('input',render));
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()});
     $('orderPanel')?.addEventListener('click',e=>{if(e.target===$('orderPanel'))closePanel()});
     // Elimina l'aggiunta dinamica precedente che duplicava le opzioni di ritiro.
     $('lntdvCheckoutOptions')?.remove();
-    restore();rememberUrl();render();
+    fetch(ENDPOINT+'?action=config').then(r=>r.json()).then(x=>{if(x&&x.ok){BANK_IBAN=String(x.iban||'');BANK_HOLDER=String(x.accountHolder||'Edvinas Dragoni')}}).catch(()=>{}).finally(()=>{restore();rememberUrl();render()});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
