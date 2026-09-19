@@ -283,3 +283,74 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
+
+/* LNTDV FINAL UX FIX 2026-09-19
+   - Never open the order summary automatically on normal page load.
+   - Keep the order summary as a compact control in the lower-right corner.
+   - Add "Tracking ordine" to the site's existing hamburger/navigation menu.
+   - Preserve tracking links (?ordine=...&token=...) and open tracking automatically only
+     when a customer follows a valid tracking link.
+*/
+(function(){
+  'use strict';
+  function closeOrderOnNormalLoad(){
+    try{
+      const q=new URLSearchParams(location.search);
+      const hasTracking=!!(q.get('ordine')&&q.get('token'));
+      const panel=document.getElementById('orderPanel');
+      if(!hasTracking && panel){
+        panel.classList.remove('active');
+        panel.setAttribute('aria-hidden','true');
+        document.documentElement.classList.remove('lntdv-order-open');
+        document.body.classList.remove('lntdv-order-open');
+        document.body.style.overflow='';
+      }
+    }catch(e){}
+  }
+  function addTrackingMenuLink(){
+    if(document.getElementById('lntdv-menu-tracking')) return;
+    const selectors=[
+      'header nav','header .nav','header .menu','header .mobile-menu',
+      'header .nav-menu','header .menu-links','nav','[role="navigation"]',
+      '.mobile-menu','.nav-menu','.menu-links','.menu'
+    ];
+    let host=null;
+    for(const sel of selectors){
+      const el=document.querySelector(sel);
+      if(el){host=el;break;}
+    }
+    if(!host) return;
+    const link=document.createElement('a');
+    link.id='lntdv-menu-tracking';
+    link.href='#trackingSection';
+    link.textContent='Tracking ordine';
+    link.setAttribute('aria-label','Tracking ordine');
+    link.style.cssText='display:block!important;';
+    link.addEventListener('click',function(e){
+      e.preventDefault();
+      const section=document.getElementById('trackingSection');
+      if(section) section.scrollIntoView({behavior:'smooth',block:'start'});
+      const menuButton=document.querySelector(
+        '[aria-expanded="true"][aria-controls], .menu-toggle.active, .hamburger.active, .hamburger.is-open'
+      );
+      if(menuButton && typeof menuButton.click==='function') menuButton.click();
+    });
+    const list=host.matches('ul,ol') ? host : host.querySelector('ul,ol');
+    if(list){
+      const li=document.createElement('li');
+      li.appendChild(link);
+      list.appendChild(li);
+    }else{
+      host.appendChild(link);
+    }
+  }
+  function initFinalUx(){
+    closeOrderOnNormalLoad();
+    addTrackingMenuLink();
+    setTimeout(addTrackingMenuLink,500);
+    setTimeout(addTrackingMenuLink,1500);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initFinalUx,{once:true});
+  else initFinalUx();
+})();
