@@ -849,8 +849,6 @@
     const grids=document.querySelectorAll('.grid, section.grid, section.catalog');
     grids.forEach(grid=>{
       setImportant(grid,'display','grid');
-      setImportant(grid,'grid-template-columns','1fr');
-      setImportant(grid,'gap','22px');
       setImportant(grid,'width','100%');
     });
     document.querySelectorAll('.grid .card, .catalog .card, .card').forEach(renderCard);
