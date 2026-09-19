@@ -368,6 +368,19 @@
         chooserEl.addEventListener('click',e=>{if(e.target===chooserEl)chooserEl.remove();});
         $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail con le istruzioni di pagamento.';
       }
+      const confirmation=$('orderConfirmation');
+      if(confirmation){
+        confirmation.hidden=false;
+        const text=$('orderConfirmationText');
+        if(text) text.innerHTML='<strong>Ordine '+esc(id)+' registrato correttamente.</strong><br>La richiesta è stata ricevuta e il riepilogo è stato salvato nel sistema ordini.';
+        const actions=$('confirmationMailActions');
+        if(actions){
+          actions.innerHTML='<div class="confirmation-mail-note">La mail predisposta può essere aperta scegliendo Gmail o Apple Mail.</div>';
+        }
+      }
+      document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(function(el){el.hidden=true;});
+      if($('orderBar')) $('orderBar').classList.remove('show','active');
+
       if($('orderPanel')){
         const panel=$('orderPanel');
         panel.classList.add('active');
