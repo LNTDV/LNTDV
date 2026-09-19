@@ -105,6 +105,17 @@ s=s.replace('''      total:total,
       deliveryType:(document.querySelector('input[name="deliveryType"]:checked')||{}).value || "Ritiro"
     };''',1)
 
+# Rimuove definitivamente la vecchia regola che ruotava le foto verticali di 90°.
+s=re.sub(r'\\.card\\.photo-vertical>img\\s*\\{[^}]*transform\\s*:\\s*rotate\\([^}]*\\)[^}]*\\}', '', s, flags=re.I)
+
+# Mantiene un solo elemento di stato consegna: ID duplicati rompono querySelector/getElementById su alcuni flussi.
+matches=list(re.finditer(r'<div id="deliveryStatus"[^>]*>',s,flags=re.I))
+if len(matches)>1:
+    first_end=matches[0].end()
+    # Il primo elemento è il messaggio "Ritiro gratuito..."; il secondo viene reso non-ID per evitare collisioni.
+    second=matches[1]
+    s=s[:second.start()] + s[second.start():second.end()].replace('id="deliveryStatus"','class="delivery-status-secondary"',1) + s[second.end():]
+
 # Ultimo override: append the final rendering rules after all earlier catalog CSS.
 # Remove all filters/veils from catalog photographs and preserve their native orientation.
 s += """
@@ -115,6 +126,7 @@ s += """
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   width:100%!important;height:auto!important;aspect-ratio:auto!important;
   object-fit:contain!important;object-position:center!important;
+  image-orientation:from-image!important;
   display:block!important;transform:none!important;
 }
 .catalog .pic::before,.catalog .pic::after,.card .pic::before,.card .pic::after{
@@ -309,6 +321,7 @@ orientation_css = r'''
   height:auto!important;
   object-fit:contain!important;
   object-position:center center!important;
+  image-orientation:from-image!important;
   transform:none!important;
   rotate:0deg!important;
   transform-origin:center center!important;
