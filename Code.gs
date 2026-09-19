@@ -8,6 +8,7 @@ const COPYSHOP_STATUS_COLUMN = 23;
 const COPYSHOP_LAST_MESSAGE_COLUMN = 24;
 const SITE_URL = 'https://lntdv.it/';
 const PAYMENT_CONFIRMATION_COLUMN = 20;
+const FINAL_COPYSHOP_DATE = '2026-10-15';
 
 function setup() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -40,7 +41,7 @@ function doPost(e) {
     const total = Number(payload.total ?? (subtotal + shipping));
     const suppliedOrderId = String(payload.orderId || '').trim();
     const orderId = /^LNTDV-[A-Z0-9-]{6,80}$/.test(suppliedOrderId) ? suppliedOrderId : ('LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase());
-    const paymentMethod = String(payload.paymentMethod || '');
+    const paymentMethod = 'Bonifico bancario';
     const paymentStatus = String(payload.paymentStatus || 'IN_ATTESA_DI_PAGAMENTO').toUpperCase();
     const receivedStatus = 'RICEVUTO';
     const suppliedTrackingToken = String(payload.trackingToken || '').trim().toUpperCase();
@@ -373,6 +374,32 @@ function sendPaymentConfirmationEmail_(row) {
   } catch (_) {}
 }
 
+
+function shipmentStatus_(orderId, email, token, callback) {
+  return trackOrder_(orderId, email, token, callback);
+}
+
+function markFinalCopyshopBatch_(key) {
+  const cfg = getSettings_();
+  if (String(key || '') !== cfg.adminKey) throw new Error('Accesso non autorizzato.');
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) throw new Error('Foglio Ordini non trovato.');
+  const values = sheet.getDataRange().getValues();
+  let updated = 0;
+  values.forEach((row, i) => {
+    if (i === 0 || !row[1] || !row[6]) return;
+    const payment = String(row[14] || '').toUpperCase();
+    const sent = row[COPYSHOP_SENT_COLUMN - 1] === true;
+    if (payment === 'PAGATO' && !sent) {
+      sheet.getRange(i + 1, COPYSHOP_SENT_COLUMN).setValue(true);
+      sheet.getRange(i + 1, COPYSHOP_STATUS_COLUMN).setValue('IN_LAVORAZIONE');
+      sheet.getRange(i + 1, 15).setValue('IN_LAVORAZIONE');
+      sendStatusEmail_(sheet.getRange(i + 1, 1, 1, COPYSHOP_LAST_MESSAGE_COLUMN).getValues()[0], 'IN_LAVORAZIONE');
+      updated++;
+    }
+  });
+  return {ok:true,updated:updated,date:FINAL_COPYSHOP_DATE};
+}
 
 function confirmOrder_(orderId, token, email, callback) {
   orderId = String(orderId || '').trim();
