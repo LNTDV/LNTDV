@@ -1067,21 +1067,38 @@
       </section>
 
       <section class="checkout-block">
-  <div class="checkout-section-title">Consegna</div>
-  <div class="delivery-choice">
-    <label><input type="radio" name="checkoutDelivery" value="Ritiro" checked> <span><strong>Ritiro gratuito</strong><br><small>Milano — Viale Romagna 43, CAP 20133 (in copisteria)</small></span></label>
-    <label><input type="radio" name="checkoutDelivery" value="Ritiro Agorà"> <span><strong>Ritiro gratuito</strong><br><small>Biblioteca Agorà di Arese</small></span></label>
-    <label><input type="radio" name="checkoutDelivery" value="Spedizione"> <span><strong>Spedizione</strong><br><small>Italia · €10</small></span></label>
-  </div>
-  <div class="delivery-note" id="deliveryNote">Scegli il punto di ritiro oppure la spedizione.</div>
-</section>
-
-      
+        <div class="checkout-section-title">Consegna</div>
+        <div class="delivery-choice">
+          <label><input type="radio" name="checkoutDelivery" value="Ritiro" checked> <span><strong>Ritiro</strong><br><small>Da concordare a Milano · €0</small></span></label>
+          <label><input type="radio" name="checkoutDelivery" value="Spedizione"> <span><strong>Spedizione</strong><br><small>Italia · €10</small></span></label>
+        </div>
+        <div class="delivery-note" id="deliveryNote">Ritiro gratuito da concordare a Milano.</div>
+      </section>
 
       <section class="checkout-block">
-  <div class="checkout-section-title">Pagamento</div>
-  <div class="payment-status">Le istruzioni per il pagamento verranno inviate tramite la mail predisposta dopo la conferma dell’ordine.</div>
-</section>
+        <div class="checkout-section-title">Consegna</div>
+        <div class="delivery-choice">
+          <label class="delivery-option">
+            <input type="radio" name="deliveryType" value="Ritiro" checked>
+            <span><strong>Ritiro gratuito</strong><small>Da concordare a Milano</small></span>
+          </label>
+          <label class="delivery-option">
+            <input type="radio" name="deliveryType" value="Spedizione">
+            <span><strong>Spedizione</strong><small>€10,00</small></span>
+          </label>
+        </div>
+        <div id="deliveryStatus" class="payment-status">Ritiro selezionato.</div>
+      </section>
+
+      <section class="checkout-block">
+        <div class="checkout-section-title">Pagamento</div>
+        <div class="payment-choice">
+          <label><input type="radio" name="checkoutPayment" value="Carta"> <span>Carta</span></label>
+          
+          
+        </div>
+        <div id="paymentStatus" class="payment-status"></div>
+      </section>
     </div>
 
     <div class="checkout-bottom">
