@@ -495,3 +495,11 @@ img[id^="photo-"]{
   .grid .card .print-choice{margin:10px 0 12px!important;padding:10px!important;}
   .grid .card .format-select{min-height:46px!important;padding:11px 12px!important;font-size:14px!important;}
 }
+
+/* Palette marrone LNTDV — riepilogo ordine */
+#orderBar.order-bar,#orderBar.orderbar{background:#4b2f22!important;border:1px solid #6b4734!important;color:#f4eadf!important;box-shadow:0 12px 32px rgba(75,47,34,.28)!important}
+#orderBar .order-bar-label,#orderBar .order-bar-info strong,#orderBar .order-bar-total{color:#f4eadf!important}
+#orderBar .order-button{background:#6b4734!important;border:1px solid #8a624b!important;color:#fff!important}
+#orderPanel .checkout-section-title,#orderPanel .section-label{color:#4b2f22!important}
+#orderPanel .checkout-submit{background:#4b2f22!important;border-color:#4b2f22!important;color:#fff!important}
+#orderPanel input:focus,#orderPanel textarea:focus,#orderPanel select:focus{border-color:#6b4734!important;box-shadow:0 0 0 2px rgba(107,71,52,.14)!important}
