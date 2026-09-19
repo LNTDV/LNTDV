@@ -2,6 +2,7 @@ const SHEET_NAME = 'Ordini';
 const SETTINGS_SHEET = 'Impostazioni';
 const OWNER_EMAIL = 'info.lanostraterradavicino@gmail.com';
 const SITE_URL = 'https://lntdv.it/';
+const PAYMENT_CONFIRMATION_COLUMN = 20;
 
 function setup() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -191,16 +192,17 @@ function getSettings_() {
 }
 
 function ensureHeader_(sheet) {
-  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Spedizione','Totale','Modalità consegna','Note','Ricezione ordine','Stato','Token tracking'];
+  const headers = ['Data','ID ordine','Nome','Via','CAP','Città','Email cliente','Ordine','Subtotale','Spedizione','Totale','Modalità consegna','Note','Ricezione ordine','Stato','Token tracking','','','', 'Pagamento confermato'];
   if (sheet.getLastRow() === 0) sheet.appendRow(headers); else sheet.getRange(1,1,1,headers.length).setValues([headers]);
   sheet.setFrozenRows(1);
+  if (sheet.getMaxColumns() < PAYMENT_CONFIRMATION_COLUMN) sheet.insertColumnsAfter(sheet.getMaxColumns(), PAYMENT_CONFIRMATION_COLUMN - sheet.getMaxColumns());
 }
 
 function ensureSettings_(sheet) {
   if (sheet.getLastRow() === 0) { sheet.getRange(1,1,7,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
 }
 
-function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
+function formatOrders_(sheet) { sheet.getRange(1,1,1,PAYMENT_CONFIRMATION_COLUMN).setFontWeight('bold'); sheet.autoResizeColumns(1,PAYMENT_CONFIRMATION_COLUMN); if (sheet.getLastRow() > 1) { sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,PAYMENT_CONFIRMATION_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); } }
 function formatSettings_(sheet) { sheet.getRange(1,1,1,2).setFontWeight('bold'); sheet.autoResizeColumns(1,2); }
 function json_(obj, callback) { const data = JSON.stringify(obj); if (callback && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) return ContentService.createTextOutput(callback + '(' + data + ');').setMimeType(ContentService.MimeType.JAVASCRIPT); return ContentService.createTextOutput(data).setMimeType(ContentService.MimeType.JSON); }
 
@@ -372,21 +374,38 @@ function onOrderCheckboxEdit_(e) {
     const range = e.range;
     const sheet = range.getSheet();
     if (sheet.getName() !== SHEET_NAME) return;
-    if (range.getColumn() !== 14 || range.getRow() < 2) return;
+    if (![14, PAYMENT_CONFIRMATION_COLUMN].includes(range.getColumn()) || range.getRow() < 2) return;
     if (String(e.value || '').toUpperCase() !== 'TRUE') return;
 
     const rowNumber = range.getRow();
-    const values = sheet.getRange(rowNumber, 1, 1, 16).getValues()[0];
+    const values = sheet.getRange(rowNumber, 1, 1, PAYMENT_CONFIRMATION_COLUMN).getValues()[0];
     if (!values[1] || !values[6]) return;
 
+    if (range.getColumn() === PAYMENT_CONFIRMATION_COLUMN) {
+      const currentStatus = String(values[14] || 'NUOVO').toUpperCase();
+      if (currentStatus === 'PAGATO') return;
+      sheet.getRange(rowNumber, 15).setValue('PAGATO');
+      sendPaymentConfirmationEmail_(values);
+      return;
+    }
     const currentStatus = String(values[14] || 'NUOVO').toUpperCase();
     if (currentStatus === 'RICEVUTO') return;
-
     sheet.getRange(rowNumber, 15).setValue('RICEVUTO');
     sendStatusEmail_(values, 'RICEVUTO');
   } catch (err) {
     console.error(err);
   }
+}
+
+
+function sendPaymentConfirmationEmail_(row) {
+  const name = String(row[2] || '');
+  const orderId = String(row[1] || '');
+  const total = Number(row[10] || 0).toFixed(2);
+  const trackingToken = String(row[15] || '');
+  const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
+  const body = 'Gentile ' + name + ',\\n\\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' è stato ricevuto e verificato.\\n\\nIl tuo ordine è confermato.\\n\\nTotale pagato: €' + total + '\\nID ordine: ' + orderId + '\\n\\nPuoi seguire lo stato del tuo ordine qui:\\n' + trackingUrl + '\\n\\nEdvinas Dragoni\\nLa Nostra Terra da Vicino\\n\\n© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.';
+  if (row[6]) MailApp.sendEmail({to:String(row[6]),subject:'Pagamento ricevuto e ordine confermato ' + orderId + ' — La Nostra Terra da Vicino',body});
 }
 
 
