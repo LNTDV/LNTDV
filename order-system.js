@@ -258,8 +258,18 @@
     render();
     const a=items(),name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
     if(!a.length||a.some(x=>!x.format)||!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
+    if(a.length>=2 && !read(PROMO_KEY,null)?.action){
+      const promoAction=await showThirdPhotoPromotion();
+      if(promoAction==='add'){
+        closePanel();
+        if($('paymentStatus'))$('paymentStatus').textContent='Puoi aggiungere la terza fotografia. Il riepilogo resterà disponibile in basso a destra.';
+        busy=false;
+        render();
+        return;
+      }
+    }
     const p=totals(a),id=orderId(),t=token();
-    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:Math.max(1,Number(x.quantity)||1)})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:null,deliveryType:delivery(),requestedTracking:true,trackingToken:t};
+    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:Math.max(1,Number(x.quantity)||1)})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:a.length>=3?'Promozione terza foto':'',deliveryType:delivery(),requestedTracking:true,trackingToken:t};
     busy=true;write(LAST_ORDER_KEY,{orderId:id,token:t,email,total:p.total,pending:true,createdAt:new Date().toISOString()});
     if($('completePayment'))$('completePayment').disabled=true;
     if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Invio ordine in corso…</strong><br>Verifica della registrazione sul sistema ordini.';
@@ -283,6 +293,7 @@
   }
   function rememberUrl(){try{const p=new URLSearchParams(location.search),id=(p.get('ordine')||'').trim(),t=(p.get('token')||'').trim();if(id&&t)track(id,t)}catch(e){}}
   function init(){
+    ensureCopyright();
     document.addEventListener('click',e=>{
       const open=e.target.closest('#openOrder'),close=e.target.closest('#closeOrder'),send=e.target.closest('#completePayment');
       if(open){e.preventDefault();e.stopImmediatePropagation();openPanel();return}
