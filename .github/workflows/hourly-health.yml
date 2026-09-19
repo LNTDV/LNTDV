@@ -1,0 +1,79 @@
+name: LNTDV hourly health check
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: lntdv-hourly-health
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild deterministic catalog
+        run: |
+          rm -f index.html
+          for n in $(seq -w 1 14); do cat "catalog/part-$n.html" >> index.html; done
+          python scripts/patch_lntdv.py
+          python scripts/fix_photo_loading.py
+
+      - name: Validate local catalog
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          expected={f"{n:03d}" for n in range(1,26)}
+          assert ids==expected, f"Foto/codici non corretti: {sorted(ids)}"
+          assert "data:image/" not in s, "Base64 inline presente"
+          assert not re.search(r'transform\s*:\s*rotate\(',s,re.I), "Rotazione CSS presente"
+          assert s.count('id="orderPanel"')==1, "orderPanel duplicato"
+          assert s.count('id="completePayment"')==1, "completePayment duplicato"
+          assert s.count('id="trackingSection"')==1, "trackingSection duplicato"
+          for n in range(1,26):
+              p=Path(f"images/natura-{n:02d}.jpg")
+              assert p.exists() and p.stat().st_size>1000, f"Foto mancante: {p}"
+              assert f'./images/natura-{n:02d}.jpg' in s, f"Foto non collegata: {n:02d}"
+          print("LOCAL HEALTH OK")
+          PY
+          node --check order-system.js
+
+      - name: Check public site
+        run: |
+          curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/
+          grep -q 'LNTDV-001' /tmp/lntdv.html
+          grep -q 'LNTDV-025' /tmp/lntdv.html
+          echo "PUBLIC SITE OK"
+
+      - name: Check Apps Script endpoint
+        run: |
+          curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec?action=config' -o /tmp/apps.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/apps.json').read_text()
+          data=json.loads(raw)
+          assert data.get('ok') is True, data
+          print("APPS SCRIPT CONFIG OK")
+          PY
+
+      - name: Publish automatic repair if needed
+        run: |
+          git config user.name "LNTDV Health Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nessuna correzione necessaria."
+            exit 0
+          fi
+          git commit -m "Auto-ripristino catalogo LNTDV"
+          git push origin HEAD:main
