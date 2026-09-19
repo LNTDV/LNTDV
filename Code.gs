@@ -41,7 +41,7 @@ function doPost(e) {
     const total = Number(payload.total ?? (subtotal + shipping));
     const suppliedOrderId = String(payload.orderId || '').trim();
     const orderId = /^LNTDV-[A-Z0-9-]{6,80}$/.test(suppliedOrderId) ? suppliedOrderId : ('LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase());
-    const paymentMethod = 'Bonifico bancario';
+    const paymentMethod = '';
     const paymentStatus = String(payload.paymentStatus || 'IN_ATTESA_DI_PAGAMENTO').toUpperCase();
     const receivedStatus = 'RICEVUTO';
     const suppliedTrackingToken = String(payload.trackingToken || '').trim().toUpperCase();
