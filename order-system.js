@@ -10,7 +10,7 @@
     'Forex':50,
     'File digitale in alta risoluzione':25
   };
-  const SHIPPING=10;
+  const SHIPPING=35;
   const BANK_TRANSFER={accountHolder:"Giulia Principi",iban:"LU538100SATI55551718",reasonPrefix:"LNTDV"};
   let busy=false;
 
