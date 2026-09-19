@@ -216,7 +216,6 @@ final_css = r'''<style id="lntdv-final-photo-rendering">
 </style>'''
 
 # Inserimento prima di <style id="lntdv-photo-frame-natural-final-20260919">
-</head>, quindi dopo tutte le regole precedenti del catalogo.
 s = re.sub(r'<style id="lntdv-final-photo-rendering">[\s\S]*?</style>', '', s, flags=re.I)
 if '</head>' not in s.lower():
     raise SystemExit("index.html senza </head>")
