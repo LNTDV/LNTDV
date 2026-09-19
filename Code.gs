@@ -79,7 +79,7 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento esclusivamente tramite bonifico bancario. I dati del bonifico vengono inviati al cliente via email dopo l’invio dell’ordine.'}); }
+  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento tramite il metodo selezionato nel checkout.'}); }
   if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
