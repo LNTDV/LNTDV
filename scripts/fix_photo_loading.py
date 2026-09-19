@@ -48,6 +48,61 @@ def card_img_fix(m):
     return tag_start + attrs + close
 s = card_pattern.sub(card_img_fix, s)
 
+
+# Struttura definitiva delle schede: foto -> selettore formato -> dati.
+# Le versioni storiche del catalogo avevano il selettore dentro .meta, quindi
+# poteva apparire sopra la fotografia. Qui lo spostiamo sempre dopo l'immagine.
+# Se una scheda non contiene più l'immagine, la ricreiamo dal codice LNTDV.
+def normalize_card_structure(m):
+    block = m.group(0)
+    code_m = re.search(r'LNTDV-(\d{3})', block, re.I)
+    if not code_m:
+        return block
+    code = code_m.group(1)
+    n = int(code)
+    jpg = f"./images/natura-{n:02d}.jpg"
+
+    # Ripara un'apertura article storica eventualmente troncata.
+    block = re.sub(r'<article\b([^>]*)', lambda x: '<article' + x.group(1) + '>', block, count=1, flags=re.I)
+
+    # Trova e normalizza l'immagine della scheda.
+    img_m = re.search(r'<img\b[^>]*>', block, re.I)
+    if img_m:
+        img = img_m.group(0)
+        img = re.sub(r'\s+src=["\'][^"\']*["\']', '', img, flags=re.I)
+        img = re.sub(r'\s+alt=["\'][^"\']*["\']', '', img, flags=re.I)
+        img = re.sub(r'\s+loading=["\'][^"\']*["\']', '', img, flags=re.I)
+        img = re.sub(r'\s+decoding=["\'][^"\']*["\']', '', img, flags=re.I)
+        img = re.sub(r'\s+fetchpriority=["\'][^"\']*["\']', '', img, flags=re.I)
+        img = img[:-1] + f' alt="LNTDV-{code}" src="{jpg}" loading="{"eager" if n <= 2 else "lazy"}" decoding="async"' + (' fetchpriority="high"' if n == 1 else '') + '>'
+        block = block[:img_m.start()] + img + block[img_m.end():]
+    else:
+        img = f'<div class="photo-wrap"><img src="{jpg}" alt="LNTDV-{code}" loading="{"eager" if n <= 2 else "lazy"}" decoding="async"'
+        if n == 1: img += ' fetchpriority="high"'
+        img += '></div>'
+        meta_pos = re.search(r'<div\b[^>]*class=["\'][^"\']*\bmeta\b[^"\']*["\']', block, re.I)
+        if meta_pos:
+            block = block[:meta_pos.start()] + img + block[meta_pos.start():]
+
+    # Estrae il selettore dalla posizione attuale e lo reinserisce subito dopo
+    # il contenitore della foto (mai sopra la foto).
+    choice_m = re.search(r'<div\b[^>]*class=["\'][^"\']*\bprint-choice\b[^"\']*["\'][\s\S]*?</div>', block, re.I)
+    choice = choice_m.group(0) if choice_m else ''
+    if choice:
+        block = block[:choice_m.start()] + block[choice_m.end():]
+        img_wrap_end = re.search(r'</div>\s*(?=<div\b[^>]*class=["\'][^"\']*\bmeta\b)', block, re.I)
+        if img_wrap_end:
+            pos = img_wrap_end.end()
+            block = block[:pos] + choice + block[pos:]
+        else:
+            img_end = re.search(r'</img\s*>|<img\b[^>]*>', block, re.I)
+            if img_end:
+                pos = img_end.end()
+                block = block[:pos] + choice + block[pos:]
+    return block
+
+s = re.sub(r'<article\b[\s\S]*?</article>', normalize_card_structure, s, flags=re.I)
+
 # Loading: prime due subito, le altre lazy. Decoding asincrono evita blocchi del rendering.
 def imgfix(m):
     tag = m.group(0)
