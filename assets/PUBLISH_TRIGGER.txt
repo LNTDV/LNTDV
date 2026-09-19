@@ -1,1 +1,1 @@
-Trigger automatic LNTDV publish after catalog validation corrections on 2026-09-19.
+Trigger automatic LNTDV publish after workflow validation fix on 2026-09-19.
