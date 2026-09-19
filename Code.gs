@@ -41,8 +41,8 @@ function doPost(e) {
     const total = Number(payload.total ?? (subtotal + shipping));
     const suppliedOrderId = String(payload.orderId || '').trim();
     const orderId = /^LNTDV-[A-Z0-9-]{6,80}$/.test(suppliedOrderId) ? suppliedOrderId : ('LNTDV-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g,'').slice(0,8).toUpperCase());
-    const paymentMethod = '';
-    const paymentStatus = String(payload.paymentStatus || 'IN_ATTESA_DI_PAGAMENTO').toUpperCase();
+    const paymentMethod = 'BONIFICO BANCARIO';
+    const paymentStatus = String(payload.paymentStatus || 'IN_ATTESA_DI_BONIFICO').toUpperCase();
     const receivedStatus = 'RICEVUTO';
     const suppliedTrackingToken = String(payload.trackingToken || '').trim().toUpperCase();
     const trackingToken = /^[A-Z0-9]{24,80}$/.test(suppliedTrackingToken) ? suppliedTrackingToken : Utilities.getUuid().replace(/-/g,'').toUpperCase();
@@ -55,7 +55,7 @@ function doPost(e) {
     sheet.getRange(row, 14).insertCheckboxes().setValue(true);
     const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${deliveryType}`;
     const promotionText = payload.promotion ? `Promozione applicata: ${payload.promotion}\n` : '';
-    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: ${''}\n\nL'ordine è stato registrato. Riceverai le indicazioni relative al pagamento secondo il metodo selezionato.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: BONIFICO BANCARIO\n\nL'ordine è stato registrato. Riceverai le indicazioni relative al pagamento secondo il metodo selezionato.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     // Invia sempre prima la copia amministrativa all'indirizzo fisso del progetto.
     MailApp.sendEmail({
       to: OWNER_EMAIL,
@@ -80,7 +80,7 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento tramite il metodo selezionato nel checkout.'}); }
+  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento esclusivamente tramite bonifico bancario. Beneficiario: Giulia Principi. IBAN: LU538100SATI55551718. Causale: LNTDV + numero ordine.'}); }
   if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
@@ -190,9 +190,9 @@ Modalità: ${pickup}
 Stato: ${labels[status]}
 
 Dati per il bonifico:
-IBAN: ${getSettings_().iban || 'verrà indicato nella conferma ordine'}
-Intestatario: ${getSettings_().accountHolder || 'Edvinas Dragoni'}
-Causale: ${orderId}
+Beneficiario: ${getSettings_().accountHolder || 'Giulia Principi'}
+IBAN: ${getSettings_().iban || 'LU538100SATI55551718'}
+Causale: LNTDV ${orderId}
 
 
 Segui il tuo ordine:
@@ -227,7 +227,7 @@ function ensureHeader_(sheet) {
 }
 
 function ensureSettings_(sheet) {
-  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,8,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
+  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,8,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban','LU538100SATI55551718'],['xpayApiKey',''],['xpayEnvironment','DISABLED'],['accountHolder','Giulia Principi']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','LU538100SATI55551718']); else { const ib=sh.createTextFinder('iban').findNext(); if(ib && !String(ib.offset(0,1).getValue())) ib.offset(0,1).setValue('LU538100SATI55551718'); } if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Giulia Principi']); else { const ah=sh.createTextFinder('accountHolder').findNext(); if(ah && (!String(ah.offset(0,1).getValue()) || String(ah.offset(0,1).getValue())==='Edvinas Dragoni')) ah.offset(0,1).setValue('Giulia Principi'); } }
 }
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).setFontWeight('bold'); sheet.autoResizeColumns(1,COPYSHOP_LAST_MESSAGE_COLUMN); if (sheet.getLastRow() > 1) { sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,PAYMENT_CONFIRMATION_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,COPYSHOP_SENT_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); } }
