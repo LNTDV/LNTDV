@@ -45,7 +45,7 @@ jobs:
       - name: Assemble final catalog
         run: |
           rm -f index.html
-          for n in $(seq -w 1 14); do cat "catalog/part-$n.html" >> index.html; done
+          cat "catalog/part-14.html" > index.html
           python scripts/patch_lntdv.py
           python scripts/fix_photo_loading.py
       - name: Finalize no-rotation SEO build
