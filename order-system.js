@@ -48,7 +48,7 @@
     const normal=list.reduce((n,x)=>n+x.price*x.quantity,0);
     const promo=null;
     const subtotal=normal;
-    const shipping=count>0?SHIPPING:0;
+    const shipping=deliveryFee();
     return {count,normal,subtotal,promo,shipping,total:subtotal+shipping};
   }
 
@@ -161,6 +161,10 @@
       document.querySelector('input[name="deliveryType"]:checked')?.value ||
       document.querySelector('input[name="checkoutDelivery"]:checked')?.value ||
       'Ritiro';
+  }
+
+  function deliveryFee(){
+    return deliveryValue()==='Ritiro Agorà' ? 10 : (deliveryValue()==='Spedizione' ? 35 : 0);
   }
 
   function postPayload(payload){
