@@ -1,61 +1,170 @@
-/* LNTDV — layout catalogo definitivo: foto naturale + formato separato */
-.grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,0.94fr))!important;gap:28px!important;justify-content:center!important;width:100%!important;align-items:start!important}
-.grid .card{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
-.grid .card .lntdv-photo-stage{display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;overflow:hidden!important;box-sizing:border-box!important;background:transparent!important;border:2px solid #6b4734!important;border-radius:14px!important}
-.grid .card .lntdv-photo-stage>img,.grid .card .lntdv-photo-stage img{display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border:0!important;border-radius:12px!important;background:transparent!important;transform:none!important;filter:none!important;opacity:1!important;visibility:visible!important;content-visibility:visible!important;contain:none!important}
-.grid .card .meta{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;height:auto!important;min-height:0!important;margin:10px 0 0!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
-.grid .card .print-choice{display:block!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-sizing:border-box!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-.grid .card .print-choice label{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.grid .card .format-select{display:block!important;width:100%!important;min-width:0!important;min-height:58px!important;height:58px!important;margin:0!important;padding:11px 13px!important;box-sizing:border-box!important;background:#fffaf3!important;color:#4b2f22!important;border:2px solid #6b4734!important;border-radius:14px!important;font:15px/1.25 Arial,sans-serif!important;appearance:auto!important;-webkit-appearance:auto!important}
-.grid .card .meta>strong,.grid .card .meta>span,.grid .card .meta>small{display:block!important;margin-top:8px!important}
-.grid .card .meta>strong{font:700 11px/1.2 Arial,sans-serif!important;letter-spacing:1.1px!important;color:#2f211a!important}
-.grid .card .meta>span{background:transparent!important;color:#6b4734!important;padding:0!important;border-radius:0!important;font:10px/1.2 Arial,sans-serif!important;letter-spacing:.5px!important}
-.grid .card .meta>small{color:#756357!important;font:10px/1.3 Arial,sans-serif!important}
-.grid .card.selected{border:0!important;box-shadow:none!important;animation:none!important}
-.grid .card.selected .lntdv-photo-stage{border-color:#54745a!important}
-.grid .card:hover{transform:none!important;box-shadow:none!important}
-.grid .card:hover .lntdv-photo-stage>img{transform:none!important}
-@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:26px!important}}
-@media(max-width:700px){
- main{padding-left:12px!important;padding-right:12px!important}
- .grid{grid-template-columns:minmax(0,0.94fr)!important;gap:24px!important;justify-content:center!important}
- .grid .card{width:100%!important;max-width:none!important}
- .grid .card .lntdv-photo-stage{width:100%!important;height:auto!important;aspect-ratio:auto!important;border-radius:14px!important}
- .grid .card .lntdv-photo-stage img{width:100%!important;height:auto!important;max-height:none!important;border-radius:12px!important}
- .grid .card .print-choice{width:100%!important;padding:0!important;background:transparent!important;border:0!important}
- .grid .card .format-select{width:100%!important;min-height:58px!important;height:58px!important;font-size:16px!important;border:2px solid #6b4734!important;border-radius:14px!important}
-}
-
-/* LNTDV — MOBILE / DESKTOP FINAL PROPORTIONS — 2026-09-19
-   Foto leggermente più contenuta; intestazione più presente; selettore
-   della stessa identica larghezza della foto, senza pannello beige esterno.
+/* LNTDV — CATALOG LAYOUT MASTER
+   Single source of truth for photo cards and responsive layout.
+   Updated 2026-09-19.
 */
-.grid .card{
+
+:root{
+  --lntdv-brown:#4b2f22;
+  --lntdv-brown-border:#6b4734;
+  --lntdv-cream:#fffaf3;
+  --lntdv-line:#b99a7d;
+}
+
+/* ===== HEADER ===== */
+header{
+  background:var(--lntdv-brown)!important;
+  color:#f4eadf!important;
+  text-align:center!important;
   box-sizing:border-box!important;
 }
 
-.grid .card .lntdv-photo-stage{
-  box-sizing:border-box!important;
+header .brand{
+  color:#f4eadf!important;
 }
 
-.grid .card .meta{
-  box-sizing:border-box!important;
+header h1{
+  color:#f4eadf!important;
+  font-weight:400!important;
 }
 
-.grid .card .print-choice{
+header .intro{
+  color:#eadbd0!important;
+}
+
+header .legend{
+  justify-content:center!important;
+}
+
+/* ===== PAGE ===== */
+main{
+  box-sizing:border-box!important;
   width:100%!important;
+  max-width:1250px!important;
+  margin:0 auto!important;
+}
+
+#selectionSummary{
+  text-align:center!important;
+  box-sizing:border-box!important;
+}
+
+#selectionSummary>span{
+  box-sizing:border-box!important;
+}
+
+/* ===== PHOTO GRID ===== */
+.grid{
+  display:grid!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  align-items:start!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:28px!important;
+}
+
+.grid .card{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  min-width:0!important;
   height:auto!important;
   min-height:0!important;
-  margin:8px 0 0!important;
+  margin:0!important;
   padding:0!important;
   background:transparent!important;
   border:0!important;
   border-radius:0!important;
   box-shadow:none!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+
+/* ===== PHOTO: NATURAL RATIO, NO EMPTY FRAME ===== */
+.grid .card .lntdv-photo-stage{
+  order:1!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  border:1px solid var(--lntdv-brown-border)!important;
+  border-radius:12px!important;
+}
+
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{
+  display:none!important;
+  content:none!important;
+}
+
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+/* ===== INFORMATION + FORMAT ===== */
+.grid .card .meta{
+  order:2!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+
+.grid .card .print-choice{
+  order:1!important;
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:7px 0 0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
 }
 
 .grid .card .print-choice label{
-  display:block!important;
   position:absolute!important;
   width:1px!important;
   height:1px!important;
@@ -73,56 +182,103 @@
   height:48px!important;
   min-height:48px!important;
   max-height:48px!important;
-  box-sizing:border-box!important;
   margin:0!important;
-  padding:0 38px 0 13px!important;
-  border:1px solid #b99a7d!important;
+  padding:0 36px 0 12px!important;
+  box-sizing:border-box!important;
+  border:1px solid var(--lntdv-line)!important;
   border-radius:10px!important;
-  background:#fffaf3!important;
-  color:#4b3022!important;
+  background:var(--lntdv-cream)!important;
+  color:var(--lntdv-brown)!important;
   font:15px/48px Arial,sans-serif!important;
   appearance:auto!important;
   -webkit-appearance:auto!important;
+  outline:none!important;
+  box-shadow:none!important;
 }
 
-@media(max-width:700px){
-  header{
-    padding:34px 16px 30px!important;
+.grid .card .meta>strong{
+  order:2!important;
+  display:block!important;
+  margin:7px 0 0!important;
+  padding:0!important;
+  background:transparent!important;
+  color:#2f211a!important;
+  font:700 11px/1.2 Arial,sans-serif!important;
+  letter-spacing:1.1px!important;
+}
+
+.grid .card .meta>span{
+  order:3!important;
+  display:block!important;
+  margin:5px 0 0!important;
+  padding:0!important;
+  background:transparent!important;
+  color:#6b4734!important;
+  font:10px/1.2 Arial,sans-serif!important;
+}
+
+.grid .card .meta>small{
+  order:4!important;
+  display:block!important;
+  margin:4px 0 0!important;
+  padding:0!important;
+  color:#756357!important;
+  font:10px/1.3 Arial,sans-serif!important;
+}
+
+/* ===== DESKTOP / TABLET ===== */
+@media (max-width:1050px){
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:700px){
+  header{
+    padding:34px 14px 30px!important;
+  }
+
   header .brand{
     font-size:13px!important;
+    line-height:1.2!important;
     letter-spacing:3px!important;
   }
+
   header h1{
-    font-size:clamp(40px,7.8vw,54px)!important;
-    line-height:1.05!important;
-    margin:16px 0 13px!important;
+    font-size:clamp(42px,8vw,56px)!important;
+    line-height:1.03!important;
+    margin:16px 0 14px!important;
   }
+
   header .intro{
     font-size:13px!important;
     line-height:1.45!important;
   }
+
   header .legend{
-    margin-top:15px!important;
     gap:7px!important;
+    margin-top:15px!important;
   }
+
   header .legend span{
     padding:6px 9px!important;
     font-size:9px!important;
   }
 
   main{
-    padding-left:0!important;
-    padding-right:0!important;
-    padding-top:22px!important;
+    width:100%!important;
+    max-width:none!important;
+    padding:22px 0 60px!important;
   }
 
   #selectionSummary{
-    margin:0 0 16px!important;
-    padding:0 4%!important;
+    width:92%!important;
+    margin:0 auto 17px!important;
+    padding:0!important;
   }
 
-  #selectionSummary > span{
+  #selectionSummary>span{
     max-width:100%!important;
     padding:9px 14px!important;
     font-size:10px!important;
@@ -133,46 +289,37 @@
     max-width:92%!important;
     margin:0 auto!important;
     grid-template-columns:minmax(0,1fr)!important;
-    gap:22px!important;
+    gap:24px!important;
   }
 
   .grid .card{
     width:100%!important;
     max-width:100%!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:visible!important;
   }
 
   .grid .card .lntdv-photo-stage{
     width:100%!important;
     height:auto!important;
     aspect-ratio:auto!important;
-    border:1px solid #6b4734!important;
+    border-width:1px!important;
     border-radius:12px!important;
-    background:transparent!important;
   }
 
-  .grid .card .lntdv-photo-stage > img,
-  .grid .card .lntdv-photo-stage img{
+  .grid .card .lntdv-photo-stage>img{
     width:100%!important;
     height:auto!important;
     max-width:100%!important;
     max-height:none!important;
-    object-fit:contain!important;
     border-radius:11px!important;
   }
 
   .grid .card .meta{
     width:100%!important;
-    margin:0!important;
-    padding:0!important;
   }
 
   .grid .card .print-choice{
     width:100%!important;
-    margin:7px 0 0!important;
-    padding:0!important;
+    margin-top:7px!important;
   }
 
   .grid .card .format-select{
@@ -180,24 +327,24 @@
     height:48px!important;
     min-height:48px!important;
     max-height:48px!important;
-    border:1px solid #b99a7d!important;
-    border-radius:10px!important;
     font-size:15px!important;
-    line-height:48px!important;
-  }
-
-  .grid .card .meta>strong,
-  .grid .card .meta>span,
-  .grid .card .meta>small{
-    margin-top:6px!important;
   }
 }
 
-@media(min-width:701px){
-  .grid .card .format-select{
-    height:48px!important;
-    min-height:48px!important;
-    max-height:48px!important;
-  }
+/* ===== SELECTION DOES NOT CHANGE GEOMETRY ===== */
+.grid .card.selected{
+  border:0!important;
+  outline:none!important;
+  box-shadow:none!important;
 }
 
+.grid .card.selected .lntdv-photo-stage{
+  border-color:var(--lntdv-brown-border)!important;
+}
+
+.grid .card:hover,
+.grid .card:focus,
+.grid .card:hover .lntdv-photo-stage>img{
+  transform:none!important;
+  box-shadow:none!important;
+}
