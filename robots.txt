@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://lntdv.it/sitemap.xml
+Sitemap: https://www.lntdv.it/sitemap.xml
