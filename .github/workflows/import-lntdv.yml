@@ -38,16 +38,17 @@ jobs:
           for n in range(1, 26):
               src = Path(f"assets/photo{n:02d}.js")
               dst = out / f"natura-{n:02d}.jpg"
-              if not src.exists():
-                  raise SystemExit(f"Asset sorgente mancante: {src}")
-              text = src.read_text(encoding="utf-8")
+              text = src.read_text(encoding="utf-8") if src.exists() else ""
               m = re.search(r'data:image/jpeg;base64,([A-Za-z0-9+/=]+)', text)
-              if not m:
-                  raise SystemExit(f"Immagine Base64 non trovata in {src}")
-              data = base64.b64decode(m.group(1), validate=True)
-              if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
-                  raise SystemExit(f"JPG non valido o vuoto: {src}")
-              dst.write_bytes(data)
+              if m:
+                  data = base64.b64decode(m.group(1), validate=True)
+                  if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
+                      raise SystemExit(f"JPG non valido: {src}")
+                  dst.write_bytes(data)
+              elif dst.exists() and dst.stat().st_size > 1000 and dst.read_bytes().startswith(b"\xff\xd8\xff"):
+                  print(f"Sorgente JS assente/vuota per {n:02d}: mantengo il JPG già validato {dst}")
+              else:
+                  raise SystemExit(f"Immagine sorgente/JPG mancante o non valido: {src} / {dst}")
           print("Generati 25 JPG in images/.")
           PY
 
