@@ -35,9 +35,14 @@ jobs:
           s=Path("index.html").read_text(encoding="utf-8")
           if "<html" not in s.lower() or "<body" not in s.lower():
               raise SystemExit("Catalogo non valido")
-          if s.count("<article") < 25 or s.count("<img") < 14:
-              raise SystemExit("Il catalogo non contiene tutte le 25 schede fotografiche")
-          print("Catalogo assemblato:", len(s), "byte", s.count("<article"), "articoli", s.count("<img"), "immagini")
+          import re
+          ids = set(re.findall(r'alt="LNTDV-(\d{3})"', s))
+          expected = {f"{n:03d}" for n in range(1,26)}
+          if ids != expected:
+              raise SystemExit(f"Catalogo fotografico incompleto: presenti {sorted(ids)}, attese tutte le 25")
+          if s.count("<img") < 14:
+              raise SystemExit("Struttura immagini del catalogo non valida")
+          print("Catalogo assemblato:", len(s), "byte", len(ids), "foto", s.count("<img"), "tag immagine")
           PY
 
       - name: Apply requested features
