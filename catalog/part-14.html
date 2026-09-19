@@ -80,7 +80,7 @@ y02/A+JjeufGRqQeLhE5GcAh4Z+LUjpKkXRstr8tZEck/h9sUsRZJYlnlg4mkTAyT9LFnizxcYlBsi5c
     <div class="checkout-head">
       <div>
         <div class="section-label">Ordine fotografia</div>
-        <h2 class="modal-title">Il mio ordine</h2>
+        <h2 class="modal-title">Riepilogo ordine</h2>
         <p>Controlla le tue scelte e completa i dati per inviare l'ordine.</p>
       </div>
       <button class="close-modal" id="closeOrder" type="button" aria-label="Chiudi">×</button>
@@ -277,6 +277,7 @@ y02/A+JjeufGRqQeLhE5GcAh4Z+LUjpKkXRstr8tZEck/h9sUsRZJYlnlg4mkTAyT9LFnizxcYlBsi5c
     if(!panel) return;
     refreshOrder();
     panel.classList.add("active");
+    if(bar) bar.classList.add("order-summary-hidden");
     panel.setAttribute("aria-hidden","false");
     document.body.style.overflow="hidden";
   }
@@ -284,6 +285,7 @@ y02/A+JjeufGRqQeLhE5GcAh4Z+LUjpKkXRstr8tZEck/h9sUsRZJYlnlg4mkTAyT9LFnizxcYlBsi5c
   function closeOrderModal(){
     if(!panel) return;
     panel.classList.remove("active");
+    if(bar) bar.classList.remove("order-summary-hidden");
     panel.setAttribute("aria-hidden","true");
     document.body.style.overflow="";
   }
