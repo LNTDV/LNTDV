@@ -126,8 +126,8 @@ final_css = r'''<style id="lntdv-final-photo-rendering">
   margin:0!important;
   background:transparent!important;
 }
-.lntdv-photo-stage[data-photo-orientation="horizontal"]{aspect-ratio:4/3!important}
-.lntdv-photo-stage[data-photo-orientation="vertical"]{aspect-ratio:3/4!important}
+.lntdv-photo-stage[data-photo-orientation="horizontal"]{aspect-ratio:auto!important;height:auto!important}
+.lntdv-photo-stage[data-photo-orientation="vertical"]{aspect-ratio:auto!important;height:auto!important}
 .lntdv-photo-stage img{
   display:block!important;
   max-width:100%!important;
@@ -215,7 +215,37 @@ final_css = r'''<style id="lntdv-final-photo-rendering">
 }
 </style>'''
 
-# Inserimento prima di </head>, quindi dopo tutte le regole precedenti del catalogo.
+# Inserimento prima di <style id="lntdv-photo-frame-natural-final-20260919">
+/* LNTDV — FOTO SENZA RIQUADRI VUOTI: il contenitore segue esattamente la foto. */
+.grid{align-items:start!important;}
+.grid .card{
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;overflow:visible!important;min-height:0!important;
+}
+.grid .card .lntdv-photo-stage{
+  width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;
+  display:block!important;overflow:hidden!important;box-sizing:border-box!important;
+  margin:0!important;padding:0!important;background:transparent!important;
+  border:1px solid #d8c6b4!important;border-radius:14px!important;
+}
+.grid .card .lntdv-photo-stage > img,
+.grid .card .lntdv-photo-stage img{
+  display:block!important;width:100%!important;height:auto!important;
+  max-width:100%!important;max-height:none!important;aspect-ratio:auto!important;
+  object-fit:contain!important;object-position:center center!important;
+  margin:0!important;padding:0!important;border:0!important;background:transparent!important;
+  transform:none!important;filter:none!important;opacity:1!important;mix-blend-mode:normal!important;
+}
+.grid .card .meta{background:transparent!important;border:0!important;box-shadow:none!important;padding:10px 0 0!important;}
+.grid .card .print-choice,.grid .card .format-select{width:100%!important;box-sizing:border-box!important;}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{width:100%!important;height:auto!important;aspect-ratio:auto!important;}
+  .grid .card .lntdv-photo-stage > img{width:100%!important;height:auto!important;max-height:none!important;}
+}
+header{background:#4b2f22!important;color:#f4eadf!important;}
+header h1{color:#f4eadf!important;}
+header .intro{color:#eadbd0!important;}
+</style></head>, quindi dopo tutte le regole precedenti del catalogo.
 s = re.sub(r'<style id="lntdv-final-photo-rendering">[\s\S]*?</style>', '', s, flags=re.I)
 if '</head>' not in s.lower():
     raise SystemExit("index.html senza </head>")
