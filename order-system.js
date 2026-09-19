@@ -553,3 +553,15 @@
     setTimeout(function(){window.__lntdvIntentionalOrderOpen=false;},1200);
   },true);
 })();
+
+
+/* LNTDV PHOTO 1 CACHE-BUST — 2026-09-19 */
+(function(){
+  try{
+    const first=document.querySelector('.grid .card:first-child img');
+    if(first && /\/images\/natura-01\.jpg(?:[?#]|$)/i.test(first.getAttribute('src')||'')){
+      const src=first.getAttribute('src').split('#')[0].split('?')[0];
+      first.setAttribute('src',src+'?v=20260919-photo01-original');
+    }
+  }catch(e){}
+})();
