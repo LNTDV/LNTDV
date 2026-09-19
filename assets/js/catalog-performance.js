@@ -55,7 +55,7 @@
 
   function preloadNearViewport(){
     if(!("IntersectionObserver" in window)) return;
-    const images=Array.from(document.querySelectorAll(".card img[loading="eager"]"));
+    const images=Array.from(document.querySelectorAll('.card img[loading="eager"]'));
     const io=new IntersectionObserver(function(entries,observer){
       entries.forEach(function(entry){
         if(!entry.isIntersecting) return;
