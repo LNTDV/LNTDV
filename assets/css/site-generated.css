@@ -671,3 +671,13 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 
+/* Override finale LNTDV: le formato della fotografia prevale sul crop 4:3 */
+.lntdv-photo-stage{background:#f4eadf!important}
+.lntdv-photo-stage img{
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  width:100%!important;
+  height:auto!important;
+  transform:none!important;
+}
+.card img{background:#f4eadf!important}
