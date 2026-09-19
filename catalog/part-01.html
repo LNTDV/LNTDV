@@ -332,7 +332,7 @@ section{
 
 <style id="lntdv-final-functions-style">
 :root{--lntdv-green:#6f8f72;--lntdv-green-dark:#4f6d54;--lntdv-beige:#efe4d0;--lntdv-maroon:#542d2b;--lntdv-brown:#2f211a}
-.order-bar{z-index:9999!important;left:18px!important;right:auto!important;bottom:18px!important;max-width:min(520px,calc(100vw - 36px));border:1px solid rgba(84,45,43,.25)!important;box-shadow:0 18px 45px rgba(47,33,26,.24)!important;animation:lntdvFloat .55s ease both}
+.order-bar{z-index:9999!important;left:auto!important;right:18px!important;bottom:18px!important;max-width:min(520px,calc(100vw - 36px));border:1px solid rgba(84,45,43,.25)!important;box-shadow:0 18px 45px rgba(47,33,26,.24)!important;animation:lntdvFloat .55s ease both}
 .order-button,.checkout-complete,.tracking-submit{transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
 .order-button:hover,.checkout-complete:hover:not(:disabled),.tracking-submit:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(79,109,84,.25)}
 .card.selected{outline:3px solid var(--lntdv-green)!important;outline-offset:3px;box-shadow:0 0 0 8px rgba(111,143,114,.14)!important}
@@ -361,7 +361,7 @@ section{
 .step-date{font-size:11px;margin-top:5px;opacity:.72}
 @keyframes lntdvPop{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes lntdvFloat{from{transform:translateY(15px);opacity:0}to{transform:translateY(0);opacity:1}}
-@media(max-width:760px){.order-bar{left:10px!important;right:10px!important;bottom:10px!important;max-width:none}.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}.delivery-choice{grid-template-columns:1fr}.tracking-section{margin:45px 12px 120px;padding:22px}}
+@media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:10px!important;max-width:calc(100vw - 20px);width:calc(100vw - 20px)}.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}.delivery-choice{grid-template-columns:1fr}.tracking-section{margin:45px 12px 120px;padding:22px}}
 </style>
 
 </head>
