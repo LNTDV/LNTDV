@@ -107,5 +107,11 @@ if 'id="lntdv-tracking-script"' not in s:
 '''
     s=s.replace("<script>document.addEventListener('contextmenu'",js+"<script>document.addEventListener('contextmenu'",1)
 
+# Ultimo override: deve essere aggiunto DOPO ogni CSS precedente, così nessun blocco mobile può spostare il carrello a sinistra.
+s += """\n<style id="lntdv-final-orderbar-mobile">
+.order-bar{position:fixed!important;left:auto!important;right:18px!important;bottom:18px!important;z-index:999999!important;width:min(520px,calc(100vw - 36px))!important;max-width:calc(100vw - 36px)!important;min-width:0!important;box-sizing:border-box!important;transform:translateY(0)!important;}
+@media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important;min-width:0!important;}}
+</style>
+"""
 p.write_text(s,encoding="utf-8")
 print("Published source prepared:",len(s),"bytes",s.count("<article"),"articles",s.count("<img"),"images")
