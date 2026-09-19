@@ -130,8 +130,8 @@ s += """
 """
 
 # Load exactly one external order engine after the generated catalog.
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919f">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919d"></script>'''
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919g">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919e"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
