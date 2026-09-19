@@ -354,3 +354,89 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initFinalUx,{once:true});
   else initFinalUx();
 })();
+
+
+/* LNTDV — ANTI ACCIDENTAL CHECKOUT OPEN v2026-09-19
+   Il riepilogo ordine si apre SOLO dopo una pressione intenzionale sul pulsante.
+   Scorrimento/touch/swipe sulla pagina non può aprirlo.
+*/
+(function(){
+  'use strict';
+  let intentionalOpen=false;
+  let downX=0, downY=0, downTarget=null, moved=false;
+
+  function isOpenButton(el){
+    return !!(el && el.closest && el.closest('#openOrder'));
+  }
+  function panel(){
+    return document.getElementById('orderPanel');
+  }
+  function trackingUrl(){
+    try{
+      const q=new URLSearchParams(location.search);
+      return !!(q.get('ordine') && q.get('token'));
+    }catch(e){ return false; }
+  }
+  function forceClosed(){
+    if(trackingUrl()) return;
+    const p=panel();
+    if(!p) return;
+    p.classList.remove('active');
+    p.setAttribute('aria-hidden','true');
+    document.documentElement.classList.remove('lntdv-order-open');
+    document.body.classList.remove('lntdv-order-open');
+    document.body.style.overflow='';
+  }
+
+  document.addEventListener('pointerdown',function(e){
+    downTarget=e.target;
+    downX=e.clientX;
+    downY=e.clientY;
+    moved=false;
+    if(!isOpenButton(e.target)) intentionalOpen=false;
+  },true);
+
+  document.addEventListener('pointermove',function(e){
+    if(Math.abs(e.clientX-downX)>8 || Math.abs(e.clientY-downY)>8) moved=true;
+  },true);
+
+  document.addEventListener('pointerup',function(e){
+    if(!isOpenButton(downTarget) || moved || e.pointerType==='touch'){
+      intentionalOpen=false;
+      return;
+    }
+    intentionalOpen=true;
+  },true);
+
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest?.('#openOrder');
+    if(!btn) return;
+    if(!intentionalOpen || moved){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      forceClosed();
+      return;
+    }
+    intentionalOpen=false;
+  },true);
+
+  // Qualunque apertura non associata al pulsante viene chiusa.
+  const obs=new MutationObserver(function(){
+    const p=panel();
+    if(p && p.classList.contains('active') && !trackingUrl() && !intentionalOpen){
+      forceClosed();
+    }
+  });
+  obs.observe(document.documentElement,{attributes:true,attributeFilter:['class'],subtree:true});
+  obs.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});
+  window.addEventListener('scroll',function(){
+    if(!trackingUrl()) forceClosed();
+  },{passive:true});
+  window.addEventListener('touchmove',function(){
+    if(!trackingUrl()) forceClosed();
+  },{passive:true});
+  window.addEventListener('pageshow',forceClosed);
+  setTimeout(forceClosed,0);
+  setTimeout(forceClosed,250);
+  setTimeout(forceClosed,1000);
+})();
