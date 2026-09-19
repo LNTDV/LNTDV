@@ -106,28 +106,35 @@ if 'id="lntdv-tracking-script"' not in s:
 '''
     s=s.replace("<script>document.addEventListener('contextmenu'",js+"<script>document.addEventListener('contextmenu'",1)
 
-# Ultimo override: deve essere aggiunto DOPO ogni CSS precedente, così nessun blocco mobile può spostare il carrello a sinistra.
-# Neutralizza qualsiasi velo/filtro grafico sulle fotografie del catalogo.\n# La foto deve essere mostrata con i colori e il contrasto del file sorgente.\ns += """\n
-<style id="lntdv-photo-first-clean">
-/* Prima fotografia: nessun filtro/velo; usa il rendering naturale del file sorgente. */
-img#photo-001{filter:none!important;-webkit-filter:none!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;background:transparent!important;}
-img#photo-001 + *{opacity:1!important;}
-</style>
-
-<style id="lntdv-photo-color-final">\n.catalog img, .card img, .pic img, img[id^="photo-"]{filter:contrast(1.22) brightness(.92) saturate(1.04)!important;-webkit-filter:contrast(1.22) brightness(.92) saturate(1.04)!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;}\n.catalog .pic::before,.catalog .pic::after,.card .pic::after{background-image:none!important;backdrop-filter:none!important;}\n</style>\n"""\n\ns += """\n<style id="id="lntdv-natural-photo-orientation"">\n/* Mantieni l'orientamento e le proporzioni reali delle fotografie: nessun crop 4:3. */\n.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;display:block!important;transform:none!important;}\n.card:hover img,.photo-card:hover img,.pic:hover img{transform:none!important;}\n</style>\n\n<style id="lntdv-final-orderbar-mobile">
-.order-bar{position:fixed!important;left:auto!important;right:18px!important;bottom:18px!important;z-index:999999!important;width:max-content!important;max-width:calc(100vw - 36px)!important;min-width:0!important;box-sizing:border-box!important;transform:translateY(0)!important;}
-@media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:max-content!important;max-width:calc(100vw - 20px)!important;min-width:0!important;}}
+# Ultimo override: append the final rendering rules after all earlier catalog CSS.
+# Remove all filters/veils from catalog photographs and preserve their native orientation.
+s += """
+<style id="lntdv-photo-final-clean">
+.catalog img,.card img,.pic img,img[id^="photo-"]{
+  filter:none!important;-webkit-filter:none!important;opacity:1!important;
+  mix-blend-mode:normal!important;background:transparent!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  width:100%!important;height:auto!important;aspect-ratio:auto!important;
+  object-fit:contain!important;object-position:center!important;
+  display:block!important;transform:none!important;
+}
+.catalog .pic::before,.catalog .pic::after,.card .pic::before,.card .pic::after{
+  content:none!important;display:none!important;opacity:0!important;
+  background:transparent!important;background-image:none!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+}
+.card:hover img,.photo-card:hover img,.pic:hover img,.catalog img:hover{
+  transform:none!important;filter:none!important;-webkit-filter:none!important;
+}
 </style>
 """
-p.write_text(s,encoding="utf-8")
-print("Published source prepared:",len(s),"bytes",s.count("<article"),"articles",s.count("<img"),"images")
 
-# Carica sempre un solo motore ordine nell'index appena assemblato.
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919b">\n<script id="lntdv-external-order-system" src="./order-system.js?v=20260919b"></script>'''
+# Load exactly one external order engine after the generated catalog.
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919c">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919c"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
-
 
 # FINAL CATALOG RENDERING FIX 2026-09-19
 # Appended last so it overrides older catalog rules.
