@@ -14,7 +14,7 @@
 
 Il catalogo pubblico è disponibile qui:
 
-👉 **https://lntdv.github.io/LNTDV/**
+👉 **https://lntdv.it/**
 
 La pagina utilizza direttamente il file fotografico storico del progetto, mantenendo l'ordine delle immagini già definito. La veste grafica finale è stata impostata con palette **marrone e beige**, adattata alla consultazione da smartphone e computer.
 
