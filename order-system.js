@@ -192,14 +192,14 @@
     write(TRACK_KEY,list.slice(0,20));
   }
 
-  function resetSelection(){
+  function resetSelection(shouldRender=true){
     cards().forEach(card=>{
       card.classList.remove('selected','lntdv-format-selected');
       card.setAttribute('aria-pressed','false');
       delete card.dataset.quantity;
     });
     write(CART_KEY,[]);
-    render();
+    if(shouldRender) render();
   }
 
   // The catalog's existing card handler selects/deselects cards.
@@ -301,8 +301,10 @@
     if($('completePayment')) $('completePayment').disabled=true;
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine in corso…';
 
+    let sent=false;
     try{
       await postPayload(payload);
+      sent=true;
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
 
@@ -310,7 +312,10 @@
         $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le indicazioni per il pagamento e la conferma dell’ordine.';
       }
 
-      resetSelection();
+      resetSelection(false);
+      if($('paymentStatus')){
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le indicazioni per il pagamento e la conferma dell’ordine.';
+      }
       if($('orderPanel')){
         $('orderPanel').classList.add('active');
         $('orderPanel').setAttribute('aria-hidden','false');
@@ -319,7 +324,7 @@
       if($('paymentStatus')) $('paymentStatus').textContent='Non è stato possibile inviare l’ordine. Controlla la connessione e riprova.';
     }finally{
       busy=false;
-      render();
+      if(!sent) render();
     }
   });
 
