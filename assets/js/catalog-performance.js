@@ -12,8 +12,11 @@
     img.loading = index < 3 ? "eager" : "lazy";
     img.decoding = "async";
     if(index === 0) img.fetchPriority = "high";
-    img.setAttribute("width", img.getAttribute("width") || "1200");
-    img.setAttribute("height", img.getAttribute("height") || "800");
+    if(!img.getAttribute("width") || !img.getAttribute("height")){
+      const vertical=img.dataset.orientation==="vertical";
+      img.setAttribute("width",vertical?"800":"1200");
+      img.setAttribute("height",vertical?"1200":"800");
+    }
     img.addEventListener("error",function(){ img.classList.add("image-load-error"); },{once:true});
   }
 
@@ -65,9 +68,27 @@
     images.forEach(function(img){io.observe(img);});
   }
 
+  function updateSelectionSummary(){
+    const n=document.querySelectorAll(".card.selected").length;
+    const box=document.getElementById("selectionSummary");
+    if(!box) return;
+    box.querySelector("span")?.replaceChildren(document.createTextNode(
+      n ? (n===1 ? "1 fotografia selezionata" : n+" fotografie selezionate") : "Seleziona la foto e il formato desiderato"
+    ));
+  }
+
   function init(){
     normalizeFormats();
     preloadNearViewport();
+    updateSelectionSummary();
+    document.addEventListener("click",function(e){
+      if(e.target.closest(".card") && !e.target.closest("select,option,input,button,a")){
+        requestAnimationFrame(updateSelectionSummary);
+      }
+    },{passive:true});
+    document.addEventListener("change",function(e){
+      if(e.target.matches(".format-select")) requestAnimationFrame(updateSelectionSummary);
+    },{passive:true});
     document.documentElement.classList.add("lntdv-catalog-ready");
   }
 
