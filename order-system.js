@@ -441,3 +441,97 @@
   setTimeout(forceClosed,250);
   setTimeout(forceClosed,1000);
 })();
+
+
+/* LNTDV FINAL ORDER UI — 2026-09-19 06:00
+   Il riepilogo NON deve mai aprirsi automaticamente.
+   Prima della selezione di una fotografia non deve comparire alcuna scheda.
+   Dopo la prima selezione compare soltanto un pulsante/pill discreto;
+   il checkout completo si apre esclusivamente con un tocco/click intenzionale
+   sul pulsante "Riepilogo ordine".
+*/
+(function(){
+  'use strict';
+
+  function hasTrackingLink(){
+    try{
+      const q=new URLSearchParams(location.search);
+      return !!(q.get('ordine') && q.get('token'));
+    }catch(e){ return false; }
+  }
+
+  function closeCheckoutOnEntry(){
+    if(hasTrackingLink()) return;
+    const panel=document.getElementById('orderPanel');
+    if(!panel) return;
+    panel.classList.remove('active','open','show');
+    panel.setAttribute('aria-hidden','true');
+    document.documentElement.classList.remove('lntdv-order-open');
+    document.body.classList.remove('lntdv-order-open');
+    document.body.style.overflow='';
+    document.body.style.position='';
+  }
+
+  function syncOrderControl(){
+    const panel=document.getElementById('orderPanel');
+    const bar=document.getElementById('orderBar');
+    if(panel && !hasTrackingLink() && !bar?.classList.contains('active')){
+      panel.classList.remove('active','open','show');
+      panel.setAttribute('aria-hidden','true');
+    }
+    if(bar){
+      const count=document.querySelectorAll('.card.selected').length;
+      const visible=count>0;
+      bar.setAttribute('aria-hidden',visible?'false':'true');
+      bar.classList.toggle('show',visible);
+      bar.classList.toggle('active',visible);
+    }
+  }
+
+  // Esegui subito e di nuovo dopo che eventuali script inline hanno terminato.
+  closeCheckoutOnEntry();
+  syncOrderControl();
+  setTimeout(closeCheckoutOnEntry,0);
+  setTimeout(closeCheckoutOnEntry,100);
+  setTimeout(closeCheckoutOnEntry,500);
+  setTimeout(syncOrderControl,0);
+  setTimeout(syncOrderControl,100);
+  setTimeout(syncOrderControl,500);
+
+  window.addEventListener('pageshow',closeCheckoutOnEntry);
+  window.addEventListener('load',function(){
+    closeCheckoutOnEntry();
+    syncOrderControl();
+  });
+
+  // Uno scroll, swipe o caricamento non può aprire il checkout.
+  window.addEventListener('scroll',function(){
+    if(!hasTrackingLink()) closeCheckoutOnEntry();
+  },{passive:true});
+
+  // Se un vecchio handler aggiunge "active" senza il pulsante, lo richiudiamo.
+  const panel=document.getElementById('orderPanel');
+  if(panel){
+    const observer=new MutationObserver(function(){
+      if(!hasTrackingLink() && panel.classList.contains('active')){
+        const btn=document.getElementById('openOrder');
+        if(!btn || !window.__lntdvIntentionalOrderOpen){
+          panel.classList.remove('active','open','show');
+          panel.setAttribute('aria-hidden','true');
+          document.documentElement.classList.remove('lntdv-order-open');
+          document.body.classList.remove('lntdv-order-open');
+          document.body.style.overflow='';
+        }
+      }
+    });
+    observer.observe(panel,{attributes:true,attributeFilter:['class','aria-hidden']});
+  }
+
+  // Stato esplicito: il solo pulsante di riepilogo può autorizzare l'apertura.
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest?.('#openOrder');
+    if(!btn) return;
+    window.__lntdvIntentionalOrderOpen=true;
+    setTimeout(function(){window.__lntdvIntentionalOrderOpen=false;},1200);
+  },true);
+})();
