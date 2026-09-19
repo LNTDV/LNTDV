@@ -681,7 +681,10 @@
   },true);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   window.addEventListener('load',apply,{once:true});
-  new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});
+  // NON usare MutationObserver qui: apply() sposta le option con appendChild() e
+  // osservare il body crea un ciclo continuo di mutazioni che può bloccare il renderer.
+  // L'aggiornamento viene già eseguito su DOMContentLoaded e load.
+
 })();
 
 /* LNTDV FINAL PHOTO/FORMAT STABILITY FIX — 2026-09-19 07:54 */
