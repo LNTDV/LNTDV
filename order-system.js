@@ -94,12 +94,11 @@
 
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
-    const phone=$('customerPhone')?.value.trim()||'';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const complete=list.length>0 && list.every(x=>!!x.format);
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
-    const ready=complete && !!name && validEmail && !!phone && addressReady;
+    const ready=complete && !!name && validEmail && addressReady;
 
     if($('completePayment')) $('completePayment').disabled=!ready||busy;
     if($('paymentStatus')){
@@ -289,7 +288,7 @@
 
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
-    if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !phone || !addressReady){
+    if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){
       render();
       return;
     }
@@ -305,7 +304,6 @@
       customer:{
         name,
         email,
-        phone,
         street:$('customerStreet')?.value.trim()||'',
         zip:$('customerZip')?.value.trim()||'',
         city:$('customerCity')?.value.trim()||'',
@@ -343,7 +341,7 @@
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
 
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.';
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.<br><br><a href="mailto:info.lanostraterradavicino@gmail.com" class="lntdv-mail-action">Apri Apple Mail</a> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info.lanostraterradavicino@gmail.com" target="_blank" rel="noopener" class="lntdv-mail-action">Apri Gmail</a>';
       }
 
       resetSelection(false);
