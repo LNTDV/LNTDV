@@ -609,8 +609,16 @@
 /* LNTDV — ORIENTAMENTO FOTO PER STAMPA — 2026-09-19 */
 (function(){
   'use strict';
-  const vertical=new Set(['LNTDV-003','LNTDV-006','LNTDV-007','LNTDV-008','LNTDV-009','LNTDV-011','LNTDV-013','LNTDV-014','LNTDV-015','LNTDV-016','LNTDV-018']);
-  function apply(){document.querySelectorAll('.card').forEach(card=>{const code=(card.querySelector('.meta strong')?.textContent||'').trim();const img=card.querySelector('img');if(!img)return;img.style.transform='none';img.style.objectFit=vertical.has(code)?'contain':'cover';});}
+  function apply(){
+    document.querySelectorAll('.card img').forEach(img=>{
+      img.style.transform='none';
+      img.style.objectFit='contain';
+      img.style.width='100%';
+      img.style.height='auto';
+      img.style.aspectRatio='auto';
+      img.style.imageOrientation='from-image';
+    });
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
 
@@ -680,16 +688,17 @@
 (function(){
   'use strict';
   // Do not rotate portrait cards with CSS: orientation is metadata, not a 90° transform.
-  const vertical = new Set(['LNTDV-003','LNTDV-006','LNTDV-007','LNTDV-008','LNTDV-009','LNTDV-011','LNTDV-013','LNTDV-014','LNTDV-015','LNTDV-016','LNTDV-018']);
   function fixCard(card){
-    const code=(card.querySelector('.meta strong')?.textContent||'').trim();
     const img=card.querySelector('img');
     if(!img)return;
     img.style.transform='none';
-    img.style.objectFit=vertical.has(code)?'contain':'cover';
-    img.style.background='#f4eadf';
-    card.classList.toggle('photo-vertical',vertical.has(code));
-    card.classList.toggle('photo-horizontal',!vertical.has(code));
+    img.style.objectFit='contain';
+    img.style.background='transparent';
+    img.style.width='100%';
+    img.style.height='auto';
+    img.style.aspectRatio='auto';
+    img.style.imageOrientation='from-image';
+    card.classList.remove('photo-vertical','photo-horizontal');
   }
   function fix(){document.querySelectorAll('.card').forEach(fixCard)}
   function formatLayout(){
@@ -709,4 +718,41 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
   window.addEventListener('load',run,{once:true});
   new MutationObserver(run).observe(document.body,{childList:true,subtree:true});
+})();
+
+
+/* LNTDV FINAL PHOTO/FORMAT HARD FIX v2026-09-19 */
+(function(){
+  'use strict';
+  function fix(){
+    document.querySelectorAll('.grid .card').forEach(card=>{
+      const img=card.querySelector('img');
+      if(img){
+        img.style.transform='none';
+        img.style.objectFit='contain';
+        img.style.width='100%';
+        img.style.height='auto';
+        img.style.aspectRatio='auto';
+        img.style.imageOrientation='from-image';
+      }
+      const meta=card.querySelector('.meta');
+      const choice=card.querySelector('.print-choice');
+      if(meta && choice && choice.parentElement!==meta) meta.prepend(choice);
+      if(choice){
+        choice.style.display='block';
+        choice.style.visibility='visible';
+        choice.style.width='100%';
+      }
+      const select=card.querySelector('.format-select');
+      if(select){
+        select.style.display='block';
+        select.style.visibility='visible';
+        select.style.width='100%';
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fix,{once:true});
+  else fix();
+  window.addEventListener('load',fix,{once:true});
+  new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
 })();
