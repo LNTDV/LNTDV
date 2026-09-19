@@ -639,6 +639,68 @@ img[alt^="LNTDV-"]{
 
 
 
+.grid .card .meta>strong{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:9px 0 0!important;
+  padding:9px 12px!important;
+  background:#4b2f22!important;
+  color:#fffaf3!important;
+  border:2px solid #6b4734!important;
+  border-radius:8px 8px 0 0!important;
+  font:800 15px/1.2 Arial,sans-serif!important;
+  letter-spacing:1.35px!important;
+  text-align:left!important;
+  text-shadow:none!important;
+  box-shadow:0 2px 8px rgba(75,47,34,.10)!important;
+}
+.grid .card .meta>small{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:7px 12px 9px!important;
+  background:#efe4d0!important;
+  color:#4b2f22!important;
+  border:2px solid #6b4734!important;
+  border-top:0!important;
+  border-radius:0 0 8px 8px!important;
+  font:700 12px/1.35 Arial,sans-serif!important;
+  letter-spacing:.25px!important;
+  text-align:left!important;
+}
+.grid .card .meta>span{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:5px 12px!important;
+  background:#f4eadf!important;
+  color:#5a3b2b!important;
+  border-left:2px solid #6b4734!important;
+  border-right:2px solid #6b4734!important;
+  font:600 11px/1.25 Arial,sans-serif!important;
+  letter-spacing:.35px!important;
+}
+@media(max-width:700px){
+  .grid .card .meta>strong{
+    font-size:16px!important;
+    padding:10px 12px!important;
+    letter-spacing:1.4px!important;
+  }
+  .grid .card .meta>span{
+    font-size:11px!important;
+    padding:5px 12px!important;
+  }
+  .grid .card .meta>small{
+    font-size:13px!important;
+    padding:8px 12px 10px!important;
+  }
+}
+
+
+
 /* Orientamento deterministico: nessuna rotazione CSS. L'orientamento reale della foto viene preservato. */
 .card:has(img[data-orientation="vertical"]) .photo-wrap,
 .card:has(img[data-orientation="horizontal"]) .photo-wrap{
