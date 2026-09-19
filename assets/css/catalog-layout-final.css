@@ -349,55 +349,79 @@ main{
   box-shadow:none!important;
 }
 
-/* ===== FINAL PROJECT SEPARATOR COLOR =====
-   The gap between every catalog item is the same exhibition brown.
-   Photo and format selector remain clean and independent.
+
+/* ===== FINAL PHOTO STACK / INFO BOX FIX — 2026-09-19 =====
+   Photo stack uses the original dark page color between cards.
+   Each photo keeps its natural dimensions.
+   LNTDV-003/013/014/016/017 are corrected from landscape to portrait
+   using the known 1500x1072 source ratio.
 */
 .grid{
-  background:var(--lntdv-brown)!important;
-  gap:12px!important;
+  background:#11100d!important;
+  gap:24px!important;
 }
-
 .grid .card{
   background:#fff!important;
 }
-
 .grid .card .lntdv-photo-stage{
   background:#fff!important;
 }
 
-.grid .card .meta{
-  background:#fff!important;
+/* Brown identification/orientation panel: LNTDV-001 → LNTDV-025 */
+.grid .card .meta>strong,
+.grid .card .meta>span,
+.grid .card .meta>small{
+  background:#4b2f22!important;
+  color:#f4eadf!important;
+  margin:0!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  box-sizing:border-box!important;
+}
+.grid .card .meta>strong{
+  margin-top:7px!important;
+  padding-top:8px!important;
+  padding-bottom:2px!important;
+  border-radius:8px 8px 0 0!important;
+}
+.grid .card .meta>span{
+  padding-top:2px!important;
+  padding-bottom:2px!important;
+}
+.grid .card .meta>small{
+  padding-top:2px!important;
+  padding-bottom:8px!important;
+  border-radius:0 0 8px 8px!important;
+  color:#eadbd0!important;
 }
 
-.grid .card .print-choice{
-  background:transparent!important;
+/* Correct the five known rotated source photos. */
+.grid .card:nth-child(3) .lntdv-photo-stage,
+.grid .card:nth-child(13) .lntdv-photo-stage,
+.grid .card:nth-child(14) .lntdv-photo-stage,
+.grid .card:nth-child(16) .lntdv-photo-stage,
+.grid .card:nth-child(17) .lntdv-photo-stage{
+  aspect-ratio:1072/1500!important;
+  overflow:hidden!important;
 }
-
-.grid .card .format-select{
-  background:var(--lntdv-cream)!important;
+.grid .card:nth-child(3) .lntdv-photo-stage>img,
+.grid .card:nth-child(13) .lntdv-photo-stage>img,
+.grid .card:nth-child(14) .lntdv-photo-stage>img,
+.grid .card:nth-child(16) .lntdv-photo-stage>img,
+.grid .card:nth-child(17) .lntdv-photo-stage>img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  transform:rotate(90deg) scale(1.399254)!important;
+  transform-origin:center center!important;
 }
 
 @media(max-width:700px){
   .grid{
-    gap:10px!important;
-    background:var(--lntdv-brown)!important;
+    background:#11100d!important;
+    gap:18px!important;
   }
-
-  .grid .card{
-    background:#fff!important;
-  }
-
   .grid .card .lntdv-photo-stage{
     background:#fff!important;
   }
-
-  .grid .card .meta{
-    background:#fff!important;
-  }
-
-  .grid .card .format-select{
-    background:var(--lntdv-cream)!important;
-  }
 }
-
