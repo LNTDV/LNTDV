@@ -143,6 +143,7 @@
   const TRACKING_KEY='lntdv_tracking_orders_v2';
   const ENDPOINT='https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec';
   const PRICES={'Stampa fotografica':40,'Forex':50,'File digitale in alta risoluzione':25};
+  const COUNT_FIX_VERSION='20260919e';
   const SHIPPING=10;
   let busy=false;
   const $=id=>document.getElementById(id);
@@ -158,7 +159,8 @@
     const format=card.querySelector('.format-select')?.value||'';
     const image=card.querySelector('img')?.getAttribute('src')||'';
     const orientation=card.querySelector('.meta small')?.textContent.replace(/^Orientamento:\s*/i,'').trim()||'';
-    return {card,code,format,image,orientation,price:Number(PRICES[format]||0),quantity:1};
+    const quantity=Math.max(1,parseInt(card.dataset.quantity||'1',10)||1);
+    return {card,code,format,image,orientation,price:Number(PRICES[format]||0),quantity};
   })}
   function totals(a){const subtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;return{subtotal,shipping,total:subtotal+shipping}}
   function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format})))}
@@ -171,6 +173,7 @@
       if(!hit)return;
       card.classList.add('selected');card.setAttribute('aria-pressed','true');
       const s=card.querySelector('.format-select');if(s)s.value=hit.format||'';
+      if(hit.quantity)card.dataset.quantity=Math.max(1,parseInt(hit.quantity,10)||1);
     });
   }
   function normalizePayment(){
@@ -187,9 +190,9 @@
     normalizePayment();
     const a=items(),p=totals(a),bar=$('orderBar');
     if(bar){const show=a.length>0;bar.classList.toggle('show',show);bar.classList.toggle('active',show);bar.setAttribute('aria-hidden',show?'false':'true')}
-    if($('orderBarCount'))$('orderBarCount').textContent=a.length+' foto';
+    if($('orderBarCount'))$('orderBarCount').textContent=a.reduce((n,x)=>n+Math.max(1,x.quantity||1),0)+' foto';
     if($('orderBarTotal'))$('orderBarTotal').textContent=money(p.total);
-    if($('summaryCount'))$('summaryCount').textContent=String(a.length);
+    if($('summaryCount'))$('summaryCount').textContent=String(a.reduce((n,x)=>n+Math.max(1,x.quantity||1),0));
     if($('orderTotal'))$('orderTotal').textContent=money(p.total);
     if($('orderList'))$('orderList').innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div></div><div class="checkout-photo-price">'+money(x.price)+'</div></div>').join(''):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     const name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
@@ -242,7 +245,7 @@
     const a=items(),name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
     if(!a.length||a.some(x=>!x.format)||!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
     const p=totals(a),id=orderId(),t=token();
-    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:null,deliveryType:delivery(),requestedTracking:true,trackingToken:t};
+    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:Math.max(1,Number(x.quantity)||1)})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:null,deliveryType:delivery(),requestedTracking:true,trackingToken:t};
     busy=true;write(LAST_ORDER_KEY,{orderId:id,token:t,email,total:p.total,pending:true,createdAt:new Date().toISOString()});
     if($('completePayment'))$('completePayment').disabled=true;
     if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Invio ordine in corso…</strong><br>Verifica della registrazione sul sistema ordini.';
@@ -256,7 +259,7 @@
       }
       track(id,t);write(LAST_ORDER_KEY,{...payload,confirmedAt:new Date().toISOString(),pending:false});write(CART_KEY,[]);
       selected().forEach(c=>{c.classList.remove('selected');c.setAttribute('aria-pressed','false')});
-      if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai la conferma via email. Totale: <strong>'+money(p.total)+'</strong>.';
+      if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br>Token tracking: <strong>'+esc(t)+'</strong><br><br>Riceverai via email i dati per il bonifico, la causale e il collegamento diretto al tracking. Totale: <strong>'+money(p.total)+'</strong>.';
       busy=false;render();
     }catch(e){
       busy=false;
