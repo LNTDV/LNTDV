@@ -1076,21 +1076,6 @@
       </section>
 
       <section class="checkout-block">
-        <div class="checkout-section-title">Consegna</div>
-        <div class="delivery-choice">
-          <label class="delivery-option">
-            <input type="radio" name="deliveryType" value="Ritiro" checked>
-            <span><strong>Ritiro gratuito</strong><small>Da concordare a Milano</small></span>
-          </label>
-          <label class="delivery-option">
-            <input type="radio" name="deliveryType" value="Spedizione">
-            <span><strong>Spedizione</strong><small>€10,00</small></span>
-          </label>
-        </div>
-        <div id="deliveryStatus" class="payment-status">Ritiro selezionato.</div>
-      </section>
-
-      <section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
         <div class="payment-choice">
           <label><input type="radio" name="checkoutPayment" value="Carta"> <span>Carta</span></label>
@@ -1108,6 +1093,12 @@
       </div>
       <button class="send-order checkout-submit" id="completePayment" type="button">CONFERMA E INVIA ORDINE</button>
     </div>
+    <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
+      <div class="confirmation-kicker">ORDINE REGISTRATO</div>
+      <h2>Conferma ordine</h2>
+      <p id="orderConfirmationText">La richiesta è stata registrata correttamente.</p>
+      <div id="confirmationMailActions" class="confirmation-actions"></div>
+    </section>
   </div>
 </div>
 
