@@ -109,12 +109,15 @@ s=s.replace('''      total:total,
 s=re.sub(r'\\.card\\.photo-vertical>img\\s*\\{[^}]*transform\\s*:\\s*rotate\\([^}]*\\)[^}]*\\}', '', s, flags=re.I)
 
 # Mantiene un solo elemento di stato consegna: ID duplicati rompono querySelector/getElementById su alcuni flussi.
-matches=list(re.finditer(r'<div id="deliveryStatus"[^>]*>',s,flags=re.I))
-if len(matches)>1:
-    first_end=matches[0].end()
-    # Il primo elemento è il messaggio "Ritiro gratuito..."; il secondo viene reso non-ID per evitare collisioni.
-    second=matches[1]
-    s=s[:second.start()] + s[second.start():second.end()].replace('id="deliveryStatus"','class="delivery-status-secondary"',1) + s[second.end():]
+delivery_seen=0
+def _unique_delivery_id(m):
+    global delivery_seen
+    tag=m.group(0)
+    delivery_seen += 1
+    if delivery_seen==1:
+        return tag
+    return re.sub(r'\s+id=["\\\']deliveryStatus["\\\']', '', tag, count=1, flags=re.I)
+s=re.sub(r'<div\\b[^>]*\\bid=["\\\']deliveryStatus["\\\'][^>]*>', _unique_delivery_id, s, flags=re.I)
 
 # Ultimo override: append the final rendering rules after all earlier catalog CSS.
 # Remove all filters/veils from catalog photographs and preserve their native orientation.
