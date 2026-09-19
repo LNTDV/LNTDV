@@ -348,3 +348,56 @@ main{
   transform:none!important;
   box-shadow:none!important;
 }
+
+/* ===== FINAL PROJECT SEPARATOR COLOR =====
+   The gap between every catalog item is the same exhibition brown.
+   Photo and format selector remain clean and independent.
+*/
+.grid{
+  background:var(--lntdv-brown)!important;
+  gap:12px!important;
+}
+
+.grid .card{
+  background:#fff!important;
+}
+
+.grid .card .lntdv-photo-stage{
+  background:#fff!important;
+}
+
+.grid .card .meta{
+  background:#fff!important;
+}
+
+.grid .card .print-choice{
+  background:transparent!important;
+}
+
+.grid .card .format-select{
+  background:var(--lntdv-cream)!important;
+}
+
+@media(max-width:700px){
+  .grid{
+    gap:10px!important;
+    background:var(--lntdv-brown)!important;
+  }
+
+  .grid .card{
+    background:#fff!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    background:#fff!important;
+  }
+
+  .grid .card .meta{
+    background:#fff!important;
+  }
+
+  .grid .card .format-select{
+    background:var(--lntdv-cream)!important;
+  }
+}
+
