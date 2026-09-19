@@ -671,3 +671,63 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 </style>
+
+
+/* LNTDV — riquadri fotografici uniformi e immagini singole 2026-09-19 */
+.grid{
+  align-items:start!important;
+}
+.grid .card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-self:start!important;
+  min-height:0!important;
+}
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:4/3!important;
+  min-height:0!important;
+  max-height:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  position:relative!important;
+  background:#4b2f22!important;
+  box-sizing:border-box!important;
+}
+.grid .card .lntdv-photo-stage img{
+  position:static!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  rotate:none!important;
+  filter:none!important;
+  opacity:1!important;
+  background:transparent!important;
+  background-image:none!important;
+}
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{
+  content:none!important;
+  display:none!important;
+}
+.grid .card .meta{
+  min-height:0!important;
+  height:auto!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    aspect-ratio:4/3!important;
+  }
+}
