@@ -258,7 +258,7 @@
     render();
     const a=items(),name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
     if(!a.length||a.some(x=>!x.format)||!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
-    if(a.length>=2 && !read(PROMO_KEY,null)?.action){
+    if(a.length>=2 && !(sessionStorage.getItem(PROMO_KEY)==='shown')){
       const promoAction=await showThirdPhotoPromotion();
       if(promoAction==='add'){
         closePanel();
