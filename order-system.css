@@ -352,3 +352,44 @@ body > main > .grid:first-of-type .card:first-child.selected img{
   filter:brightness(1.16)!important;
   -webkit-filter:brightness(1.16)!important;
 }
+
+
+/* LNTDV PRINT ORIENTATION HARD FIX — 2026-09-19 */
+/* Ogni foto mantiene le proprie proporzioni reali: verticale resta verticale, orizzontale resta orizzontale. */
+.grid .card .photo-wrap,
+.grid .card .photo-wrap img,
+.grid .card img{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+}
+.grid .card .photo-wrap{overflow:visible!important;background:transparent!important;}
+@media print{
+  @page{size:auto;margin:10mm;}
+  html,body{background:#fff!important;}
+  .grid{display:block!important;}
+  .grid .card{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 10mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    overflow:visible!important;
+    box-shadow:none!important;
+  }
+  .grid .card .photo-wrap,
+  .grid .card img{
+    width:auto!important;
+    max-width:100%!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    transform:none!important;
+  }
+  .grid .card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
+}
