@@ -579,7 +579,7 @@
   </div>
 </aside>
 
-<div class="order-bar" id="orderBar">
+<div class="order-bar" id="orderBar" aria-hidden="true">
   <div class="order-bar-info">
     <span class="order-bar-label">Il mio ordine</span>
     <strong id="orderBarCount">0 foto</strong>
@@ -634,26 +634,9 @@
       </section>
 
       <section class="checkout-block">
-        <div class="checkout-section-title">Consegna</div>
-        <div class="delivery-choice">
-          <label class="delivery-option">
-            <input type="radio" name="deliveryType" value="Ritiro" checked>
-            <span><strong>Ritiro gratuito</strong><small>Da concordare a Milano</small></span>
-          </label>
-          <label class="delivery-option">
-            <input type="radio" name="deliveryType" value="Spedizione">
-            <span><strong>Spedizione</strong><small>€10,00</small></span>
-          </label>
-        </div>
-        <div id="deliveryStatus" class="payment-status">Ritiro selezionato.</div>
-      </section>
-
-      <section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
         <div class="payment-choice">
           <label><input type="radio" name="checkoutPayment" value="Carta"> <span>Carta</span></label>
-          <label><input type="radio" name="checkoutPayment" value="Apple Pay"> <span>Apple Pay</span></label>
-          <label><input type="radio" name="checkoutPayment" value="Google Pay"> <span>Google Pay</span></label>
           <label><input type="radio" name="checkoutPayment" value="Bonifico bancario"> <span>Bonifico bancario</span></label>
         </div>
         <div id="paymentStatus" class="payment-status"></div>
@@ -821,7 +804,7 @@
     totalEl.textContent="€"+total.toFixed(2).replace(".",",");
     if(barCount) barCount.textContent=items.length+" "+(items.length===1 ? "foto" : "foto");
     if(barTotal) barTotal.textContent="€"+total.toFixed(2).replace(".",",");
-    if(bar) bar.classList.add("active");
+    if(bar){\n      const visible=items.length>0;\n      bar.setAttribute("aria-hidden",visible?"false":"true");\n      bar.classList.toggle("active",visible);\n      bar.classList.toggle("show",visible);\n    }
 
     updatePayment();
   }
