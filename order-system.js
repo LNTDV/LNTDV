@@ -192,33 +192,11 @@
     });
   }
   function paymentInfo(){
-    let box=document.getElementById('lntdvPaymentDetails');
-    const panel=$('orderPanel');
-    if(!panel)return;
-    if(!box){box=document.createElement('div');box.id='lntdvPaymentDetails';box.style.cssText='margin:14px 0;padding:14px 15px;border:1px solid rgba(91,64,50,.16);border-radius:12px;background:#fffdf9;color:#3d281d;font:12px/1.55 Arial,sans-serif;';
-      const target=$('completePayment')?.closest('.checkout-bottom')||$('completePayment')?.parentNode||panel.querySelector('.checkout-bottom');
-      if(target)target.parentNode.insertBefore(box,target);
-    }
-    const a=items(),p=totals(a),previewId='LNTDV-PREPARAZIONE';
-    let promoNote=document.getElementById('lntdvPromoNote');
-    if(!promoNote){
-      promoNote=document.createElement('div');
-      promoNote.id='lntdvPromoNote';
-      promoNote.style.cssText='margin:10px 0 14px;padding:11px 13px;border:1px solid #d8c5ae;border-radius:10px;background:#fffaf3;color:#5a3b2b;font:12px/1.5 Arial,sans-serif;text-align:center;';
-      const list=$('orderList');
-      if(list?.parentNode)list.parentNode.insertBefore(promoNote,list);
-    }
-    box.innerHTML='<strong>Dopo il riepilogo</strong><br>Conferma l’ordine per ricevere i dati definitivi del pagamento.<br><br><strong>Bonifico bancario</strong><br>IBAN: <strong>'+esc(BANK_IBAN||'verrà indicato nella conferma')+'</strong><br>Intestatario: <strong>'+esc(BANK_HOLDER)+'</strong><br>Causale: <strong>'+previewId+'</strong> (la causale definitiva sarà l’ID ordine).<br><span style="display:block;margin-top:7px;opacity:.78">Per i pagamenti online, la verifica Nexi XPay è gestita lato server. Non inserire dati della carta nel sito se non viene aperto il portale Nexi.</span>';
+    const box=document.getElementById('lntdvPaymentDetails');
+    if(box)box.remove();
   }
   function normalizePayment(){
-    const inputs=[...document.querySelectorAll('input[name="checkoutPayment"]')];
-    inputs.forEach(i=>{
-      const label=i.closest('label');
-      const supported=i.value==='Bonifico bancario';
-      if(label)label.style.display=supported?'':'none';
-      i.disabled=!supported;
-      if(supported)i.checked=true;
-    });
+    // I metodi di pagamento non vengono mostrati nel riepilogo.
   }
   function render(){
     normalizePayment();
