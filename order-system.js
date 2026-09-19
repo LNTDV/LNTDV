@@ -675,7 +675,7 @@
   // - selettore formato sempre sotto la fotografia
   // - niente Base64, niente filtri, niente effetti scroll-driven
 
-  const ORIENTATION_VERTICAL=new Set(['003','006','007','008','009','011','013','014','015','016','018']);
+  const ORIENTATION_VERTICAL=new Set();
 
   function getCode(card){
     const strong=card.querySelector('.meta strong');
@@ -686,8 +686,12 @@
 
   function getOrientation(card,code){
     const small=(card.querySelector('.meta small')?.textContent||'').trim().toLowerCase();
-    const declared=ORIENTATION_VERTICAL.has(code)||/verticale|vertical/.test(small);
-    return declared?'vertical':'horizontal';
+    const img=card.querySelector('img');
+    const explicit=(card.dataset.orientation||img?.dataset.orientation||'').trim().toLowerCase();
+    if(explicit==='vertical'||explicit==='horizontal') return explicit;
+    if(/verticale|vertical/.test(small)) return 'vertical';
+    if(img && img.naturalWidth && img.naturalHeight) return img.naturalHeight>img.naturalWidth?'vertical':'horizontal';
+    return 'horizontal';
   }
 
   function ensureImage(card,code){
