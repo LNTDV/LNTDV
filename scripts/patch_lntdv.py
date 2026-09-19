@@ -107,7 +107,14 @@ if 'id="lntdv-tracking-script"' not in s:
     s=s.replace("<script>document.addEventListener('contextmenu'",js+"<script>document.addEventListener('contextmenu'",1)
 
 # Ultimo override: deve essere aggiunto DOPO ogni CSS precedente, così nessun blocco mobile può spostare il carrello a sinistra.
-# Neutralizza qualsiasi velo/filtro grafico sulle fotografie del catalogo.\n# La foto deve essere mostrata con i colori e il contrasto del file sorgente.\ns += """\n<style id="lntdv-photo-color-final">\n.catalog img, .card img, .pic img, img[id^="photo-"]{filter:contrast(1.22) brightness(.92) saturate(1.04)!important;-webkit-filter:contrast(1.22) brightness(.92) saturate(1.04)!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;}\n.catalog .pic::before,.catalog .pic::after,.card .pic::after{background-image:none!important;backdrop-filter:none!important;}\n</style>\n"""\n\ns += """\n<style id="lntdv-final-orderbar-mobile">
+# Neutralizza qualsiasi velo/filtro grafico sulle fotografie del catalogo.\n# La foto deve essere mostrata con i colori e il contrasto del file sorgente.\ns += """\n
+<style id="lntdv-photo-first-clean">
+/* Prima fotografia: nessun filtro/velo; usa il rendering naturale del file sorgente. */
+img#photo-001{filter:none!important;-webkit-filter:none!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;background:transparent!important;}
+img#photo-001 + *{opacity:1!important;}
+</style>
+
+<style id="lntdv-photo-color-final">\n.catalog img, .card img, .pic img, img[id^="photo-"]{filter:contrast(1.22) brightness(.92) saturate(1.04)!important;-webkit-filter:contrast(1.22) brightness(.92) saturate(1.04)!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;}\n.catalog .pic::before,.catalog .pic::after,.card .pic::after{background-image:none!important;backdrop-filter:none!important;}\n</style>\n"""\n\ns += """\n<style id="lntdv-final-orderbar-mobile">
 .order-bar{position:fixed!important;left:auto!important;right:18px!important;bottom:18px!important;z-index:999999!important;width:min(520px,calc(100vw - 36px))!important;max-width:calc(100vw - 36px)!important;min-width:0!important;box-sizing:border-box!important;transform:translateY(0)!important;}
 @media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important;min-width:0!important;}}
 </style>
