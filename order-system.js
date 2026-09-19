@@ -118,6 +118,15 @@
   function openPanel(){
     render();
     const panel=$('orderPanel');
+    if(panel) {
+      panel.dataset.state='summary';
+      const submit=$('completePayment');
+      if(submit) submit.style.display='';
+      const title=panel.querySelector('.modal-title');
+      if(title) title.textContent='Riepilogo ordine';
+      const intro=panel.querySelector('.checkout-head p');
+      if(intro) intro.textContent="Controlla le tue scelte e completa i dati per inviare l'ordine.";
+    }
     if(!panel) return;
     panel.classList.add('active');
     panel.setAttribute('aria-hidden','false');
@@ -359,8 +368,16 @@
         $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail predisposta.';
       }
       if($('orderPanel')){
-        $('orderPanel').classList.add('active');
-        $('orderPanel').setAttribute('aria-hidden','false');
+        const panel=$('orderPanel');
+        panel.classList.add('active');
+        panel.setAttribute('aria-hidden','false');
+        panel.dataset.state='confirmed';
+        const submit=$('completePayment');
+        if(submit) submit.style.display='none';
+        const title=panel.querySelector('.modal-title');
+        if(title) title.textContent='Ordine confermato';
+        const intro=panel.querySelector('.checkout-head p');
+        if(intro) intro.textContent='La richiesta è stata registrata. Ora puoi scegliere l’app per inviare la mail predisposta.';
       }
     }catch(err){
       if($('paymentStatus')) $('paymentStatus').textContent='Non è stato possibile inviare l’ordine. Controlla la connessione e riprova.';
