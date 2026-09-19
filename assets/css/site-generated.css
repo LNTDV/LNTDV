@@ -690,8 +690,3 @@ main{background:#f4eadf!important;max-width:1500px!important}
 .lntdv-photo-stage img{background:#fbf6ef!important}
 .meta strong{display:inline-block!important;align-self:flex-end!important;margin-left:auto!important;padding:7px 11px!important;border:1px solid #5a3b2b!important;border-radius:7px!important;background:#fbf6ef!important;color:#5a3b2b!important}
 .meta small{align-self:flex-end!important;text-align:right!important}
-
-
-/* LNTDV SEO/PHOTO FINAL */
-.lntdv-photo-stage img{transform:none!important;rotate:0deg!important;image-orientation:from-image!important;}
-.card img,.photo-card img,.photo-wrap img,.photo-image img{transform:none!important;rotate:0deg!important;}
