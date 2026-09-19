@@ -11,6 +11,10 @@ on:
       - "order-system.js"
   workflow_dispatch:
 
+concurrency:
+  group: lntdv-catalog-publish
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -66,4 +70,5 @@ jobs:
           git add index.html
           git diff --cached --quiet && exit 0
           git commit -m "Fix catalog validation and publish photo loading"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
