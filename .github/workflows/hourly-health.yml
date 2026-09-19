@@ -67,6 +67,14 @@ jobs:
           @media(max-width:700px){.grid{grid-template-columns:1fr!important;gap:18px!important}}
           '''
           css.write_text(css.read_text(encoding="utf-8")+'\n'+extra,encoding="utf-8")
+          final=r'''
+          /* LNTDV — cornice marrone richiesta */
+          .lntdv-photo-stage{background:#fbf6ef!important;border:3px solid #5a3b2b!important;box-sizing:border-box!important;padding:8px!important}
+          .lntdv-photo-stage img{background:#fbf6ef!important}
+          .meta strong{display:inline-block!important;align-self:flex-end!important;margin-left:auto!important;padding:7px 11px!important;border:1px solid #5a3b2b!important;border-radius:7px!important;background:#fbf6ef!important;color:#5a3b2b!important}
+          .meta small{align-self:flex-end!important;text-align:right!important}
+          '''
+          css.write_text(css.read_text(encoding="utf-8")+'\n'+final,encoding="utf-8")
           print("Override finale applicato.")
           PY
 
