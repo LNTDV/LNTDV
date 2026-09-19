@@ -830,3 +830,36 @@ img[id^="photo-"]{
 @media(max-width:520px){.lntdv-mail-chooser{padding:10px}.lntdv-mail-chooser-card{width:calc(100vw - 20px);padding:20px}.lntdv-mail-actions{flex-direction:column}.lntdv-mail-btn{width:100%;box-sizing:border-box}}
 .bank-transfer-only{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border:1px solid #b99a7d;border-radius:10px;background:#fcfaf7;color:#4b2f22}
 .bank-transfer-only small{color:#756357;font:12px/1.4 Arial,sans-serif}
+
+
+/* LNTDV — riepilogo e conferma separati */
+#orderConfirmation{
+  margin-top:24px!important;
+  padding:28px!important;
+  border:1px solid rgba(84,45,43,.18)!important;
+  border-radius:18px!important;
+  background:#fffaf3!important;
+  box-shadow:0 10px 30px rgba(47,33,26,.08)!important;
+  text-align:center!important;
+}
+#orderConfirmation[hidden]{display:none!important}
+#orderConfirmation .confirmation-kicker{
+  font:800 10px/1.2 Arial,sans-serif;
+  letter-spacing:2px;
+  color:#6f8f72;
+  margin-bottom:8px;
+}
+#orderConfirmation h2{margin:0 0 10px;color:#2f211a}
+#orderConfirmation p{margin:0 auto;max-width:620px;line-height:1.6;color:#5b4032}
+#orderConfirmation .confirmation-actions{margin-top:18px}
+#orderConfirmation .confirmation-mail-note{
+  padding:12px 14px;
+  border-radius:10px;
+  background:#efe4d0;
+  color:#5b4032;
+  font:600 12px/1.5 Arial,sans-serif;
+}
+#orderPanel .checkout-head[hidden],
+#orderPanel .checkout-selected[hidden],
+#orderPanel .checkout-grid[hidden],
+#orderPanel .checkout-bottom[hidden]{display:none!important}
