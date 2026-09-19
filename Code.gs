@@ -79,10 +79,9 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Per i pagamenti online Nexi XPay la verifica avviene lato server; per il bonifico usa esclusivamente i dati presenti nella conferma ordine.'}); }
+  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento esclusivamente tramite bonifico bancario. I dati del bonifico vengono inviati al cliente via email dopo l’invio dell’ordine.'}); }
   if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
-  if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || p.ordine || '', p.key || '');
   if (p.action === 'track') return trackOrder_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
   if (p.action === 'shipment') return shipmentStatus_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
@@ -194,7 +193,6 @@ IBAN: ${getSettings_().iban || 'verrà indicato nella conferma ordine'}
 Intestatario: ${getSettings_().accountHolder || 'Edvinas Dragoni'}
 Causale: ${orderId}
 
-Pagamento online: quando disponibile, la verifica dei pagamenti Nexi XPay viene effettuata lato server.
 
 Segui il tuo ordine:
 ${trackingUrl}
@@ -217,7 +215,7 @@ function getSettings_() {
   const data = sh.getDataRange().getValues();
   const out = {};
   data.slice(1).forEach(r => { if (r[0]) out[String(r[0])] = r[1]; });
-  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE'), iban:String(out.iban || ''), accountHolder:String(out.accountHolder || 'Edvinas Dragoni'), xpayApiKey:String(out.xpayApiKey || ''), xpayEnvironment:String(out.xpayEnvironment || 'TEST').toUpperCase()};
+  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE'), iban:String(out.iban || ''), accountHolder:String(out.accountHolder || 'Edvinas Dragoni')};
 }
 
 function ensureHeader_(sheet) {
@@ -228,7 +226,7 @@ function ensureHeader_(sheet) {
 }
 
 function ensureSettings_(sheet) {
-  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,8,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
+  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,8,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
 }
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).setFontWeight('bold'); sheet.autoResizeColumns(1,COPYSHOP_LAST_MESSAGE_COLUMN); if (sheet.getLastRow() > 1) { sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,PAYMENT_CONFIRMATION_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); sheet.getRange(2,COPYSHOP_SENT_COLUMN,sheet.getLastRow()-1,1).insertCheckboxes(); } }
@@ -276,131 +274,6 @@ function trackOrder_(orderId, email, token, callback) {
   }, callback);
 }
 
-
-/**
- * Verifica server-side dello stato di un ordine su Nexi XPay.
- * La X-Api-Key resta nel foglio Impostazioni di Apps Script e non viene mai
- * esposta al browser del cliente.
- *
- * Richiesta protetta:
- *   ?action=xpayVerify&orderId=LNTDV-...&key=<adminKey>
- */
-function verifyXpayOrder_(orderId, key) {
-  const cfg = getSettings_();
-  orderId = String(orderId || '').trim();
-  key = String(key || '').trim();
-  if (!orderId || !key || key !== cfg.adminKey) {
-    return json_({ok:false, error:'Accesso non autorizzato.'});
-  }
-  if (!cfg.xpayApiKey) {
-    return json_({ok:false, error:'XPay API Key non configurata nelle Impostazioni.'});
-  }
-  if (!/^LNTDV-[A-Z0-9-]{6,80}$/.test(orderId)) {
-    return json_({ok:false, error:'ID ordine non valido.'});
-  }
-
-  const endpoint = cfg.xpayEnvironment === 'PROD'
-    ? 'https://xpay.nexigroup.com/api/phoenix-0.0/psp/api/v1/orders/'
-    : 'https://xpaysandbox.nexigroup.com/api/phoenix-0.0/psp/api/v1/orders/';
-
-  const correlationId = Utilities.getUuid();
-  const response = UrlFetchApp.fetch(endpoint + encodeURIComponent(orderId), {
-    method:'get',
-    muteHttpExceptions:true,
-    headers:{
-      'X-Api-Key': cfg.xpayApiKey,
-      'Correlation-Id': correlationId
-    }
-  });
-
-  const code = response.getResponseCode();
-  const raw = response.getContentText();
-  let data = {};
-  try { data = JSON.parse(raw || '{}'); } catch (_) {}
-
-  if (code < 200 || code >= 300) {
-    return json_({ok:false, httpStatus:code, correlationId:correlationId, error:data.message || data.description || raw || 'Errore XPay.'});
-  }
-
-  const order = data.order || {};
-  const operations = Array.isArray(data.operations) ? data.operations : [];
-  const successful = operations.filter(op =>
-    ['EXECUTED','AUTHORIZED'].includes(String(op.operationResult || '').toUpperCase()) &&
-    ['AUTHORIZATION','CAPTURE'].includes(String(op.operationType || '').toUpperCase())
-  );
-  const paid = successful.length > 0;
-
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  if (!sheet) throw new Error('Foglio Ordini non trovato.');
-  const values = sheet.getDataRange().getValues();
-  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId);
-  if (index < 1) return json_({ok:false, error:'Ordine LNTDV non trovato.', xpay:data});
-
-  const row = values[index];
-  const expectedTotal = Number(row[10] || 0);
-  const xpayAmount = Number(order.amount || 0) / 100;
-  const amountOk = !isNaN(xpayAmount) && Math.abs(xpayAmount - expectedTotal) < 0.01;
-
-  if (paid && amountOk) {
-    const current = String(row[14] || '').toUpperCase();
-    if (current !== 'PAGATO') {
-      sheet.getRange(index + 1, 15).setValue('PAGATO');
-      sheet.getRange(index + 1, 14).setValue(true);
-      sheet.getRange(index + 1, PAYMENT_CONFIRMATION_COLUMN).setValue(true);
-      const customerEmail = String(row[6] || '');
-      if (customerEmail) {
-        const paymentCircuit = successful[successful.length - 1].paymentCircuit || 'XPay';
-        const body = 'Gentile ' + String(row[2] || '') + ',\n\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' risulta confermato da Nexi XPay.\n\nIl tuo ordine è confermato.\n\nTotale pagato: €' + expectedTotal.toFixed(2) + '\nMetodo: ' + paymentCircuit + '\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino';
-        MailApp.sendEmail({to:customerEmail, subject:'Pagamento confermato ' + orderId + ' — La Nostra Terra da Vicino', body:body});
-      }
-    }
-  }
-
-  return json_({
-    ok:true,
-    orderId:orderId,
-    paid:paid && amountOk,
-    amountOk:amountOk,
-    expectedAmount:expectedTotal,
-    xpayAmount:xpayAmount,
-    operationResult:successful.length ? successful[successful.length - 1].operationResult : null,
-    paymentCircuit:successful.length ? (successful[successful.length - 1].paymentCircuit || null) : null,
-    correlationId:correlationId
-  });
-}
-
-
-function shipmentStatus_(orderId, email, token, callback) {
-  orderId = String(orderId || '').trim();
-  email = String(email || '').trim().toLowerCase();
-  token = String(token || '').trim().toUpperCase();
-  if (!orderId || !token) return json_({ok:false,error:'ID ordine e token obbligatori.'}, callback);
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  if (!sheet) return json_({ok:false,error:'Ordini non disponibile.'}, callback);
-  const values = sheet.getDataRange().getValues();
-  const index = values.findIndex((r,i) => i > 0 && String(r[1]) === orderId && String(r[15] || '').toUpperCase() === token && (!email || String(r[6] || '').toLowerCase() === email));
-  if (index < 1) return json_({ok:false,error:'Ordine non trovato.'}, callback);
-  const row = values[index];
-  const status = String(row[14] || 'NUOVO').toUpperCase();
-  const shipmentTracking = String(row[16] || '').trim();
-  const carrier = String(row[17] || '').trim();
-  const shipmentStatus = String(row[18] || '').trim();
-  const shipmentUrl = String(row[19] || '').trim();
-  return json_({ok:true,orderId:orderId,deliveryType:String(row[11] || ''),status:status,trackingNumber:shipmentTracking,carrier:carrier,shipmentStatus:shipmentStatus,trackingUrl:shipmentUrl}, callback);
-}
-
-
-/**
- * Quando il gestore spunta la casella "Ricezione ordine" nel foglio Ordini,
- * invia automaticamente la mail all'indirizzo già registrato nell'ordine.
- * Il trigger installabile consente a Apps Script di usare MailApp.
- */
-function ensureCopyshopReplyTrigger_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const triggers = ScriptApp.getProjectTriggers();
-  const exists = triggers.some(t => t.getHandlerFunction() === 'processCopyshopEmails_');
-  if (!exists) ScriptApp.newTrigger('processCopyshopEmails_').timeBased().everyMinutes(5).create();
-}
 
 function sendCopyshopOrderEmail_(row) {
   const orderId = String(row[1] || '');
