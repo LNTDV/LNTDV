@@ -1,0 +1,8 @@
+/* LNTDV — performance and scroll module */
+html{scroll-behavior:auto}
+body{overflow-x:hidden}
+img{content-visibility:auto}
+.card,.photo-card,.photo-wrap,.photo-image{contain:layout paint style;content-visibility:auto;contain-intrinsic-size:420px 360px}
+.card img,.photo-card img,.photo-image img{content-visibility:auto;contain-intrinsic-size:420px 315px}
+@media(max-width:700px){.card,.photo-card{contain-intrinsic-size:520px 520px}.card img,.photo-card img{contain-intrinsic-size:520px 390px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
