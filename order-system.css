@@ -337,3 +337,18 @@ img[id^="photo-"]{
   opacity:1!important;
   pointer-events:auto!important;
 }
+
+
+/* LNTDV FIRST PHOTO COLOR MATCH — 2026-09-19 */
+/* Correzione dedicata alla prima fotografia: riallinea la luminosità al file originale fornito. */
+body > main > .grid:first-of-type .card:first-child img{
+  filter:brightness(1.16)!important;
+  -webkit-filter:brightness(1.16)!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+}
+body > main > .grid:first-of-type .card:first-child:hover img,
+body > main > .grid:first-of-type .card:first-child.selected img{
+  filter:brightness(1.16)!important;
+  -webkit-filter:brightness(1.16)!important;
+}
