@@ -94,9 +94,12 @@
 
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
+    const phone=$('customerPhone')?.value.trim()||'';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const complete=list.length>0 && list.every(x=>!!x.format);
-    const ready=complete && !!name && validEmail;
+    const delivery=deliveryValue();
+    const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
+    const ready=complete && !!name && validEmail && !!phone && addressReady;
 
     if($('completePayment')) $('completePayment').disabled=!ready||busy;
     if($('paymentStatus')){
@@ -230,7 +233,7 @@
   },false);
 
   document.addEventListener('input',e=>{
-    if(e.target.matches?.('#customerName,#customerEmail,#customerStreet,#customerZip,#customerCity,#customerNote')) render();
+    if(e.target.matches?.('#customerName,#customerEmail,#customerPhone,#customerStreet,#customerZip,#customerCity,#customerNote')) render();
   },false);
 
   // iPhone/Safari HARD FALLBACK: handle checkout controls in capture phase so
@@ -281,9 +284,12 @@
     const list=items();
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
+    const phone=$('customerPhone')?.value.trim()||'';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    if(!list.length || list.some(x=>!x.format) || !name || !validEmail){
+    const delivery=deliveryValue();
+    const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
+    if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !phone || !addressReady){
       render();
       return;
     }
@@ -294,11 +300,12 @@
     const payload={
       orderId:id,
       paymentMethod:'',
-      paymentStatus:'IN_ATTESA_DI_PAGAMENTO',
+      paymentStatus:'NON_RICHIESTO',
       orderStatus:'ORDINE RICEVUTO',
       customer:{
         name,
         email,
+        phone,
         street:$('customerStreet')?.value.trim()||'',
         zip:$('customerZip')?.value.trim()||'',
         city:$('customerCity')?.value.trim()||'',
@@ -318,6 +325,9 @@
       promotion:t.promo!==null?'Promozione dedicata: 1 foto €50, 2 foto €80, 3 foto €120':'',
       deliveryType:deliveryValue(),
       requestedTracking:true,
+      notificationEmail:'info.lanostraterradavicino@gmail.com',
+      notificationClients:['Gmail','Apple Mail'],
+      replyTo:email,
       trackingToken
     };
 
@@ -333,12 +343,12 @@
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
 
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le indicazioni per il pagamento e la conferma dell’ordine.';
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.';
       }
 
       resetSelection(false);
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le indicazioni per il pagamento e la conferma dell’ordine.';
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.';
       }
       if($('orderPanel')){
         $('orderPanel').classList.add('active');
