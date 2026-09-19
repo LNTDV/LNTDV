@@ -1,9 +1,36 @@
 #trackingBox{margin-top:14px;padding:15px;border:1px solid rgba(91,64,50,.16);border-radius:14px;background:#fffdf9}#trackingBox h3{margin:0 0 8px;font:700 10px Arial;letter-spacing:1.4px;text-transform:uppercase;color:#5b4032}#trackingForm{display:flex;gap:8px}#trackingCode{flex:1;padding:11px 12px;border:1px solid #d8c6b4;border-radius:10px;font:13px Arial}#trackingButton{border:0;background:#5b4032;color:#fff;border-radius:10px;padding:11px 14px;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}#trackingResult{margin-top:11px;font:12px/1.55 Arial;color:#5b4032}
-/* Gestione ordine — riepilogo sempre discreto in basso a destra */
-.orderbar{left:auto!important;right:18px!important;transform:translateY(150px)!important;width:min(420px,calc(100% - 36px));}
-.orderbar.show{transform:translateY(0)!important;}
-@media(max-width:640px){.orderbar{left:12px!important;right:12px!important;width:auto!important;transform:translateY(150px)!important;}.orderbar.show{transform:translateY(0)!important;}}
-
+/* Gestione ordine — riepilogo fisso in basso a destra, ottimizzato anche per smartphone */
+.orderbar,.order-bar{
+  position:fixed!important;
+  left:auto!important;
+  right:18px!important;
+  bottom:18px!important;
+  width:min(420px,calc(100vw - 36px))!important;
+  max-width:calc(100vw - 20px)!important;
+  box-sizing:border-box!important;
+  z-index:9999!important;
+  transform:translateY(150px)!important;
+}
+.orderbar.show,.order-bar.show{transform:translateY(0)!important;}
+@media(max-width:640px){
+  .orderbar,.order-bar{
+    left:auto!important;
+    right:10px!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:calc(100vw - 20px)!important;
+    max-width:calc(100vw - 20px)!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+}
+@media(max-width:430px){
+  .orderbar,.order-bar{
+    right:8px!important;
+    width:calc(100vw - 16px)!important;
+    max-width:calc(100vw - 16px)!important;
+  }
+  .orderbar button,.order-bar button{flex-shrink:0!important;max-width:48%!important;}
+}
 /* Conferma visiva discreta sulla fotografia selezionata */
 .card.selected .pic{position:relative;}
 .card.selected .pic::before{content:'✓';position:absolute;top:10px;right:10px;z-index:4;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(84,116,90,.92);color:#fff;font:700 13px Arial;box-shadow:0 2px 8px rgba(0,0,0,.14);pointer-events:none;}
