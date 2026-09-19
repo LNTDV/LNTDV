@@ -143,7 +143,7 @@ final_css = r'''<style id="lntdv-final-photo-rendering">
   -webkit-filter:none!important;
   opacity:1!important;
   mix-blend-mode:normal!important;
-  image-orientation:none!important;
+  image-orientation:from-image!important;
   transition:none!important;
   background:transparent!important;
 }
