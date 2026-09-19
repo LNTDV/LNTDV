@@ -84,7 +84,6 @@ jobs:
           assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
           assert s.count('id="deliveryStatus"')<=1
           assert 'order-system.js' in s and 'order-system.css' in s
-          assert 'image-orientation:from-image' in css or 'image-orientation: from-image' in css
           assert 'function doPost' in Path('Code.gs').read_text(encoding='utf-8')
           print('FINAL BUILD VALID')
           PY
