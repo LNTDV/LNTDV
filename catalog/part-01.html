@@ -5,7 +5,7 @@
 .card.selected .photo-wrap{outline:4px solid #3f8f5a;outline-offset:-4px}
 .selection-check{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:#3f8f5a;color:#fff;display:none;align-items:center;justify-content:center;font:700 22px Arial;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .card.selected .selection-check{display:flex}
-.card.selected img{filter:brightness(.96)}
+.card.selected img{filter:none!important}
 .photo-wrap{border:1px solid #eadfd5;border-radius:14px;overflow:hidden}.card img{width:100%;aspect-ratio:4/3;display:block;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-drag:none}.print-choice{margin:0 0 3px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fcfaf7}
 .print-choice label{display:block;margin-bottom:6px;font:10px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--brown2)}
 .format-select{width:100%;padding:10px 12px;border:1px solid #d9c9bb;border-radius:12px;background:#fff;color:var(--brown);font:12px Arial,sans-serif;outline:none}
@@ -196,7 +196,7 @@ section{
 .card img,.photo-card img{
   transition:transform .8s cubic-bezier(.2,.8,.2,1),filter .5s ease;
 }
-.card:hover img,.photo-card:hover img{transform:scale(1.025);filter:saturate(1.04)}
+.card:hover img,.photo-card:hover img{transform:scale(1.025);filter:none!important}
 
 /* Selezione foto: feedback immediato */
 .card.selected,.photo-card.selected{
