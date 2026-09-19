@@ -1,4 +1,5 @@
 name: Publish LNTDV catalog
+# Trigger pubblicazione e consolidamento identità LNTDV
 
 on:
   push:
