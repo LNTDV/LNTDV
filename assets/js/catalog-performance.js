@@ -23,6 +23,19 @@
     img.addEventListener("error",function(){ img.classList.add("image-load-error"); },{once:true});
   }
 
+  function enforceSingleCatalog(){
+    const seen=new Set();
+    const all=Array.from(document.querySelectorAll('.grid .card'));
+    all.forEach(function(card){
+      const code=card.querySelector('.meta strong')?.textContent.trim() || card.querySelector('img')?.alt || '';
+      if(!/^LNTDV-\\d{3}$/.test(code) || seen.has(code) || seen.size>=25){
+        card.remove();
+        return;
+      }
+      seen.add(code);
+    });
+  }
+
   function normalizeFormats(){
     document.querySelectorAll(".card").forEach(function(card,index){
       const img=card.querySelector("img");
@@ -74,6 +87,7 @@
   }
 
   function init(){
+    enforceSingleCatalog();
     normalizeFormats();
     preloadNearViewport();
     updateSelectionSummary();
