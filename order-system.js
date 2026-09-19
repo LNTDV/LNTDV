@@ -670,3 +670,47 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshFirstPhoto,{once:true});else refreshFirstPhoto();
   window.addEventListener('load',refreshFirstPhoto,{once:true});
 })();
+
+
+/* LNTDV — FORMAT SELECTION UX v2026-09-19 */
+(function(){
+  'use strict';
+  const ORDER=['Forex','Stampa fotografica','File digitale in alta risoluzione'];
+  const LABELS={
+    'Forex':'Forex — €50',
+    'Stampa fotografica':'Stampa fotografica — €40',
+    'File digitale in alta risoluzione':'Stampa digitale ad alta definizione — €25'
+  };
+  function apply(){
+    document.querySelectorAll('.format-select').forEach(select=>{
+      const placeholder=select.querySelector('option[value=""]');
+      const opts=ORDER.map(v=>select.querySelector('option[value="'+v+'"]')).filter(Boolean);
+      opts.forEach(o=>{o.textContent=LABELS[o.value];select.appendChild(o)});
+      if(placeholder)select.insertBefore(placeholder,select.firstChild);
+      select.setAttribute('aria-label','Scegli il formato per questa fotografia');
+    });
+  }
+  function softSelect(card){
+    if(!card)return;
+    card.classList.add('lntdv-format-selected');
+    clearTimeout(card.__lntdvSoftTimer);
+    card.__lntdvSoftTimer=setTimeout(()=>card.classList.remove('lntdv-format-selected'),900);
+  }
+  document.addEventListener('change',function(e){
+    const select=e.target.closest?.('.format-select');
+    if(!select)return;
+    const card=select.closest('.card');
+    if(!select.value){
+      if(card){card.classList.remove('selected','lntdv-format-selected');card.setAttribute('aria-pressed','false');}
+      return;
+    }
+    if(card){
+      card.classList.add('selected');
+      card.setAttribute('aria-pressed','true');
+      softSelect(card);
+    }
+  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+  window.addEventListener('load',apply,{once:true});
+  new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});
+})();
