@@ -7,7 +7,7 @@
   const QTY_KEY="lntdv_order_quantities_v1";
   let BANK_IBAN="";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
-  const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-a770YuAKbYkaPmwX0ocf64/exec";
+  const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec";
   const $=id=>document.getElementById(id);
   const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
