@@ -671,3 +671,44 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 </style>
+
+
+/* LNTDV — sfondo marrone definitivo 2026-09-19 */
+:root{
+  --lntdv-page-brown:#4b2f22;
+  --lntdv-page-brown-dark:#352018;
+  --lntdv-page-cream:#f4eadf;
+}
+html,body{
+  background:var(--lntdv-page-brown)!important;
+}
+body{
+  min-height:100vh;
+}
+main{
+  background:var(--lntdv-page-brown)!important;
+  color:var(--lntdv-page-cream)!important;
+  max-width:none!important;
+  padding-left:clamp(12px,3vw,40px)!important;
+  padding-right:clamp(12px,3vw,40px)!important;
+}
+main>.grid{
+  max-width:1250px;
+  margin:0 auto;
+}
+#selectionSummary{
+  max-width:1250px;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+footer{
+  background:var(--lntdv-page-brown-dark)!important;
+  color:#eadbd0!important;
+  border-top:1px solid rgba(244,234,223,.18)!important;
+}
+.collection-notice{
+  background:#5b3a2b!important;
+  color:#f4eadf!important;
+  border-color:rgba(244,234,223,.22)!important;
+}
+.collection-notice strong{color:#fff!important}
