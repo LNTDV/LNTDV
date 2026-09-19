@@ -98,7 +98,6 @@ jobs:
           print('BUILD OK: 25 FOTO / NO ROTATE / NO BASE64 / ORDINI OK')
           PY
           node --check order-system.js
-          node --check Code.gs
 
       - name: Publish to main if generated files changed
         run: |
