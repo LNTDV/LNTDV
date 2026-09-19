@@ -44,6 +44,9 @@ def imgfix(m):
     return tag[:-1] + f' loading="{load}" decoding="async"{priority}>'
 s=re.sub(r'<img\b[^>]*alt=["\']LNTDV-\d{3}["\'][^>]*>',imgfix,s,flags=re.I)
 
+# Rimuove le vecchie opzioni di pagamento che non fanno parte del flusso definitivo.
+s = re.sub(r'<label[^>]*>[^<]*(?:<[^>]+>)*[^<]*(?:Apple Pay|Google Pay)[^<]*(?:</[^>]+>)*</label>', '', s, flags=re.I)
+
 # Una sola regola di orientamento: nessuna rotazione CSS; la foto mantiene la propria geometria.
 final_css="""<style id="lntdv-final-photo-rendering">
 .card,.photo-card,.photo-wrap,.photo-image{overflow:hidden}
