@@ -255,7 +255,7 @@ img[id^="photo-"]{
 
 /* LNTDV — ORIENTAMENTO FOTOGRAFIE: rispetta l'orientamento EXIF/originale */
 /* Non ruotare o ritagliare le fotografie: verticale resta verticale, orizzontale resta orizzontale. */
-.catalog img,.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;image-orientation:from-image!important;transform:none!important;}
+.catalog img,.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;image-orientation:none!important;transform:none!important;}
 .card:hover img,.photo-card:hover img,.pic:hover img,.catalog img:hover{transform:none!important;}
 
 
@@ -342,6 +342,7 @@ img[id^="photo-"]{
 /* LNTDV FIRST PHOTO COLOR MATCH — removed: first photo must remain pixel-faithful to source. */
 
 /* LNTDV PRINT ORIENTATION HARD FIX — 2026-09-19 */
+/* Le immagini sono già normalizzate nei file del catalogo: non riapplicare la rotazione EXIF, così la stampa non ruota nuovamente le foto. */
 .grid .card .photo-wrap,
 .grid .card .photo-wrap img,
 .grid .card img{
