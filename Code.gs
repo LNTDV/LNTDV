@@ -70,7 +70,7 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || ''}); }
+  if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Per i pagamenti online Nexi XPay la verifica avviene lato server; per il bonifico usa esclusivamente i dati presenti nella conferma ordine.'}); }
   if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
   if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || p.ordine || '', p.key || '');
@@ -159,6 +159,13 @@ Modalità: ${pickup}
 
 Stato: ${labels[status]}
 
+Dati per il bonifico:
+IBAN: ${getSettings_().iban || 'verrà indicato nella conferma ordine'}
+Intestatario: ${getSettings_().accountHolder || 'Edvinas Dragoni'}
+Causale: ${orderId}
+
+Pagamento online: quando disponibile, la verifica dei pagamenti Nexi XPay viene effettuata lato server.
+
 Segui il tuo ordine:
 ${trackingUrl}
 
@@ -178,7 +185,7 @@ function getSettings_() {
   const data = sh.getDataRange().getValues();
   const out = {};
   data.slice(1).forEach(r => { if (r[0]) out[String(r[0])] = r[1]; });
-  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE'), iban:String(out.iban || ''), xpayApiKey:String(out.xpayApiKey || ''), xpayEnvironment:String(out.xpayEnvironment || 'TEST').toUpperCase()};
+  return {shippingPrice:Number(out.shippingPrice || 0), pickupText:String(out.pickupText || 'Ritiro da concordare a Milano'), adminKey:String(out.adminKey || 'CAMBIA-QUESTA-CHIAVE'), iban:String(out.iban || ''), accountHolder:String(out.accountHolder || 'Edvinas Dragoni'), xpayApiKey:String(out.xpayApiKey || ''), xpayEnvironment:String(out.xpayEnvironment || 'TEST').toUpperCase()};
 }
 
 function ensureHeader_(sheet) {
@@ -188,7 +195,7 @@ function ensureHeader_(sheet) {
 }
 
 function ensureSettings_(sheet) {
-  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,7,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); }
+  if (sheet.getLastRow() === 0) { sheet.getRange(1,1,7,2).setValues([['Parametro','Valore'],['shippingPrice',10],['pickupText','Ritiro da concordare a Milano'],['adminKey','CAMBIA-QUESTA-CHIAVE'],['iban',''],['xpayApiKey',''],['xpayEnvironment','TEST'],['accountHolder','Edvinas Dragoni']]); sheet.setFrozenRows(1); } else { const data=sheet.getDataRange().getValues().map(r=>String(r[0]||'')); if(!data.includes('iban')) sheet.appendRow(['iban','']); if(!data.includes('xpayApiKey')) sheet.appendRow(['xpayApiKey','']); if(!data.includes('xpayEnvironment')) sheet.appendRow(['xpayEnvironment','TEST']); if(!data.includes('accountHolder')) sheet.appendRow(['accountHolder','Edvinas Dragoni']); }
 }
 
 function formatOrders_(sheet) { sheet.getRange(1,1,1,16).setFontWeight('bold'); sheet.autoResizeColumns(1,16); if (sheet.getLastRow() > 1) sheet.getRange(2,14,sheet.getLastRow()-1,1).insertCheckboxes(); }
