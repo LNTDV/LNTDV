@@ -9,8 +9,11 @@
     '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
 
   function setupImage(img,index){
-    img.loading = "eager";
+    img.loading = index < 2 ? "eager" : "lazy";
     img.decoding = "async";
+    img.style.setProperty("transform","none","important");
+    img.style.setProperty("rotate","none","important");
+    img.style.setProperty("image-orientation","from-image","important");
     if(index === 0) img.fetchPriority = "high";
     if(!img.getAttribute("width") || !img.getAttribute("height")){
       const vertical=img.dataset.orientation==="vertical";
