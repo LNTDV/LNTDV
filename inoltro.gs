@@ -78,11 +78,21 @@ function doPost(e) {
       customer.note || ''
     ];
 
-    // Prima riga libera in fondo: nessun intervallo 1–1999 precompilato.
-    const nextRow = Math.max(sheet.getLastRow() + 1, 2);
-    sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-    sheet.getRange(nextRow, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
-    sheet.getRange(nextRow, 12, 1, 3).setNumberFormat('€0.00');
+    // ORDINI IN ORDINE VERTICALE:
+    // prima registrazione alla riga 2, poi 3, 4, 5...
+    // Ogni nuovo ordine viene sempre aggiunto IN FONDO.
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+
+    let nextRow;
+    try {
+      nextRow = Math.max(sheet.getLastRow() + 1, 2);
+      sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
+      sheet.getRange(nextRow, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+      sheet.getRange(nextRow, 12, 1, 3).setNumberFormat('€0.00');
+    } finally {
+      lock.releaseLock();
+    }
 
     sendNotification_(payload, customer, items);
 
