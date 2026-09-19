@@ -298,37 +298,22 @@ img[alt^="LNTDV-"]{
 # Only the requested orientation is applied to each photo.
 orientation_css = r'''
 <style id="lntdv-photo-orientation-final-20260919">
-.card:has(img[data-orientation="vertical"]) .photo-wrap{
-  aspect-ratio:3/4!important;
-}
+/* Orientamento deterministico: nessuna rotazione CSS. L'orientamento reale della foto viene preservato. */
+.card:has(img[data-orientation="vertical"]) .photo-wrap,
 .card:has(img[data-orientation="horizontal"]) .photo-wrap{
-  aspect-ratio:4/3!important;
+  overflow:hidden!important;
 }
-.card img[data-orientation="vertical"]{
+.card img[data-orientation="vertical"],
+.card img[data-orientation="horizontal"]{
   width:100%!important;
-  height:100%!important;
+  height:auto!important;
   object-fit:contain!important;
-  object-position:center!important;
-  transform:rotate(90deg)!important;
+  object-position:center center!important;
+  transform:none!important;
+  rotate:0deg!important;
   transform-origin:center center!important;
   filter:none!important;
   opacity:1!important;
-}
-.card img[data-orientation="horizontal"]{
-  width:100%!important;
-  height:100%!important;
-  object-fit:contain!important;
-  object-position:center!important;
-  transform:none!important;
-  filter:none!important;
-  opacity:1!important;
-}
-.card:hover img[data-orientation="vertical"],
-.card:hover img[data-orientation="horizontal"]{
-  transform:rotate(90deg)!important;
-}
-.card:hover img[data-orientation="horizontal"]{
-  transform:none!important;
 }
 </style>
 '''
