@@ -142,20 +142,11 @@ main{box-sizing:border-box!important;width:100%!important;max-width:1250px!impor
   transform:none!important;box-shadow:none!important;
 }
 
-/* ===== FINAL PHOTO ORIENTATION FIX ===== */
-.grid .card:nth-child(3) .lntdv-photo-stage,
-.grid .card:nth-child(13) .lntdv-photo-stage,
-.grid .card:nth-child(14) .lntdv-photo-stage,
-.grid .card:nth-child(16) .lntdv-photo-stage,
-.grid .card:nth-child(17) .lntdv-photo-stage{
-  aspect-ratio:1072/1500!important;
-  overflow:hidden!important;
-}
-.grid .card:nth-child(3) .lntdv-photo-stage>img,
-.grid .card:nth-child(13) .lntdv-photo-stage>img,
-.grid .card:nth-child(14) .lntdv-photo-stage>img,
-.grid .card:nth-child(16) .lntdv-photo-stage>img,
-.grid .card:nth-child(17) .lntdv-photo-stage>img{
-  width:100%!important;height:100%!important;object-fit:contain!important;
-  transform:rotate(90deg) scale(1.399254)!important;transform-origin:center center!important;
+/* ===== FINAL PHOTO ORIENTATION FIX =====
+   Orientation is carried by the image asset itself. The catalog must never
+   rotate or scale a photograph with CSS, on desktop or mobile. */
+.grid .card .lntdv-photo-stage,
+.grid .card .lntdv-photo-stage>img{
+  transform:none!important;
+  transform-origin:center center!important;
 }
