@@ -793,7 +793,7 @@
     setImportant(img,'-webkit-filter','none');
     setImportant(img,'opacity','1');
     setImportant(img,'mix-blend-mode','normal');
-    setImportant(img,'image-orientation','none');
+    setImportant(img,'image-orientation','from-image');
     setImportant(img,'transition','none');
     setImportant(img,'margin','0 auto');
     if(orientation==='vertical'){
@@ -801,7 +801,7 @@
       setImportant(img,'height','auto');
       setImportant(img,'max-width','100%');
       setImportant(img,'max-height','100%');
-      setImportant(img,'transform','rotate(90deg)');
+      setImportant(img,'transform','none');
       setImportant(img,'transform-origin','center center');
     }else{
       setImportant(img,'width','100%');
@@ -876,8 +876,7 @@
   }
   window.addEventListener('load',renderAll,{once:true});
 
-  const observer=new MutationObserver(function(){
-    renderAll();
-  });
-  observer.observe(document.body,{childList:true,subtree:true});
+  // Nessun MutationObserver sul body: renderAll() modifica stili/attributi e
+  // un observer globale creerebbe un ciclo di rendering continuo durante lo scroll.
+
 })();
