@@ -1,0 +1,88 @@
+# LNTDV GitHub Pages deployment — static build
+# Triggered refresh: 2026-09-19
+name: Deploy LNTDV catalog
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate published static catalog
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          expected={f"{n:03d}" for n in range(1,26)}
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          if ids != expected:
+              raise SystemExit(f"Codici foto errati: {sorted(ids)}")
+          for n in range(1,26):
+              p=Path(f"images/natura-{n:02d}.jpg")
+              if not p.exists() or p.stat().st_size < 1000:
+                  raise SystemExit(f"Foto mancante o vuota: {p}")
+          if not Path("assets/css/site-generated.css").exists():
+              raise SystemExit("CSS generato mancante: assets/css/site-generated.css")
+          if "data:image/" in s:
+              raise SystemExit("Base64 inline presente nell'HTML pubblicato.")
+          if s.count('id="orderPanel"') != 1:
+              raise SystemExit("orderPanel duplicato.")
+          if s.count('id="completePayment"') != 1:
+              raise SystemExit("completePayment duplicato.")
+          if s.count('id="trackingSection"') != 1:
+              raise SystemExit("trackingSection duplicato.")
+          print("STATIC CATALOG OK:", len(s), "bytes")
+          PY
+
+      - name: Prepare static Pages artifact
+        run: |
+          touch .nojekyll
+          rm -rf _site
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            --exclude='catalog' \
+            --exclude='scripts' \
+            --exclude='Code.gs' \
+            --exclude='README.md' \
+            --exclude='RESTORE_NOTICE.txt' \
+            --exclude='assets/photo*.js' \
+            ./ _site/
+          echo "Static Pages artifact pronto."
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

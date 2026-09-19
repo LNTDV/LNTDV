@@ -1,0 +1,865 @@
+#trackingBox{margin-top:14px;padding:15px;border:1px solid rgba(91,64,50,.16);border-radius:14px;background:#fffdf9}#trackingBox h3{margin:0 0 8px;font:700 10px Arial;letter-spacing:1.4px;text-transform:uppercase;color:#5b4032}#trackingForm{display:flex;gap:8px}#trackingCode{flex:1;padding:11px 12px;border:1px solid #d8c6b4;border-radius:10px;font:13px Arial}#trackingButton{border:0;background:#5b4032;color:#fff;border-radius:10px;padding:11px 14px;font:bold 10px Arial;letter-spacing:1px;cursor:pointer}#trackingResult{margin-top:11px;font:12px/1.55 Arial;color:#5b4032}
+/* Gestione ordine — riepilogo fisso in basso a destra, ottimizzato anche per smartphone */
+.orderbar,.order-bar{
+  position:fixed!important;
+  left:auto!important;
+  right:18px!important;
+  bottom:18px!important;
+  width:min(420px,calc(100vw - 36px))!important;
+  max-width:calc(100vw - 20px)!important;
+  box-sizing:border-box!important;
+  z-index:9999!important;
+  transform:translateY(150px)!important;
+}
+.orderbar.show,.order-bar.show{transform:translateY(0)!important;}
+@media(max-width:640px){
+  .orderbar,.order-bar{
+    left:auto!important;
+    right:10px!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:calc(100vw - 20px)!important;
+    max-width:calc(100vw - 20px)!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+}
+@media(max-width:430px){
+  .orderbar,.order-bar{
+    right:8px!important;
+    width:calc(100vw - 16px)!important;
+    max-width:calc(100vw - 16px)!important;
+  }
+  .orderbar button,.order-bar button{flex-shrink:0!important;max-width:48%!important;}
+}
+/* Conferma visiva discreta sulla fotografia selezionata */
+.card.selected .pic{position:relative;}
+.card.selected .pic::before{content:'✓';position:absolute;top:10px;right:10px;z-index:4;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(84,116,90,.92);color:#fff;font:700 13px Arial;box-shadow:0 2px 8px rgba(0,0,0,.14);pointer-events:none;}
+
+
+/* LNTDV MOBILE CART / CHECKOUT FINAL OVERRIDE v4
+   Neutralizza trasformazioni precedenti che potevano portare la barra fuori viewport.
+*/
+html,body{overflow-x:hidden!important}
+html.lntdv-order-open,body.lntdv-order-open{overflow:hidden!important}
+#orderBar.order-bar,#orderBar.orderbar{
+  position:fixed!important;
+  left:auto!important;
+  right:18px!important;
+  bottom:18px!important;
+  width:auto!important;
+  max-width:calc(100vw - 36px)!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  transform:translate3d(0,0,0)!important;
+  z-index:2147483000!important;
+  margin:0!important;
+}
+#orderBar.order-bar.show,#orderBar.orderbar.show,#orderBar.order-bar.active,#orderBar.orderbar.active{
+  transform:translate3d(0,0,0)!important;
+}
+#orderBar .order-bar-info{min-width:0!important;flex:1 1 auto!important;overflow:hidden!important}
+#orderBar .order-bar-label,#orderBar .order-bar-info strong,#orderBar .order-bar-total{overflow:hidden;text-overflow:ellipsis}
+#orderBar .order-button{flex:0 0 auto!important;white-space:nowrap!important}
+#orderPanel{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:none!important;
+  padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  z-index:2147482990!important;
+}
+#orderPanel .modal-content{
+  width:min(820px,100%)!important;
+  max-width:820px!important;
+  max-height:calc(100dvh - max(24px,env(safe-area-inset-top) + env(safe-area-inset-bottom)))!important;
+  margin:auto!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+}
+#orderPanel .checkout-photo-list{max-height:none!important;overflow:visible!important}
+@media(max-width:700px){
+  #orderBar.order-bar,#orderBar.orderbar{
+    left:max(10px,env(safe-area-inset-left))!important;
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+  #orderBar .order-bar-info{gap:6px!important}
+  #orderBar .order-bar-label{font-size:9px!important;letter-spacing:.8px!important}
+  #orderBar .order-bar-info strong{font-size:10px!important}
+  #orderBar .order-bar-total{font-size:15px!important}
+  #orderBar .order-button{padding:11px 12px!important;font-size:9px!important}
+  #orderPanel .modal-content{padding:18px!important;border-radius:16px!important}
+  #orderPanel .checkout-head{gap:10px!important}
+  #orderPanel .checkout-grid{grid-template-columns:1fr!important}
+  #orderPanel .checkout-bottom{flex-direction:column!important;align-items:stretch!important}
+  #orderPanel .checkout-submit{width:100%!important;min-height:48px!important}
+}
+@media(max-width:380px){
+  #orderBar .order-bar-label{display:none!important}
+  #orderBar .order-bar-total{font-size:14px!important}
+  #orderBar .order-button{padding:10px 11px!important}
+}
+
+
+/* LNTDV — RIEPILOGO ORDINE MOBILE DEFINITIVO v5
+   Una sola pill compatta in basso a destra, visibile solo dopo la prima selezione.
+   Il pannello checkout occupa correttamente lo schermo senza essere tagliato su Android/iPhone.
+*/
+#orderBar.order-bar[aria-hidden="true"],#orderBar.orderbar[aria-hidden="true"]{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#orderBar.order-bar[aria-hidden="false"],#orderBar.orderbar[aria-hidden="false"]{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+#orderBar.order-bar,#orderBar.orderbar{
+  position:fixed!important;
+  left:auto!important;
+  right:16px!important;
+  bottom:16px!important;
+  width:max-content!important;
+  max-width:calc(100vw - 32px)!important;
+  min-width:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:8px 8px 8px 12px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  border-radius:14px!important;
+  transform:none!important;
+  z-index:2147483000!important;
+}
+#orderBar .order-bar-info{
+  flex:0 1 auto!important;
+  min-width:0!important;
+  width:auto!important;
+  max-width:calc(100vw - 150px)!important;
+  overflow:hidden!important;
+}
+#orderBar .order-bar-label{display:inline!important}
+#orderBar .order-bar-info strong,#orderBar .order-bar-total{white-space:nowrap!important}
+#orderBar .order-button{flex:0 0 auto!important;width:auto!important;max-width:none!important;white-space:nowrap!important}
+@media(max-width:560px){
+  #orderBar.order-bar,#orderBar.orderbar{
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:max-content!important;
+    max-width:calc(100vw - 20px)!important;
+    padding:7px 7px 7px 10px!important;
+    gap:8px!important;
+    border-radius:13px!important;
+  }
+  #orderBar .order-bar-info{max-width:calc(100vw - 150px)!important;gap:6px!important}
+  #orderBar .order-bar-label{font-size:8px!important;letter-spacing:.7px!important}
+  #orderBar .order-bar-info strong{font-size:9px!important}
+  #orderBar .order-bar-total{font-size:14px!important}
+  #orderBar .order-button{padding:9px 10px!important;font-size:8px!important}
+}
+@media(max-width:360px){
+  #orderBar .order-bar-label{display:none!important}
+  #orderBar .order-bar-info{max-width:calc(100vw - 125px)!important}
+  #orderBar .order-button{padding:8px 9px!important}
+}
+#orderPanel{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-height:none!important;
+  padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#orderPanel .modal-content.order-checkout{
+  width:min(820px,100%)!important;
+  max-width:820px!important;
+  max-height:calc(100dvh - max(20px,env(safe-area-inset-top) + env(safe-area-inset-bottom)))!important;
+  margin:auto!important;
+  padding:24px!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+}
+#orderPanel .checkout-photo-list{max-height:none!important;overflow:visible!important}
+@media(max-width:560px){
+  #orderPanel .modal-content.order-checkout{
+    width:100%!important;
+    max-height:calc(100dvh - 20px)!important;
+    padding:16px!important;
+    border-radius:16px!important;
+  }
+  #orderPanel .checkout-head{gap:10px!important}
+  #orderPanel .checkout-grid{grid-template-columns:1fr!important}
+  #orderPanel .checkout-bottom{flex-direction:column!important;align-items:stretch!important;gap:12px!important}
+  #orderPanel .checkout-submit{width:100%!important;min-height:48px!important}
+}
+
+
+/* LNTDV — MOBILE FINAL: compact bottom-right order bar + natural photo orientation */
+/* The order control must stay compact in the lower-right corner on Android and iPhone. */
+#orderBar.order-bar,#orderBar.orderbar{
+  left:auto!important;
+  right:max(12px,env(safe-area-inset-right))!important;
+  bottom:max(12px,env(safe-area-inset-bottom))!important;
+  width:max-content!important;
+  max-width:calc(100vw - 24px)!important;
+  min-width:0!important;
+  height:auto!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:560px){
+  #orderBar.order-bar,#orderBar.orderbar{
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:max-content!important;
+    max-width:calc(100vw - 20px)!important;
+    padding:7px 8px 7px 10px!important;
+    gap:8px!important;
+  }
+}
+/* Never force a 4:3 crop: preserve each photograph's real orientation/aspect ratio. */
+.card img,.photo-card img,.photo-wrap img,.pic img,
+img[id^="photo-"]{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  transform:none!important;
+}
+.card:hover img,.photo-card:hover img,.pic:hover img{
+  transform:none!important;
+}
+
+
+/* LNTDV — ORIENTAMENTO FOTOGRAFIE: rispetta l'orientamento EXIF/originale */
+/* Non ruotare o ritagliare le fotografie: verticale resta verticale, orizzontale resta orizzontale. */
+.catalog img,.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;image-orientation:from-image!important;transform:none!important;}
+.card:hover img,.photo-card:hover img,.pic:hover img,.catalog img:hover{transform:none!important;}
+
+
+/* LNTDV FINAL ORDER PANEL STATE — 2026-09-19 06:00
+   The checkout is a modal only after the customer intentionally opens it.
+   It is never visible on initial page load or when no photo is selected.
+*/
+#orderPanel[aria-hidden="true"]{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderPanel:not(.active)[aria-hidden="true"]{
+  display:none!important;
+}
+#orderPanel.active[aria-hidden="false"]{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* The persistent control is a button/pill, not a side card or checkout sheet. */
+#orderBar[aria-hidden="true"]{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#orderBar[aria-hidden="false"]{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:calc(100vw - 20px)!important;
+  height:auto!important;
+  padding:9px 12px!important;
+  border-radius:999px!important;
+  box-sizing:border-box!important;
+}
+#orderBar .order-button{
+  border:0!important;
+  cursor:pointer!important;
+}
+@media(max-width:560px){
+  #orderBar[aria-hidden="false"]{
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    max-width:calc(100vw - 20px)!important;
+    padding:8px 11px!important;
+    border-radius:999px!important;
+  }
+}
+
+/* LNTDV HARD INITIAL STATE — 2026-09-19
+   Prevent any checkout/order UI from appearing during HTML parse or before JS initializes.
+   It becomes visible only when explicitly set to aria-hidden="false" after a photo selection.
+*/
+#orderPanel:not([aria-hidden="false"]){
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderBar:not([aria-hidden="false"]){
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderPanel[aria-hidden="false"]{
+  visibility:visible!important;
+  opacity:1!important;
+}
+#orderBar[aria-hidden="false"]{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+
+/* LNTDV FIRST PHOTO COLOR MATCH — removed: first photo must remain pixel-faithful to source. */
+
+/* LNTDV PRINT ORIENTATION HARD FIX — 2026-09-19 */
+/* Le immagini sono già normalizzate nei file del catalogo: non riapplicare la rotazione EXIF, così la stampa non ruota nuovamente le foto. */
+.grid .card .photo-wrap,
+.grid .card .photo-wrap img,
+.grid .card img{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+}
+.grid .card .photo-wrap{overflow:visible!important;background:transparent!important;}
+@media print{
+  @page{size:auto;margin:10mm;}
+  html,body{background:#fff!important;}
+  .grid{display:block!important;}
+  .grid .card{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 10mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    overflow:visible!important;
+    box-shadow:none!important;
+  }
+  .grid .card .photo-wrap,
+  .grid .card img{
+    width:auto!important;
+    max-width:100%!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    transform:none!important;
+  }
+  .grid .card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
+}
+
+
+/* LNTDV — FORMAT SELECTION UX CSS v2026-09-19 */
+/* Il formato scelto è il punto di selezione della fotografia. Feedback breve e morbido, non lampeggiante. */
+.card.selected,.photo-card.selected{animation:none!important;}
+.card.lntdv-format-selected,.photo-card.lntdv-format-selected{
+  animation:lntdvSoftFormat .9s cubic-bezier(.22,.8,.28,1) both!important;
+}
+@keyframes lntdvSoftFormat{
+  0%{box-shadow:0 0 0 0 rgba(84,116,90,0);}
+  45%{box-shadow:0 0 0 6px rgba(84,116,90,.16);}
+  100%{box-shadow:0 0 0 2px rgba(84,116,90,.30),0 18px 45px rgba(47,33,26,.12);}
+}
+/* Nessun filtro sulla fotografia: il file sorgente resta fedele all'originale. */
+.grid .card img,.card img,.photo-card img{filter:none!important;opacity:1!important;mix-blend-mode:normal!important;}
+
+
+/* LNTDV FINAL PHOTO/FORMAT STABILITY FIX — 2026-09-19 07:54 */
+.card.photo-vertical>img,.card.photo-horizontal>img{transform:none!important;object-position:center;}
+.card.photo-vertical>img{object-fit:contain!important;background:#f4eadf;}
+.card.photo-horizontal>img{object-fit:cover!important;}
+.print-choice{display:block!important;visibility:visible!important;position:relative;z-index:4;margin-top:8px;padding:12px!important;}
+.print-choice label{display:block!important;visibility:visible!important;}
+.format-select{display:block!important;visibility:visible!important;width:100%!important;min-height:44px!important;font-size:14px!important;line-height:1.2!important;appearance:auto;-webkit-appearance:auto;}
+@media(max-width:700px){.grid{grid-template-columns:1fr;gap:18px}.card img{aspect-ratio:auto;max-height:72vh;object-fit:contain!important}.print-choice{margin-top:10px}.format-select{min-height:46px!important;padding:11px 12px!important;font-size:14px!important}.meta{padding:12px 13px 15px}}
+
+/* LNTDV — FORMATTO SEMPRE SOTTO LA FOTO — 2026-09-19 */
+.grid .card{display:flex!important;flex-direction:column!important;align-items:stretch!important;}
+.grid .card .photo-wrap{order:1!important;width:100%!important;}
+.grid .card img{display:block!important;width:100%!important;margin:0 auto!important;}
+.grid .card .meta{order:2!important;width:100%!important;}
+.grid .card .print-choice{order:3!important;width:100%!important;display:block!important;position:relative!important;clear:both!important;margin:10px 0 0!important;}
+.grid .card .print-choice .format-select{display:block!important;width:100%!important;box-sizing:border-box!important;}
+@media(max-width:700px){.grid .card{display:flex!important;flex-direction:column!important}.grid .card .photo-wrap,.grid .card .meta,.grid .card .print-choice{width:100%!important}.grid .card .print-choice{margin-top:10px!important}}
+
+
+/* LNTDV FINAL PHOTO/FORMAT HARD FIX v2026-09-19 */
+.grid .card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  min-width:0!important;
+}
+.grid .card .photo-wrap{
+  order:1!important;
+  width:100%!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+.grid .card .photo-wrap img,
+.grid .card > img,
+.grid .card img[id^="photo-"],
+.grid .card img{
+  order:1!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  image-orientation:from-image!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  margin:0 auto!important;
+  background:transparent!important;
+}
+.grid .card .meta{
+  order:2!important;
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  box-sizing:border-box!important;
+}
+.grid .card .print-choice{
+  order:-1!important;
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  clear:both!important;
+  margin:10px 0 12px!important;
+  padding:10px 11px!important;
+  visibility:visible!important;
+}
+.grid .card .print-choice label{
+  display:block!important;
+  width:100%!important;
+  margin:0 0 6px!important;
+}
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  min-height:44px!important;
+  box-sizing:border-box!important;
+  visibility:visible!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+}
+.grid .card.photo-vertical>img,
+.grid .card.photo-horizontal>img{
+  object-fit:contain!important;
+  background:transparent!important;
+}
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr!important;gap:18px!important;}
+  .grid .card img{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;}
+  .grid .card .print-choice{margin:10px 0 12px!important;padding:10px!important;}
+  .grid .card .format-select{min-height:46px!important;padding:11px 12px!important;font-size:14px!important;}
+}
+
+/* Palette marrone LNTDV — riepilogo ordine */
+#orderBar.order-bar,#orderBar.orderbar{background:#4b2f22!important;border:1px solid #6b4734!important;color:#f4eadf!important;box-shadow:0 12px 32px rgba(75,47,34,.28)!important}
+#orderBar .order-bar-label,#orderBar .order-bar-info strong,#orderBar .order-bar-total{color:#f4eadf!important}
+#orderBar .order-button{background:#6b4734!important;border:1px solid #8a624b!important;color:#fff!important}
+#orderPanel .checkout-section-title,#orderPanel .section-label{color:#4b2f22!important}
+#orderPanel .checkout-submit{background:#4b2f22!important;border-color:#4b2f22!important;color:#fff!important}
+#orderPanel input:focus,#orderPanel textarea:focus,#orderPanel select:focus{border-color:#6b4734!important;box-shadow:0 0 0 2px rgba(107,71,52,.14)!important}
+
+
+/* LNTDV — CATALOGO FORMATO UNIFORME / RIFERIMENTO 19-09-2026
+   La struttura visiva deve essere identica per ogni fotografia:
+   foto -> selezione formato -> codice -> orientamento.
+   Nessun bordo/spazio residuo sotto la fotografia e nessuna cornice
+   più alta/lunga del riquadro fotografico.
+*/
+.grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:18px!important;
+}
+.grid .card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  border-radius:14px!important;
+  background:#fff!important;
+}
+.grid .card .photo-wrap{
+  order:1!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  line-height:0!important;
+}
+.grid .card .photo-wrap img,
+.grid .card>img,
+.grid .card img[id^="photo-"],
+.grid .card img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:4/3!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  background:transparent!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+}
+.grid .card .meta{
+  order:2!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 12px 14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:0!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+}
+.grid .card .print-choice{
+  order:1!important;
+  width:100%!important;
+  min-height:78px!important;
+  margin:0 0 10px!important;
+  padding:10px!important;
+  box-sizing:border-box!important;
+  border:1px solid #d8c6b4!important;
+  border-radius:10px!important;
+  background:#fcfaf7!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  position:relative!important;
+  clear:none!important;
+}
+.grid .card .print-choice label{
+  display:block!important;
+  width:100%!important;
+  min-height:12px!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+  font:10px/1 Arial,sans-serif!important;
+  letter-spacing:1px!important;
+  text-transform:uppercase!important;
+  color:#6b4734!important;
+}
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  height:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+  margin:0!important;
+  padding:0 11px!important;
+  box-sizing:border-box!important;
+  border:1px solid #d9c9bb!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#4b2f22!important;
+  font:12px/40px Arial,sans-serif!important;
+}
+.grid .card .meta strong{
+  order:2!important;
+  display:block!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  min-height:14px!important;
+  font:700 12px/14px Arial,sans-serif!important;
+  letter-spacing:1.2px!important;
+}
+.grid .card .meta small{
+  order:3!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  min-height:12px!important;
+  font:11px/12px Arial,sans-serif!important;
+  color:#756357!important;
+}
+.grid .card .meta span{order:4!important}
+@media(max-width:700px){
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
+  }
+  .grid .card{
+    border-radius:12px!important;
+  }
+  .grid .card .meta{
+    padding:0 8px 11px!important;
+  }
+  .grid .card .print-choice{
+    min-height:72px!important;
+    margin:0 0 9px!important;
+    padding:8px!important;
+    border-radius:9px!important;
+  }
+  .grid .card .print-choice label{
+    font-size:8px!important;
+    margin-bottom:5px!important;
+  }
+  .grid .card .format-select{
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+    padding:0 8px!important;
+    font-size:10px!important;
+  }
+  .grid .card .meta strong{
+    font-size:9px!important;
+    line-height:11px!important;
+    min-height:11px!important;
+    margin-bottom:9px!important;
+    letter-spacing:.9px!important;
+  }
+  .grid .card .meta small{
+    font-size:8px!important;
+    line-height:10px!important;
+    min-height:10px!important;
+  }
+}
+
+
+/* LNTDV CATALOGO — DEFINITIVE SINGLE COLUMN PHOTO CARDS 2026-09-19 */
+.grid,section.grid,section.catalog{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:22px!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.grid .card,.catalog .card,.photo-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.grid .card .lntdv-photo-stage,.grid .card .photo-wrap,.catalog .card .lntdv-photo-stage,.catalog .card .photo-wrap{
+  order:1!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:2px solid #6b4734!important;
+  border-radius:14px!important;
+  box-sizing:border-box!important;
+  line-height:0!important;
+}
+.grid .card .lntdv-photo-stage img,.grid .card .photo-wrap img,.grid .card>img,.grid .card img,
+.catalog .card .lntdv-photo-stage img,.catalog .card .photo-wrap img,.catalog .card img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  transform:none!important;
+}
+.grid .card .meta,.catalog .card .meta{
+  order:2!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:0!important;
+}
+.grid .card .print-choice,.catalog .card .print-choice{
+  order:1!important;
+  width:100%!important;
+  margin:0 0 10px!important;
+  padding:10px 11px!important;
+  box-sizing:border-box!important;
+  border:1px solid #b99a7d!important;
+  border-radius:11px!important;
+  background:#fcfaf7!important;
+  display:block!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+.grid .card .print-choice label,.catalog .card .print-choice label{
+  display:block!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+  color:#6b4734!important;
+}
+.grid .card .format-select,.catalog .card .format-select{
+  display:block!important;
+  width:100%!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:none!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border:1px solid #b99a7d!important;
+  border-radius:9px!important;
+  background:#fffaf3!important;
+  color:#4b2f22!important;
+  font-size:15px!important;
+  line-height:1.2!important;
+}
+.grid .card .meta strong,.catalog .card .meta strong{
+  order:2!important;
+  display:block!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+}
+.grid .card .meta small,.catalog .card .meta small{
+  order:3!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:700px){
+  .grid,section.grid,section.catalog{grid-template-columns:1fr!important;gap:20px!important;}
+  .grid .card .lntdv-photo-stage,.grid .card .photo-wrap,.catalog .card .lntdv-photo-stage,.catalog .card .photo-wrap{
+    margin-bottom:10px!important;
+    border-radius:13px!important;
+  }
+  .grid .card .lntdv-photo-stage img,.grid .card .photo-wrap img,.grid .card img,.catalog .card img{
+    border-radius:11px!important;
+  }
+  .grid .card .print-choice,.catalog .card .print-choice{
+    padding:10px!important;
+    border-radius:10px!important;
+  }
+  .grid .card .format-select,.catalog .card .format-select{
+    height:46px!important;
+    min-height:46px!important;
+    font-size:16px!important;
+  }
+}
+
+/* LNTDV FINAL ORIENTATION FIX — 2026-09-19
+   Correzioni richieste per la visualizzazione cliente.
+*/
+.card[data-photo-code="LNTDV-003"] img,.grid .card:nth-child(3) img{transform:rotate(-90deg)!important;}
+.card[data-photo-code="LNTDV-006"] img,.grid .card:nth-child(6) img,.card[data-photo-code="LNTDV-007"] img,.grid .card:nth-child(7) img{transform:rotate(90deg)!important;}
+
+
+/* LNTDV MAIL APP CHOOSER — 2026-09-19 */
+.lntdv-mail-chooser{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:flex-end;justify-content:flex-end;padding:18px;background:rgba(47,33,26,.18);backdrop-filter:blur(2px);animation:lntdvMailFade .22s ease both}
+.lntdv-mail-chooser-card{width:min(390px,calc(100vw - 28px));box-sizing:border-box;background:#fffaf3;border:1px solid #b99a7d;border-radius:18px;padding:22px;box-shadow:0 18px 55px rgba(47,33,26,.28);transform:translate(0,120%);animation:lntdvMailSlide .42s cubic-bezier(.2,.8,.2,1) .04s both;position:relative;color:#4b2f22}
+.lntdv-mail-close{position:absolute;top:10px;right:12px;border:0;background:transparent;color:#6b4734;font-size:25px;line-height:1;cursor:pointer}
+.lntdv-mail-kicker{font:700 9px/1 Arial,sans-serif;letter-spacing:1.5px;color:#8a624b;text-transform:uppercase;margin-bottom:9px}
+.lntdv-mail-chooser-card h3{margin:0 30px 7px 0;font:700 20px/1.2 Georgia,serif;color:#4b2f22}
+.lntdv-mail-chooser-card p{margin:0 0 16px;font:13px/1.5 Arial,sans-serif;color:#756357}
+.lntdv-mail-actions{display:flex;gap:10px}
+.lntdv-mail-btn{flex:1;text-align:center;text-decoration:none;padding:13px 12px;border-radius:10px;background:#4b2f22;color:#fff!important;font:700 12px Arial,sans-serif;letter-spacing:.4px}
+.lntdv-mail-btn:hover{background:#6b4734}
+@keyframes lntdvMailSlide{from{transform:translate(0,120%);opacity:.6}to{transform:translate(0,0);opacity:1}}
+@keyframes lntdvMailFade{from{opacity:0}to{opacity:1}}
+@media(max-width:520px){.lntdv-mail-chooser{padding:10px}.lntdv-mail-chooser-card{width:calc(100vw - 20px);padding:20px}.lntdv-mail-actions{flex-direction:column}.lntdv-mail-btn{width:100%;box-sizing:border-box}}
+.bank-transfer-only{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border:1px solid #b99a7d;border-radius:10px;background:#fcfaf7;color:#4b2f22}
+.bank-transfer-only small{color:#756357;font:12px/1.4 Arial,sans-serif}
+
+
+/* LNTDV — riepilogo e conferma separati */
+#orderConfirmation{
+  margin-top:24px!important;
+  padding:28px!important;
+  border:1px solid rgba(84,45,43,.18)!important;
+  border-radius:18px!important;
+  background:#fffaf3!important;
+  box-shadow:0 10px 30px rgba(47,33,26,.08)!important;
+  text-align:center!important;
+}
+#orderConfirmation[hidden]{display:none!important}
+#orderConfirmation .confirmation-kicker{
+  font:800 10px/1.2 Arial,sans-serif;
+  letter-spacing:2px;
+  color:#6f8f72;
+  margin-bottom:8px;
+}
+#orderConfirmation h2{margin:0 0 10px;color:#2f211a}
+#orderConfirmation p{margin:0 auto;max-width:620px;line-height:1.6;color:#5b4032}
+#orderConfirmation .confirmation-actions{margin-top:18px}
+#orderConfirmation .confirmation-mail-note{
+  padding:12px 14px;
+  border-radius:10px;
+  background:#efe4d0;
+  color:#5b4032;
+  font:600 12px/1.5 Arial,sans-serif;
+}
+#orderPanel .checkout-head[hidden],
+#orderPanel .checkout-selected[hidden],
+#orderPanel .checkout-grid[hidden],
+#orderPanel .checkout-bottom[hidden]{display:none!important}
