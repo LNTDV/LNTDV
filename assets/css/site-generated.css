@@ -671,3 +671,82 @@ img[alt^="LNTDV-"]{
   transform:none!important;
 }
 </style>
+
+
+<style id="lntdv-uniform-photo-stage-final">
+/* LNTDV — Riquadri fotografici uniformi — 2026-09-19 */
+.grid .card .lntdv-photo-stage{
+  position:relative!important;
+  width:100%!important;
+  aspect-ratio:4 / 3!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#4b2f22!important;
+  border:0!important;
+  border-radius:0!important;
+  isolation:isolate!important;
+}
+.grid .card .lntdv-photo-stage::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:#4b2f22!important;
+  z-index:-1!important;
+}
+.grid .card .lntdv-photo-stage > img{
+  position:relative!important;
+  z-index:1!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  aspect-ratio:auto!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  background:transparent!important;
+}
+/* Nessun taglio: sia verticale sia orizzontale rimangono completamente visibili. */
+.grid .card[data-orientation="vertical"] .lntdv-photo-stage > img,
+.grid .card[data-orientation="horizontal"] .lntdv-photo-stage > img{
+  object-fit:contain!important;
+}
+/* Il contenuto sotto la foto resta sempre separato e allineato. */
+.grid .card .meta{
+  width:100%!important;
+  min-width:0!important;
+  background:#fff!important;
+  overflow:visible!important;
+}
+.grid .card .print-choice{
+  width:100%!important;
+  box-sizing:border-box!important;
+  background:#fbf8f3!important;
+}
+/* Evita che hover/animazioni deformino o ingrandiscano la fotografia. */
+.grid .card:hover .lntdv-photo-stage > img,
+.grid .card:focus .lntdv-photo-stage > img{
+  transform:none!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    aspect-ratio:4 / 3!important;
+    width:100%!important;
+  }
+  .grid .card .lntdv-photo-stage > img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+  }
+}
+</style>
