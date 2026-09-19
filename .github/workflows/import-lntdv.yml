@@ -82,23 +82,23 @@ jobs:
           import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          styles=re.findall(r'<style\\b[^>]*>[\\s\\S]*?</style>',s,re.I)
-          css="\\n\\n".join(styles)+"\\n" if styles else ""
+          styles=re.findall(r'<style\b[^>]*>[\s\S]*?</style>',s,re.I)
+          css="\n\n".join(styles)+"\n" if styles else ""
           if styles:
               Path("assets/css/site-generated.css").write_text(css,encoding="utf-8")
-              s=re.sub(r'<style\\b[^>]*>[\\s\\S]*?</style>',"",s,flags=re.I)
+              s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>',"",s,flags=re.I)
           link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260919">'
           if link not in s:
-              s=s.replace("</head>",link+"\\n</head>",1)
+              s=s.replace("</head>",link+"\n</head>",1)
           preload='<link rel="preload" as="image" href="./images/natura-01.jpg" fetchpriority="high">'
           if preload not in s:
-              s=s.replace("</head>",preload+"\\n</head>",1)
-          imgs=re.sub(r'(<img\\b[^>]*?)\\s+loading="eager"',r'\\1 loading="lazy"',s,flags=re.I)
-          first=re.search(r'<img\\b[^>]*\\bsrc="(?:\\./)?images/natura-01\\.jpg"[^>]*>',imgs,re.I)
+              s=s.replace("</head>",preload+"\n</head>",1)
+          imgs=re.sub(r'(<img\b[^>]*?)\s+loading="eager"',r'\1 loading="lazy"',s,flags=re.I)
+          first=re.search(r'<img\b[^>]*\bsrc="(?:\./)?images/natura-01\.jpg"[^>]*>',imgs,re.I)
           if first:
               tag=first.group(0)
-              tag=re.sub(r'\\sloading="[^"]*"',' loading="eager"',tag,flags=re.I)
-              tag=re.sub(r'\\sfetchpriority="[^"]*"','',tag,flags=re.I)
+              tag=re.sub(r'\sloading="[^"]*"',' loading="eager"',tag,flags=re.I)
+              tag=re.sub(r'\sfetchpriority="[^"]*"','',tag,flags=re.I)
               tag=tag[:-1]+' fetchpriority="high">'
               imgs=imgs[:first.start()]+tag+imgs[first.end():]
           p.write_text(imgs,encoding="utf-8")
