@@ -606,51 +606,12 @@
 })();
 
 
-/* LNTDV — NORMALIZZAZIONE ROTAZIONE FOTO PER STAMPA — 2026-09-19
-   Corregge le fotografie che nel catalogo risultano ruotate di 90°.
-   La rotazione viene resa permanente nel pixel raster della <img> tramite canvas,
-   così vale anche per la stampa e non dipende da transform CSS/EXIF.
-*/
+/* LNTDV — ORIENTAMENTO FOTO PER STAMPA — 2026-09-19 */
 (function(){
   'use strict';
-  const ROTATE={
-    'LNTDV-006':90,
-    'LNTDV-007':90,
-    'LNTDV-014':-90,
-    'LNTDV-015':90,
-    'LNTDV-016':-90
-  };
-  function codeOf(card){return (card.querySelector('.meta strong')?.textContent||'').trim()}
-  function setOrientation(card,angle){
-    const small=card.querySelector('.meta small');
-    if(small&&Math.abs(angle)%180===90)small.textContent='Orientamento: verticale';
-  }
-  function normalize(card,img,angle){
-    if(!img||img.dataset.lntdvNormalized==='1')return;
-    const run=()=>{
-      if(!img.naturalWidth||!img.naturalHeight)return;
-      const rad=angle*Math.PI/180,swap=Math.abs(angle)%180===90;
-      const c=document.createElement('canvas');
-      c.width=swap?img.naturalHeight:img.naturalWidth;
-      c.height=swap?img.naturalWidth:img.naturalHeight;
-      const x=c.getContext('2d',{alpha:false});
-      if(!x)return;
-      x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
-      x.translate(c.width/2,c.height/2);x.rotate(rad);
-      x.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);
-      img.dataset.lntdvNormalized='1';
-      img.src=c.toDataURL('image/jpeg',0.98);
-      img.removeAttribute('srcset');img.removeAttribute('sizes');img.style.transform='none';
-      setOrientation(card,angle);
-    };
-    if(img.complete){if(img.decode)img.decode().then(run).catch(run);else run()}
-    else img.addEventListener('load',run,{once:true});
-  }
-  function apply(){
-    document.querySelectorAll('.card').forEach(card=>{const angle=ROTATE[codeOf(card)];if(angle)normalize(card,card.querySelector('img'),angle)})
-  }
+  const vertical=new Set(['LNTDV-003','LNTDV-006','LNTDV-007','LNTDV-008','LNTDV-009','LNTDV-011','LNTDV-013','LNTDV-014','LNTDV-015','LNTDV-016','LNTDV-018']);
+  function apply(){document.querySelectorAll('.card').forEach(card=>{const code=(card.querySelector('.meta strong')?.textContent||'').trim();const img=card.querySelector('img');if(!img)return;img.style.transform='none';img.style.objectFit=vertical.has(code)?'contain':'cover';});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
-  window.addEventListener('load',apply,{once:true});
 })();
 
 
