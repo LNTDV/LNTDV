@@ -772,7 +772,30 @@
 <script src="./assets/js/tracking.js?v=20260919" defer></script>
 <script src="./assets/js/checkout.js?v=20260919" defer></script>
 <link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919h">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919f"></script><script defer src="./assets/js/performance.js?v=20260919"></script><script defer src="./assets/js/catalog-performance.js?v=20260919"></script></body></html>
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919f"></script><script defer src="./assets/js/performance.js?v=20260919"></script><script defer src="./assets/js/catalog-performance.js?v=20260919"></script><script id="lntdv-selection-reset">
+(function(){
+  /* LNTDV: reset selezione foto ad ogni nuova apertura della pagina */
+  function resetSelections(){
+    document.querySelectorAll('.card.selected,[aria-pressed="true"]').forEach(function(el){
+      if(el.classList) el.classList.remove('selected');
+      if(el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed','false');
+    });
+    var summary=document.getElementById('selectionSummary');
+    if(summary) summary.textContent='Nessuna fotografia selezionata';
+    var bar=document.getElementById('orderBar');
+    if(bar) bar.classList.remove('active');
+    var count=document.getElementById('orderBarCount');
+    if(count) count.textContent='0 foto';
+    var total=document.getElementById('orderBarTotal');
+    if(total) total.textContent='€0,00';
+    var panel=document.getElementById('orderPanel');
+    if(panel){panel.classList.remove('active');panel.setAttribute('aria-hidden','true');}
+    document.body.style.overflow='';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',resetSelections); else resetSelections();
+})();
+</script>
+</body></html>
 
 
 
