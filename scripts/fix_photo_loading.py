@@ -4,148 +4,221 @@ import re
 p = Path("index.html")
 s = p.read_text(encoding="utf-8")
 
-orientation_map = {
-    "001":"horizontal","002":"horizontal","003":"vertical","004":"horizontal","005":"horizontal",
-    "006":"vertical","007":"vertical","008":"vertical","009":"vertical","010":"horizontal",
-    "011":"vertical","012":"horizontal","013":"vertical","014":"vertical","015":"vertical",
-    "016":"vertical","017":"horizontal","018":"vertical","019":"horizontal","020":"horizontal",
-    "021":"horizontal","022":"horizontal","023":"horizontal","024":"horizontal","025":"horizontal",
+ORIENTATION = {
+    "001": "horizontal", "002": "horizontal", "003": "vertical",
+    "004": "horizontal", "005": "horizontal", "006": "vertical",
+    "007": "vertical", "008": "vertical", "009": "vertical",
+    "010": "horizontal", "011": "vertical", "012": "horizontal",
+    "013": "vertical", "014": "vertical", "015": "vertical",
+    "016": "vertical", "017": "horizontal", "018": "vertical",
+    "019": "horizontal", "020": "horizontal", "021": "horizontal",
+    "022": "horizontal", "023": "horizontal", "024": "horizontal",
+    "025": "horizontal",
 }
 
-# Elimina preload massivi e vecchi src Base64: il browser deve caricare veri JPG.
-s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', '', s, flags=re.I)
+def photo_src(code):
+    n = str(int(code)).zfill(2)
+    return f"./images/natura-{n}.jpg"
 
-# Elimina definitivamente le vecchie regole di rotazione automatica e i src Base64.
-s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:\);?)', '', s, flags=re.I)
-s = re.sub(r'\s+src=["\']data:image/[^"\']+["\']', '', s, flags=re.I)
+def default_choice(code):
+    return f'''<div class="print-choice">
+<label for="format-{int(code)}">Modalità di stampa</label>
+<select id="format-{int(code)}" class="format-select" aria-label="Scegli il formato per questa fotografia">
+<option value="">Seleziona formato</option>
+<option value="Stampa fotografica">Stampa fotografica — €40</option>
+<option value="Forex">Forex — €50</option>
+<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>
+</select>
+</div>'''
 
-# Elimina anche i vecchi bundle JS Base64 incorporati nei frammenti del catalogo.\n# Le foto sono ora file JPG separati: lasciare questi blocchi nel documento rende\n# index.html enorme e può bloccare il caricamento del browser.\ns = re.sub(r'<script[^>]*>\s*window\.LNTDV_PHOTO_\d{2}\s*=\s*"data:image/[^"]*"\s*;?\s*</script>', '', s, flags=re.I)\ns = re.sub(r'window\.LNTDV_PHOTO_\d{2}\s*=\s*"data:image/[^"]*"\s*;?', '', s, flags=re.I)\n\n# Elimina i vecchi bundle JS Base64 incorporati nei frammenti del catalogo.\ns = re.sub(r'<script[^>]*>\s*window\.LNTDV_PHOTO_\d{2}\s*=\s*"data:image/[^"]*"\s*;?\s*</script>', '', s, flags=re.I)\ns = re.sub(r'window\.LNTDV_PHOTO_\d{2}\s*=\s*"data:image/[^"]*"\s*;?', '', s, flags=re.I)\n\n# Ogni fotografia usa esclusivamente il proprio JPG, prima per codice alt.
-for n in range(1, 26):
-    code = f"{n:03d}"
-    jpg = f"./images/natura-{n:02d}.jpg"
-    pattern = rf'(<img\b[^>]*)(>)'
-    def repl(m, code=code, jpg=jpg):
-        tag = m.group(1)
-        if re.search(rf'\balt=["\']LNTDV-{code}["\']', tag, re.I):
-            tag = re.sub(r'\s+src=["\'][^"\']*["\']', '', tag, flags=re.I)
-            tag += f' src="{jpg}"'
-        return tag + m.group(2)
-    s = re.sub(pattern, repl, s)
+# Rimuove preload e vecchi blocchi Base64: le fotografie pubblicate devono essere JPG reali.
+s = re.sub(r'<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', '', s, flags=re.I)
+s = re.sub(
+    r'<script[^>]*>\s*window\.LNTDV_PHOTO_\d{2}\s*=\s*["\']data:image/[^"\']*["\']\s*;?\s*</script>',
+    '',
+    s,
+    flags=re.I,
+)
+s = re.sub(r'window\.LNTDV_PHOTO_\d{2}\s*=\s*["\']data:image/[^"\']*["\']\s*;?', '', s, flags=re.I)
 
-# Fallback robusto: assegna i JPG in ordine ai primi 25 elementi .card che contengono un img.
-# Questo copre le parti storiche in cui l'attributo alt non era coerente.
-card_pattern = re.compile(r'(<(?:div|article|section)[^>]*class=["\'][^"\']*\bcard\b[^"\']*["\'][^>]*>.*?<img\b)([^>]*)(>)', re.I | re.S)
-card_index = 0
-def card_img_fix(m):
-    global card_index
-    if card_index >= 25:
-        return m.group(0)
-    card_index += 1
-    tag_start, attrs, close = m.group(1), m.group(2), m.group(3)
-    attrs = re.sub(r'\s+src=["\'][^"\']*["\']', '', attrs, flags=re.I)
-    attrs = re.sub(r'\s+alt=["\'][^"\']*["\']', '', attrs, flags=re.I)
-    attrs += f' alt="LNTDV-{card_index:03d}" src="./images/natura-{card_index:02d}.jpg"'
-    return tag_start + attrs + close
-s = card_pattern.sub(card_img_fix, s)
+# Elimina qualunque data-URI immagine rimasto nell'HTML prima di ricostruire le schede.
+s = re.sub(r'data:image/[^;\s"\']+;base64,[A-Za-z0-9+/=]+', '', s, flags=re.I)
 
+# Elimina le vecchie regole CSS di rotazione automatica.
+s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:;|})', 'transform:none;', s, flags=re.I)
 
-# Struttura definitiva delle schede: foto -> selettore formato -> dati.
-# Le versioni storiche del catalogo avevano il selettore dentro .meta, quindi
-# poteva apparire sopra la fotografia. Qui lo spostiamo sempre dopo l'immagine.
-# Se una scheda non contiene più l'immagine, la ricreiamo dal codice LNTDV.
-def normalize_card_structure(m):
+def normalize_card(m):
     block = m.group(0)
-    code_m = re.search(r'LNTDV-(\d{3})', block, re.I)
+    code_m = re.search(r'LNTDV-(\d{3})', block, flags=re.I)
     if not code_m:
         return block
     code = code_m.group(1)
-    n = int(code)
-    jpg = f"./images/natura-{n:02d}.jpg"
+    orientation = ORIENTATION.get(code, "horizontal")
 
-    # Ripara un'apertura article storica eventualmente troncata.
-    block = re.sub(r'<article\b([^>]*)', lambda x: '<article' + x.group(1) + '>', block, count=1, flags=re.I)
+    # Recupera il contenuto utile della scheda prima di sostituirne la struttura.
+    strong = f"LNTDV-{code}"
+    category = ""
+    cat_m = re.search(r'<strong>\s*LNTDV-\d{3}\s*</strong>\s*<span>([\s\S]*?)</span>', block, re.I)
+    if cat_m:
+        category = cat_m.group(1).strip()
 
-    # Trova e normalizza l'immagine della scheda.
-    img_m = re.search(r'<img\b[^>]*>', block, re.I)
-    if img_m:
-        img = img_m.group(0)
-        img = re.sub(r'\s+src=["\'][^"\']*["\']', '', img, flags=re.I)
-        img = re.sub(r'\s+alt=["\'][^"\']*["\']', '', img, flags=re.I)
-        img = re.sub(r'\s+loading=["\'][^"\']*["\']', '', img, flags=re.I)
-        img = re.sub(r'\s+decoding=["\'][^"\']*["\']', '', img, flags=re.I)
-        img = re.sub(r'\s+fetchpriority=["\'][^"\']*["\']', '', img, flags=re.I)
-        img = img[:-1] + f' alt="LNTDV-{code}" src="{jpg}" loading="{"eager" if n <= 2 else "lazy"}" decoding="async"' + (' fetchpriority="high"' if n == 1 else '') + '>'
-        block = block[:img_m.start()] + img + block[img_m.end():]
-    else:
-        img = f'<div class="photo-wrap"><img src="{jpg}" alt="LNTDV-{code}" loading="{"eager" if n <= 2 else "lazy"}" decoding="async"'
-        if n == 1: img += ' fetchpriority="high"'
-        img += '></div>'
-        meta_pos = re.search(r'<div\b[^>]*class=["\'][^"\']*\bmeta\b[^"\']*["\']', block, re.I)
-        if meta_pos:
-            block = block[:meta_pos.start()] + img + block[meta_pos.start():]
+    orient_text = "verticale" if orientation == "vertical" else "orizzontale"
 
-    # Estrae il selettore dalla posizione attuale e lo reinserisce subito dopo
-    # il contenitore della foto (mai sopra la foto).
+    # Riutilizza il selettore originale quando esiste; altrimenti ne crea uno standard.
     choice_m = re.search(r'<div\b[^>]*class=["\'][^"\']*\bprint-choice\b[^"\']*["\'][\s\S]*?</div>', block, re.I)
-    choice = choice_m.group(0) if choice_m else ''
-    if choice:
-        block = block[:choice_m.start()] + block[choice_m.end():]
-        img_wrap_end = re.search(r'</div>\s*(?=<div\b[^>]*class=["\'][^"\']*\bmeta\b)', block, re.I)
-        if img_wrap_end:
-            pos = img_wrap_end.end()
-            block = block[:pos] + choice + block[pos:]
-        else:
-            img_end = re.search(r'</img\s*>|<img\b[^>]*>', block, re.I)
-            if img_end:
-                pos = img_end.end()
-                block = block[:pos] + choice + block[pos:]
-    return block
+    choice = choice_m.group(0) if choice_m else default_choice(code)
 
-s = re.sub(r'<article\b[\s\S]*?</article>', normalize_card_structure, s, flags=re.I)
+    # Normalizza sempre il selettore con un ID univoco e le tre opzioni definitive.
+    choice = default_choice(code)
 
-# Loading: prime due subito, le altre lazy. Decoding asincrono evita blocchi del rendering.
-def imgfix(m):
-    tag = m.group(0)
-    code = re.search(r'alt=["\']LNTDV-(\d{3})["\']', tag, re.I)
-    if not code:
-        return tag
-    n = int(code.group(1))
-    tag = re.sub(r'\s+loading=["\'][^"\']*["\']', '', tag, flags=re.I)
-    tag = re.sub(r'\s+decoding=["\'][^"\']*["\']', '', tag, flags=re.I)
-    tag = re.sub(r'\s+fetchpriority=["\'][^"\']*["\']', '', tag, flags=re.I)
-    load = "eager" if n <= 2 else "lazy"
-    priority = ' fetchpriority="high"' if n == 1 else ''
-    return tag[:-1] + f' loading="{load}" decoding="async"{priority}>'
-s = re.sub(r'<img\b[^>]*alt=["\']LNTDV-\d{3}["\'][^>]*>', imgfix, s, flags=re.I)
+    return f'''<article class="card" data-orientation="{orientation}">
+<span class="selection-check" aria-hidden="true">✓</span>
+<div class="lntdv-photo-stage" data-photo-orientation="{orientation}">
+<img src="{photo_src(code)}" alt="{strong}" data-orientation="{orientation}" loading="{"eager" if int(code) <= 2 else "lazy"}" decoding="async" draggable="false">
+</div>
+<div class="meta">
+{choice}
+<strong>{strong}</strong>
+<span>{category}</span>
+<small>Orientamento: {orient_text}</small>
+</div>
+</article>'''
 
-# Rimuove le vecchie opzioni di pagamento che non fanno parte del flusso definitivo.
-s = re.sub(r'<label[^>]*>[^<]*(?:<[^>]+>)*[^<]*(?:Apple Pay|Google Pay)[^<]*(?:</[^>]+>)*</label>', '', s, flags=re.I)
+# Ricostruzione deterministica di OGNI scheda: foto -> formato -> metadati.
+# Questo elimina definitivamente le vecchie schede con foto sopra/sotto il formato,
+# tag corrotti, src Base64 e immagini mancanti.
+s = re.sub(r'<article\b[\s\S]*?</article>', normalize_card, s, flags=re.I)
 
-# Una sola regola di orientamento: nessuna rotazione CSS; la foto mantiene la propria geometria.
-final_css = """<style id="lntdv-final-photo-rendering">
-.card,.photo-card,.photo-wrap,.photo-image{overflow:hidden}
-.card img,.photo-card img,.photo-wrap img,.photo-image img,img[alt^="LNTDV-"]{
-  width:100%!important;height:auto!important;aspect-ratio:auto!important;
-  object-fit:contain!important;object-position:center center!important;
-  display:block!important;transform:none!important;filter:none!important;
-  -webkit-filter:none!important;opacity:1!important;mix-blend-mode:normal!important;
-  background:transparent!important;transition:none!important;
+# Se una scheda è rimasta fuori dalla regex precedente, riparala per codice.
+for code, orientation in ORIENTATION.items():
+    if not re.search(r'<img\b[^>]*\balt=["\']LNTDV-' + code + r'["\']', s, re.I):
+        marker = re.search(r'LNTDV-' + code + r'\b', s, re.I)
+        if not marker:
+            raise SystemExit(f"Codice foto mancante: {code}")
+        start = s.rfind('<article', 0, marker.start())
+        end = s.find('</article>', marker.end())
+        if start >= 0 and end >= 0:
+            block = s[start:end + len('</article>')]
+            m = re.match(r'LNTDV-' + code + r'\b', s[marker.start():], re.I)
+            fixed = normalize_card(type("M", (), {"group": lambda self, _=0: block})())
+            s = s[:start] + fixed + s[end + len('</article>'):]
+
+# Nessuna rotazione CSS deve essere lasciata nel documento pubblicato.
+s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:;|})', 'transform:none;', s, flags=re.I)
+
+final_css = r'''<style id="lntdv-final-photo-rendering">
+/* Catalogo fotografico definitivo: struttura e geometria stabili su Android/iPhone. */
+.grid .card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  min-width:0!important;
+  overflow:hidden!important;
 }
-.card::before,.card::after,.photo-card::before,.photo-card::after,
-.photo-wrap::before,.photo-wrap::after,.photo-image::before,.photo-image::after{
-  content:none!important;display:none!important;background:none!important;
-  opacity:0!important;box-shadow:none!important;filter:none!important;
+.lntdv-photo-stage{
+  order:1!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  background:transparent!important;
 }
+.lntdv-photo-stage[data-photo-orientation="horizontal"]{aspect-ratio:4/3!important}
+.lntdv-photo-stage[data-photo-orientation="vertical"]{aspect-ratio:3/4!important}
+.lntdv-photo-stage img{
+  display:block!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  image-orientation:none!important;
+  transition:none!important;
+  background:transparent!important;
+}
+.lntdv-photo-stage[data-photo-orientation="vertical"] img{
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  transform:rotate(90deg)!important;
+  transform-origin:center center!important;
+}
+.lntdv-photo-stage[data-photo-orientation="horizontal"] img{transform:none!important}
+.grid .card .meta{
+  order:2!important;
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  z-index:2!important;
+  overflow:visible!important;
+}
+.grid .card .print-choice{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0 0 10px!important;
+  padding:10px 11px!important;
+  position:relative!important;
+  z-index:3!important;
+  background:#fcfaf7!important;
+  border:1px solid #d8c6b4!important;
+  border-radius:11px!important;
+}
+.grid .card .print-choice label{
+  display:block!important;
+  width:100%!important;
+  margin:0 0 7px!important;
+}
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:48px!important;
+  height:48px!important;
+  box-sizing:border-box!important;
+  padding:11px 12px!important;
+  margin:0!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+  background:#fffaf3!important;
+  color:#4b3022!important;
+  border:1px solid #b99a7d!important;
+  border-radius:10px!important;
+  opacity:1!important;
+  transform:none!important;
+}
+.grid .card .format-select option{background:#fffaf3!important;color:#3d281d!important}
 @media(max-width:700px){
-  .card img,.photo-card img,.photo-wrap img,.photo-image img,img[alt^="LNTDV-"]{
-    width:100%!important;height:auto!important;object-fit:contain!important;
-  }
+  .grid{grid-template-columns:1fr!important;gap:18px!important}
+  .grid .card{width:100%!important}
+  .lntdv-photo-stage[data-photo-orientation="horizontal"]{aspect-ratio:4/3!important}
+  .lntdv-photo-stage[data-photo-orientation="vertical"]{aspect-ratio:3/4!important}
+  .lntdv-photo-stage img{max-width:100%!important;max-height:100%!important}
+  .grid .card .format-select{font-size:16px!important}
 }
-</style>"""
-s = re.sub(r'<style id="lntdv-final-photo-rendering">.*?</style>', '', s, flags=re.S | re.I)
-if "</head>" not in s:
+</style>'''
+
+# Inserimento prima di </head>, quindi dopo tutte le regole precedenti del catalogo.
+s = re.sub(r'<style id="lntdv-final-photo-rendering">[\s\S]*?</style>', '', s, flags=re.I)
+if '</head>' not in s.lower():
     raise SystemExit("index.html senza </head>")
-s = s.replace("</head>", final_css + "</head>", 1)
+s = s.replace('</head>', final_css + '</head>', 1)
 
 p.write_text(s, encoding="utf-8")
-print("Foto normalizzate: 25 JPG, nessun Base64, nessuna rotazione CSS.")
+print("Catalogo normalizzato definitivamente: 25 schede, JPG canonici, formato sotto ogni foto, orientamento deterministico.")
