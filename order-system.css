@@ -813,3 +813,20 @@ img[id^="photo-"]{
 */
 .card[data-photo-code="LNTDV-003"] img,.grid .card:nth-child(3) img{transform:rotate(-90deg)!important;}
 .card[data-photo-code="LNTDV-006"] img,.grid .card:nth-child(6) img,.card[data-photo-code="LNTDV-007"] img,.grid .card:nth-child(7) img{transform:rotate(90deg)!important;}
+
+
+/* LNTDV MAIL APP CHOOSER — 2026-09-19 */
+.lntdv-mail-chooser{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:flex-end;justify-content:flex-end;padding:18px;background:rgba(47,33,26,.18);backdrop-filter:blur(2px);animation:lntdvMailFade .22s ease both}
+.lntdv-mail-chooser-card{width:min(390px,calc(100vw - 28px));box-sizing:border-box;background:#fffaf3;border:1px solid #b99a7d;border-radius:18px;padding:22px;box-shadow:0 18px 55px rgba(47,33,26,.28);transform:translate(0,120%);animation:lntdvMailSlide .42s cubic-bezier(.2,.8,.2,1) .04s both;position:relative;color:#4b2f22}
+.lntdv-mail-close{position:absolute;top:10px;right:12px;border:0;background:transparent;color:#6b4734;font-size:25px;line-height:1;cursor:pointer}
+.lntdv-mail-kicker{font:700 9px/1 Arial,sans-serif;letter-spacing:1.5px;color:#8a624b;text-transform:uppercase;margin-bottom:9px}
+.lntdv-mail-chooser-card h3{margin:0 30px 7px 0;font:700 20px/1.2 Georgia,serif;color:#4b2f22}
+.lntdv-mail-chooser-card p{margin:0 0 16px;font:13px/1.5 Arial,sans-serif;color:#756357}
+.lntdv-mail-actions{display:flex;gap:10px}
+.lntdv-mail-btn{flex:1;text-align:center;text-decoration:none;padding:13px 12px;border-radius:10px;background:#4b2f22;color:#fff!important;font:700 12px Arial,sans-serif;letter-spacing:.4px}
+.lntdv-mail-btn:hover{background:#6b4734}
+@keyframes lntdvMailSlide{from{transform:translate(0,120%);opacity:.6}to{transform:translate(0,0);opacity:1}}
+@keyframes lntdvMailFade{from{opacity:0}to{opacity:1}}
+@media(max-width:520px){.lntdv-mail-chooser{padding:10px}.lntdv-mail-chooser-card{width:calc(100vw - 20px);padding:20px}.lntdv-mail-actions{flex-direction:column}.lntdv-mail-btn{width:100%;box-sizing:border-box}}
+.bank-transfer-only{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border:1px solid #b99a7d;border-radius:10px;background:#fcfaf7;color:#4b2f22}
+.bank-transfer-only small{color:#756357;font:12px/1.4 Arial,sans-serif}
