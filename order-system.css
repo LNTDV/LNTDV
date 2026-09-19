@@ -212,3 +212,42 @@ html.lntdv-order-open,body.lntdv-order-open{overflow:hidden!important}
   #orderPanel .checkout-bottom{flex-direction:column!important;align-items:stretch!important;gap:12px!important}
   #orderPanel .checkout-submit{width:100%!important;min-height:48px!important}
 }
+
+
+/* LNTDV — MOBILE FINAL: compact bottom-right order bar + natural photo orientation */
+/* The order control must stay compact in the lower-right corner on Android and iPhone. */
+#orderBar.order-bar,#orderBar.orderbar{
+  left:auto!important;
+  right:max(12px,env(safe-area-inset-right))!important;
+  bottom:max(12px,env(safe-area-inset-bottom))!important;
+  width:max-content!important;
+  max-width:calc(100vw - 24px)!important;
+  min-width:0!important;
+  height:auto!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:560px){
+  #orderBar.order-bar,#orderBar.orderbar{
+    right:max(10px,env(safe-area-inset-right))!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    width:max-content!important;
+    max-width:calc(100vw - 20px)!important;
+    padding:7px 8px 7px 10px!important;
+    gap:8px!important;
+  }
+}
+/* Never force a 4:3 crop: preserve each photograph's real orientation/aspect ratio. */
+.card img,.photo-card img,.photo-wrap img,.pic img,
+img[id^="photo-"]{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  transform:none!important;
+}
+.card:hover img,.photo-card:hover img,.pic:hover img{
+  transform:none!important;
+}
