@@ -101,7 +101,7 @@ function orderWindow_(orderId, key) {
   const status = row[14] || 'NUOVO';
   const safe = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const orderHtml = safe(row[7]).replace(/\n/g, '<br>');
-  const html = `<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gestione ${safe(orderId)}</title><style>body{font-family:Arial,sans-serif;background:#f3eadc;color:#3d281d;margin:0;padding:24px}.box{max-width:760px;margin:auto;background:#fffaf3;border:1px solid #d8c5ae;border-radius:16px;padding:24px;box-shadow:0 8px 30px #0001}h1{margin-top:0;color:#5a3b2b}.row{padding:10px 0;border-bottom:1px solid #eadbc9}.status{font-size:18px;font-weight:700;margin:22px 0}button{background:#5a3b2b;color:#fff;border:0;border-radius:9px;padding:12px 18px;font-size:16px;cursor:pointer;margin-right:8px;margin-top:8px}</style></head><body><div class="box"><h1>Gestione ordine ${safe(orderId)}</h1><div class="row"><b>Cliente:</b> ${safe(row[2])}</div><div class="row"><b>Email:</b> ${safe(row[6])}</div><div class="row"><b>Indirizzo:</b> ${safe(row[3])}, ${safe(row[4])} ${safe(row[5])}</div><div class="row"><b>Ordine:</b><br>${orderHtml}</div><div class="row"><b>Subtotale:</b> €${Number(row[8]||0).toFixed(2)}</div><div class="row"><b>Spedizione:</b> €${Number(row[9]||0).toFixed(2)}</div><div class="row"><b>Totale:</b> €${Number(row[10]||0).toFixed(2)}</div><div class="row"><b>Modalità:</b> ${safe(row[11])}</div><div class="row"><b>Stato pagamento:</b> ${safe(status)}</div><div class="row"><b>Note:</b> ${safe(row[12])}</div><div class="status">Stato: ${safe(status)}</div><button onclick="setStatus('RICEVUTO')">✓ Ricevuto</button><button onclick="setStatus('IN_LAVORAZIONE')">⚙ In lavorazione</button><button onclick="setStatus('PRONTO_AL_RITIRO')">✓ Pronto al ritiro</button><button onclick="setStatus('CONSEGNATO')">✓ Consegnato</button><button onclick="setStatus('ANNULLATO')">× Annulla</button></div><script>function setStatus(v){google.script.run.withSuccessHandler(function(){location.reload()}).withFailureHandler(function(e){alert(e.message||e)}).setOrderStatus('${safe(orderId)}',v)}</script></body></html>`;
+  const html = `<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gestione ${safe(orderId)}</title><style>body{font-family:Arial,sans-serif;background:#f3eadc;color:#3d281d;margin:0;padding:24px}.box{max-width:760px;margin:auto;background:#fffaf3;border:1px solid #d8c5ae;border-radius:16px;padding:24px;box-shadow:0 8px 30px #0001}h1{margin-top:0;color:#5a3b2b}.row{padding:10px 0;border-bottom:1px solid #eadbc9}.status{font-size:18px;font-weight:700;margin:22px 0}button{background:#5a3b2b;color:#fff;border:0;border-radius:9px;padding:12px 18px;font-size:16px;cursor:pointer;margin-right:8px;margin-top:8px}</style></head><body><div class="box"><h1>Gestione ordine ${safe(orderId)}</h1><div class="row"><b>Cliente:</b> ${safe(row[2])}</div><div class="row"><b>Email:</b> ${safe(row[6])}</div><div class="row"><b>Indirizzo:</b> ${safe(row[3])}, ${safe(row[4])} ${safe(row[5])}</div><div class="row"><b>Ordine:</b><br>${orderHtml}</div><div class="row"><b>Subtotale:</b> €${Number(row[8]||0).toFixed(2)}</div><div class="row"><b>Spedizione:</b> €${Number(row[9]||0).toFixed(2)}</div><div class="row"><b>Totale:</b> €${Number(row[10]||0).toFixed(2)}</div><div class="row"><b>Modalità:</b> ${safe(row[11])}</div><div class="row"><b>Stato pagamento:</b> ${safe(status)}</div><div class="row"><b>Note:</b> ${safe(row[12])}</div><div class="status">Stato: ${safe(status)}</div><button onclick="setStatus('RICEVUTO')">✓ Ricevuto</button><button onclick="setStatus('IN_LAVORAZIONE')">⚙ In lavorazione</button><button onclick="setStatus('PRONTO_AL_RITIRO')">✓ Pronto al ritiro</button><button onclick="setStatus('IN_CONSEGNA_BIBLIOTECA')">🚚 In consegna Biblioteca Arese</button><button onclick="setStatus('DISPONIBILE_PER_IL_RITIRO')">✓ Disponibile al ritiro</button><button onclick="setStatus('RITIRATO')">✓ Ritirato</button><button onclick="setStatus('CONSEGNATO')">✓ Consegnato</button><button onclick="setStatus('ANNULLATO')">× Annulla</button></div><script>function setStatus(v){google.script.run.withSuccessHandler(function(){location.reload()}).withFailureHandler(function(e){alert(e.message||e)}).setOrderStatus('${safe(orderId)}',v)}</script></body></html>`;
   return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -114,7 +114,7 @@ function setOrderStatus(orderId, status) {
 }
 
 function setOrderStatus_(orderId, status) {
-  const allowed = ['RICEVUTO','IN_LAVORAZIONE','PRONTO_AL_RITIRO','CONSEGNATO','ANNULLATO','NUOVO'];
+  const allowed = ['RICEVUTO','IN_LAVORAZIONE','PRONTO_AL_RITIRO','IN_CONSEGNA_BIBLIOTECA','DISPONIBILE_PER_IL_RITIRO','RITIRATO','CONSEGNATO','ANNULLATO','NUOVO'];
   status = String(status || '').toUpperCase();
   if (!allowed.includes(status)) throw new Error('Stato ordine non valido.');
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
@@ -136,6 +136,9 @@ function sendStatusEmail_(row, status) {
     IN_LAVORAZIONE: 'Ordine in lavorazione',
     PRONTO_AL_RITIRO: 'Ordine pronto per il ritiro',
     CONSEGNATO: 'Ordine consegnato',
+    IN_CONSEGNA_BIBLIOTECA: 'Ordine in consegna alla Biblioteca di Arese',
+    DISPONIBILE_PER_IL_RITIRO: 'Ordine disponibile per il ritiro',
+    RITIRATO: 'Ordine ritirato',
     ANNULLATO: 'Ordine annullato',
     NUOVO: 'Ordine registrato'
   };
@@ -149,12 +152,16 @@ function sendStatusEmail_(row, status) {
     IN_LAVORAZIONE: 'Il tuo ordine è ora in lavorazione.',
     PRONTO_AL_RITIRO: 'Il tuo ordine è pronto per il ritiro.',
     CONSEGNATO: 'Il tuo ordine risulta consegnato.',
+    IN_CONSEGNA_BIBLIOTECA: 'Il tuo ordine è in consegna alla Biblioteca di Arese.',
+    DISPONIBILE_PER_IL_RITIRO: 'Il tuo ordine è disponibile per il ritiro alla Biblioteca di Arese.',
+    RITIRATO: 'Il tuo ordine risulta ritirato.',
     ANNULLATO: 'Il tuo ordine è stato annullato. Per informazioni puoi rispondere a questa email.',
     NUOVO: 'Il tuo ordine è stato registrato.'
   }[status];
   const trackingToken = String(row[15] || '');
   const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
-  const pickupNote = status === 'PRONTO_AL_RITIRO' ? `\n\nRITIRO:\n${pickup}\n\nQuando vieni a ritirare, porta con te l'ID ordine ${orderId}.` : '';
+  const deliveryDate = String(row[DELIVERY_DATE_COLUMN - 1] || '').trim();
+  const pickupNote = ['PRONTO_AL_RITIRO','DISPONIBILE_PER_IL_RITIRO','IN_CONSEGNA_BIBLIOTECA'].includes(status) ? `\n\nCONSEGNA/RITIRO:\n${pickup}${deliveryDate ? '\\nData concordata: ' + deliveryDate : ''}\n\nQuando vieni a ritirare, porta con te l'ID ordine ${orderId}.` : '';
   const body = `Gentile ${name},
 
 ${message}${pickupNote}
@@ -237,6 +244,9 @@ function trackOrder_(orderId, email, token, callback) {
     RICEVUTO:'Ricevuto',
     IN_LAVORAZIONE:'In lavorazione',
     PRONTO_AL_RITIRO:'Pronto al ritiro',
+    IN_CONSEGNA_BIBLIOTECA:'In consegna alla Biblioteca di Arese',
+    DISPONIBILE_PER_IL_RITIRO:'Disponibile per il ritiro',
+    RITIRATO:'Ritirato',
     CONSEGNATO:'Consegnato',
     ANNULLATO:'Annullato',
     NUOVO:'Registrato'
@@ -247,7 +257,8 @@ function trackOrder_(orderId, email, token, callback) {
     status:status,
     label:labels[status] || status,
     total:Number(row[10] || 0),
-    labels:{RICEVUTO:'Ricevuto',IN_LAVORAZIONE:'In lavorazione',PRONTO_AL_RITIRO:'Pronto al ritiro',CONSEGNATO:'Consegnato'}
+    deliveryDate:String(row[DELIVERY_DATE_COLUMN - 1] || ''),
+    labels:{RICEVUTO:'Ricevuto',IN_LAVORAZIONE:'In lavorazione',PRONTO_AL_RITIRO:'Pronto al ritiro',IN_CONSEGNA_BIBLIOTECA:'In consegna alla Biblioteca di Arese',DISPONIBILE_PER_IL_RITIRO:'Disponibile per il ritiro',RITIRATO:'Ritirato',CONSEGNATO:'Consegnato'}
   }, callback);
 }
 
