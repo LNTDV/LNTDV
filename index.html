@@ -364,58 +364,6 @@ section{
 @media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:10px!important;max-width:calc(100vw - 20px);width:calc(100vw - 20px)}.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}.delivery-choice{grid-template-columns:1fr}.tracking-section{margin:45px 12px 120px;padding:22px}}
 </style>
 
-<script id="lntdv-order-submit-fix">
-(function(){
-  const ENDPOINT="https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec";
-  const PRICES={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
-  const euro=n=>"€"+Number(n||0).toFixed(2).replace(".",",");
-  const esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
-  function val(id){return document.getElementById(id)?.value?.trim()||""}
-  function submit(){
-    const cards=[...document.querySelectorAll(".card.selected")];
-    const items=cards.map(c=>{
-      const code=c.querySelector(".meta strong")?.textContent?.trim()||"Fotografia";
-      const format=c.querySelector(".format-select")?.value||"";
-      const orientation=c.dataset.orientation||"";
-      return {title:code,format,orientation,price:Number(PRICES[format]||0),quantity:1};
-    }).filter(x=>x.format);
-    const email=val("customerEmail"),name=val("customerName");
-    if(!items.length||!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
-    const base=items.reduce((s,x)=>s+x.price,0);
-    const shipping=(document.querySelector('input[name="deliveryType"]:checked')?.value||"Ritiro").toLowerCase().includes("sped")?10:0;
-    const total=base+shipping;
-    const orderId="LNTDV-"+Date.now().toString(36).toUpperCase();
-    const token=(window.crypto?.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()).replace(/-/g,"").toUpperCase();
-    const payload={orderId,paymentMethod:"BONIFICO",paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name,email,street:val("customerStreet"),zip:val("customerZip"),city:val("customerCity"),note:val("customerNote")},items,total,baseTotal:base,promotion:null,deliveryType:document.querySelector('input[name="deliveryType"]:checked')?.value||"Ritiro",trackingToken:token};
-    const button=document.getElementById("completePayment"),status=document.getElementById("paymentStatus");
-    if(button)button.disabled=true;
-    if(status)status.innerHTML="Ordine inviato. Verifica della registrazione in corso…";
-    const iframe=document.createElement("iframe"),form=document.createElement("form");
-    iframe.name="lntdv-submit-fix"; iframe.style.display="none";
-    form.method="POST"; form.action=ENDPOINT; form.target=iframe.name; form.style.display="none";
-    const input=document.createElement("input"); input.type="hidden"; input.name="payload"; input.value=JSON.stringify(payload);
-    form.appendChild(input); document.body.append(iframe,form);
-    let done=false;
-    const finish=()=>{if(done)return;done=true;
-      if(status)status.innerHTML="<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>"+esc(orderId)+"</strong><br><br>La conferma viene inviata all'indirizzo email indicato e la copia amministrativa a <strong>info.lanostraterradavicino@gmail.com</strong>.";
-      try{form.remove();iframe.remove()}catch(e){}
-      cards.forEach(c=>{c.classList.remove("selected");c.setAttribute("aria-pressed","false")});
-      try{localStorage.removeItem("lntdv_cart_v3")}catch(e){}
-    };
-    iframe.addEventListener("load",finish,{once:true});
-    form.submit();
-    setTimeout(finish,9000);
-    return true;
-  }
-  document.addEventListener("click",function(e){
-    const b=e.target.closest("#completePayment");
-    if(!b)return;
-    if(!submit())return;
-    e.preventDefault(); e.stopImmediatePropagation();
-  },true);
-})();
-</script>
-
 <style id="lntdv-order-tracking">
 .delivery-choice{display:grid;gap:8px}.delivery-option{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid rgba(91,64,50,.14);border-radius:10px;background:#fff;font:12px Arial,sans-serif;color:#3d281d;cursor:pointer}.delivery-option:has(input:checked){border-color:#3f8f5a;background:#e4efe6}.delivery-option input{accent-color:#3f8f5a}.delivery-option span{display:flex;flex-direction:column;gap:3px}.delivery-option small{font-size:10px;color:#756357}
 .tracking-section{max-width:1050px;margin:70px auto 110px;padding:34px 24px;background:#f4eadf;border:1px solid #d8c6b4;border-radius:24px;box-shadow:0 14px 40px rgba(75,47,34,.08)}.tracking-intro{text-align:center;max-width:720px;margin:0 auto 25px}.tracking-intro h2{margin:7px 0 10px;font:400 clamp(28px,5vw,46px) Georgia,serif;color:#4b2f22}.tracking-intro p{margin:0;color:#6b4734;font:13px/1.6 Arial,sans-serif}.tracking-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.tracking-form label{display:flex;flex-direction:column;gap:6px;font:700 10px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#6b4734}.tracking-form input{padding:13px 14px;border:1px solid #d8c6b4;border-radius:11px;background:#fff;color:#4b2f22;font:13px Arial,sans-serif}.tracking-form button{padding:14px 17px;border:0;border-radius:11px;background:#3f8f5a;color:#fff;font:bold 10px Arial,sans-serif;letter-spacing:1px;cursor:pointer}.tracking-message{min-height:20px;margin:14px 0;text-align:center;font:12px Arial,sans-serif;color:#6b4734}.tracking-result{margin-top:15px;padding:20px;background:#fff;border:1px solid #d8c6b4;border-radius:17px}.tracking-order-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:24px;color:#4b2f22;font:12px Arial,sans-serif}.tracking-order-head span{padding:7px 10px;border-radius:999px;background:#e4efe6;color:#2f7045;font-weight:700}.tracking-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tracking-step{text-align:center;padding:14px 8px 12px;border:1px solid #d8c6b4;border-radius:13px;background:#fbf8f3;color:#8b796d;transition:all .35s ease}.tracking-step span{display:flex;width:30px;height:30px;margin:0 auto 8px;align-items:center;justify-content:center;border-radius:50%;border:1px solid #cbb7a4;background:#fff;font:700 11px Arial}.tracking-step strong{font:700 10px Arial,sans-serif}.tracking-step.done,.tracking-step.current{border-color:#3f8f5a;background:#e4efe6;color:#2f7045;box-shadow:0 0 0 2px rgba(63,143,90,.12)}.tracking-step.done span,.tracking-step.current span{background:#3f8f5a;border-color:#3f8f5a;color:#fff}.tracking-step.current{animation:trackingPulse 1.8s ease-in-out infinite}@keyframes trackingPulse{0%,100%{box-shadow:0 0 0 2px rgba(63,143,90,.12)}50%{box-shadow:0 0 0 6px rgba(63,143,90,.06)}}.tracking-total{margin-top:18px;padding-top:15px;border-top:1px solid #eadfd5;text-align:right;color:#6b4734;font:12px Arial,sans-serif}.tracking-total strong{color:#4b2f22;font-size:18px}@media(max-width:760px){.tracking-form{grid-template-columns:1fr}.tracking-steps{grid-template-columns:1fr 1fr}.tracking-section{margin-left:14px;margin-right:14px;padding:25px 16px}.order-bar{right:12px;left:auto;max-width:calc(100% - 24px);min-width:0}}@media(max-width:430px){.order-bar{right:10px;left:auto;bottom:10px;width:calc(100% - 20px)}.tracking-steps{grid-template-columns:1fr}}
