@@ -21,6 +21,7 @@ concurrency:
 permissions:
   contents: write
 
+# Final validation pass: source photo bundles are converted to real JPG files before publication.
 jobs:
   publish:
     runs-on: ubuntu-latest
