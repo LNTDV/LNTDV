@@ -7,7 +7,7 @@ const CONFIG = {
   SHEET_NAME: 'lntdv-ordini',
   NOTIFY_EMAIL: 'info.lanostraterradavicino@gmail.com',
   HEADER: [
-    'DATA','ID ORDINE','STATO ORDINE','STATO PAGAMENTO','CLIENTE',
+    'NUMERO ORDINE','DATA','ID ORDINE','STATO ORDINE','STATO PAGAMENTO','CLIENTE',
     'EMAIL CLIENTE','TELEFONO','INDIRIZZO','CAP','CITTÀ','CONSEGNA',
     'TOTALE','SUBTOTALE','COSTO CONSEGNA','FOTO / FORMATO / QTA',
     'TOKEN TRACKING','NOTE'
@@ -59,6 +59,7 @@ function doPost(e) {
     }).join('\n');
 
     const row = [
+      nextOrderNumber_(sheet),
       new Date(),
       payload.orderId || '',
       payload.orderStatus || 'ORDINE RICEVUTO',
@@ -88,8 +89,8 @@ function doPost(e) {
     try {
       nextRow = Math.max(sheet.getLastRow() + 1, 2);
       sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-      sheet.getRange(nextRow, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
-      sheet.getRange(nextRow, 12, 1, 3).setNumberFormat('€0.00');
+      sheet.getRange(nextRow, 2).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+      sheet.getRange(nextRow, 13, 1, 3).setNumberFormat('€0.00');
     } finally {
       lock.releaseLock();
     }
@@ -119,10 +120,25 @@ function ensureHeader_(sheet) {
 function orderExists_(sheet, orderId) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return false;
-  const values = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  const values = sheet.getRange(2, 3, lastRow - 1, 1).getValues();
   return values.some(function(row) {
     return String(row[0] || '') === orderId;
   });
+}
+
+function nextOrderNumber_(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 1;
+
+  const values = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  let max = 0;
+
+  values.forEach(function(row) {
+    const n = Number(row[0]);
+    if (Number.isFinite(n) && n > max) max = n;
+  });
+
+  return max + 1;
 }
 
 function sendNotification_(payload, customer, items) {
