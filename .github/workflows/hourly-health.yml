@@ -1,0 +1,66 @@
+name: LNTDV hourly health check
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lntdv-hourly-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate repository catalog and order code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          css=Path('assets/css/site-generated.css').read_text(encoding='utf-8') if Path('assets/css/site-generated.css').exists() else ''
+          ids=set(re.findall(r'LNTDV-(\d{3})',s)); expected={f'{n:03d}' for n in range(1,26)}
+          assert ids==expected, f'Codici foto errati: {sorted(ids)}'
+          assert 'data:image/' not in s and 'data:image/' not in css, 'Base64 nel build finale'
+          assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I), 'Rotazione CSS nel catalogo'
+          assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate',css,re.I|re.S), 'Rotazione CSS sulle immagini'
+          assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
+          assert 'order-system.js' in s and 'order-system.css' in s
+          for n in range(1,26):
+              p=Path(f'images/natura-{n:02d}.jpg')
+              assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
+              assert f'./images/natura-{n:02d}.jpg' in s
+          code=Path('Code.gs').read_text(encoding='utf-8')
+          js=Path('order-system.js').read_text(encoding='utf-8')
+          assert 'function doPost' in code and 'function doGet' in code and 'MailApp.sendEmail' in code
+          assert 'trackingToken' in code and 'trackingToken' in js
+          assert 'https://script.google.com/macros/s/' in js
+          PY
+          node --check order-system.js
+          node --check Code.gs
+
+      - name: Check public website
+        run: |
+          curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/
+          grep -q 'LNTDV-001' /tmp/lntdv.html
+          grep -q 'LNTDV-025' /tmp/lntdv.html
+          grep -q 'LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni' /tmp/lntdv.html
+
+      - name: Check Apps Script public deployment
+        run: |
+          curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbwYI8raiMQ830nMMtRm3FQueXv2a9vbrdH3SJkg7csqGEdnd1vIKS1Y1-jwjJvCPBA/exec?action=config' -o /tmp/apps.json
+          python - <<'PY'
+          import json
+          raw=open('/tmp/apps.json',encoding='utf-8-sig',errors='replace').read().strip()
+          data=json.loads(raw)
+          assert isinstance(data,dict) and data.get('ok') is True, raw[:500]
+          print('APPS SCRIPT PUBLIC DEPLOYMENT OK')
+          PY
