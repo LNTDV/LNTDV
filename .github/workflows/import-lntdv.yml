@@ -121,6 +121,33 @@ jobs:
           print("CSS esterno:",len(css),"byte; HTML:",p.stat().st_size,"byte")
           PY
 
+      - name: Consolidate LNTDV identity and SEO signals
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          s=re.sub(r'<title>[\\s\\S]*?</title>', '<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>', s, count=1, flags=re.I)
+          meta='''<meta name="description" content="LNTDV – La Nostra Terra Da Vicino: progetto fotografico di Edvinas Dragoni, un viaggio tra Natura, Tempo e Città.">\\n<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">\\n<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">\\n<meta property="og:title" content="LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni">\\n<meta property="og:description" content="Progetto fotografico LNTDV – La Nostra Terra Da Vicino.">\\n<meta property="og:url" content="https://lntdv.it/">\\n<link rel="canonical" href="https://lntdv.it/">\\n<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"LNTDV – La Nostra Terra Da Vicino","alternateName":"LNTDV","url":"https://lntdv.it/","description":"Progetto fotografico di Edvinas Dragoni: un viaggio tra Natura, Tempo e Città."}</script>'''
+          s=re.sub(r'<meta name="description"[^>]*>','',s,flags=re.I)
+          s=re.sub(r'<meta name="application-name"[^>]*>','',s,flags=re.I)
+          s=re.sub(r'<meta property="og:[^>]*>','',s,flags=re.I)
+          s=re.sub(r'<link rel="canonical"[^>]*>','',s,flags=re.I)
+          s=re.sub(r'<script type="application/ld\+json">[\\s\\S]*?</script>','',s,flags=re.I)
+          s=s.replace('</head>',meta+'\\n</head>',1)
+          # Elimina i riferimenti accidentali alla sigla errata dal build finale.
+          s=re.sub(r'\\bLNDV\\b','LNTDV',s,flags=re.I)
+          p.write_text(s,encoding="utf-8")
+          css=Path("assets/css/site-generated.css")
+          if css.exists():
+              c=css.read_text(encoding="utf-8")
+              c=re.sub(r'\\bLNDV\\b','LNTDV',c,flags=re.I)
+              c=re.sub(r'transform\\s*:\\s*rotate\\s*\\([^;}]*(?:\\);?)','transform:none!important;',c,flags=re.I)
+              css.write_text(c,encoding="utf-8")
+          print("Identità SEO LNTDV consolidata.")
+          PY
+
       - name: Validate HTML, photos, CSS, scripts and order hooks
         run: |
           python - <<'PY'
