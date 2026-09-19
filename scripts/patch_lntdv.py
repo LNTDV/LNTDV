@@ -6,6 +6,10 @@ import re
 p=Path("index.html")
 s=p.read_text(encoding="utf-8")
 
+# Rimuove ogni riferimento alla vecchia scadenza del 15 ottobre dal catalogo e dalla conferma.
+s = re.sub(r'<div class="collection-notice"[^>]*>[\\s\\S]*?</div>', '', s, flags=re.I)
+s = re.sub(r'IL BONIFICO DEVE ESSERE EFFETTUATO ENTRO IL 15 OTTOBRE 2026\\\\n\\\\n', '', s, flags=re.I)
+
 # Rimuove i metodi di pagamento non utilizzati dal checkout LNTDV.
 # Il flusso attivo usa il metodo Carta e la conferma server-side dell'ordine.
 s = re.sub(r"<label[^>]*>\s*<input[^>]*value=[\"'](?:Apple Pay|Google Pay)[\"'][\s\S]*?</label>", "", s, flags=re.I)
@@ -33,6 +37,8 @@ s = re.sub(
 s=s.replace('.order-bar{position:fixed;left:22px;right:auto;', '.order-bar{position:fixed;right:22px;left:auto;', 1)
 s=s.replace('.order-bar{position:fixed;right:22px;left:auto;', '.order-bar{position:fixed;right:22px;left:auto;', 1)
 
+# Normalizza la sezione Consegna: una sola sezione, senza duplicati.
+s = re.sub(r'<section class="checkout-block">\\s*<div class="checkout-section-title">Consegna</div>[\\s\\S]*?<input type="radio" name="deliveryType" value="Spedizione"[\\s\\S]*?</section>\\s*', '', s, flags=re.I)
 # Ritiro / spedizione
 if 'name="deliveryType"' not in s:
     needle='''      <section class="checkout-block">
@@ -144,8 +150,11 @@ s += """
 """
 
 # Load exactly one external order engine after the generated catalog.
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919h">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919f"></script>'''
+# Deduplica gli asset dell'ordine prima di inserirli: Safari/iOS non deve eseguire il motore due volte.
+s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\\s*', '', s, flags=re.I)
+s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\\s*', '', s, flags=re.I)
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919i">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260919g"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
