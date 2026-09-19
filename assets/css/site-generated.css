@@ -410,7 +410,7 @@ section{
   max-height:100%!important;
   rotate:0deg!important;
   transform:none!important;
-  transform-origin:center center!important;
+  
 }
 .lntdv-photo-stage[data-photo-orientation="horizontal"] img{transform:none!important}
 .grid .card .meta{
@@ -650,7 +650,7 @@ img[alt^="LNTDV-"]{
   object-fit:contain!important;
   object-position:center!important;
   transform:none;
-  transform-origin:center center!important;
+  
   filter:none!important;
   opacity:1!important;
 }
