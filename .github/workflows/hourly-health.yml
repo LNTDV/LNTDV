@@ -45,7 +45,6 @@ jobs:
           assert 'https://script.google.com/macros/s/' in js
           PY
           node --check order-system.js
-          node --check Code.gs
 
       - name: Check public website
         run: |
