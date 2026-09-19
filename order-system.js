@@ -417,7 +417,8 @@
       forceClosed();
       return;
     }
-    intentionalOpen=false;
+    intentionalOpen=true;
+    setTimeout(()=>{intentionalOpen=false;},1200);
   },true);
 
   // Qualunque apertura non associata al pulsante viene chiusa.
