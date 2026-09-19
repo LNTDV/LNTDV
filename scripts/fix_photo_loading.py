@@ -19,7 +19,7 @@ s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', ''
 s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:\);?)', '', s, flags=re.I)
 s = re.sub(r'\s+src=["\']data:image/[^"\']+["\']', '', s, flags=re.I)
 
-# Ogni fotografia usa esclusivamente il proprio file JPG.
+# Ogni fotografia usa esclusivamente il proprio file JPG, prima per codice alt.
 for n in range(1, 26):
     code = f"{n:03d}"
     jpg = f"./images/natura-{n:02d}.jpg"
@@ -31,6 +31,22 @@ for n in range(1, 26):
             tag += f' src="{jpg}"'
         return tag + m.group(2)
     s = re.sub(pattern, repl, s)
+
+# Fallback: alcune parti storiche possono contenere una foto senza alt corretto.
+# Sostituisce i vecchi src immagine residui nell'ordine delle fotografie.
+photo_counter = 0
+def fallback_img(m):
+    global photo_counter
+    tag = m.group(0)
+    if re.search(r'\balt=["\']LNTDV-\d{3}["\']', tag, re.I):
+        return tag
+    if re.search(r'\bsrc=["\'](?:data:image/|\.\/assets\/photo\d{2}\.js)', tag, re.I):
+        photo_counter += 1
+        if photo_counter <= 25:
+            tag = re.sub(r'\s+src=["\'][^"\']*["\']', '', tag, flags=re.I)
+            tag = tag[:-1] + f' src="./images/natura-{photo_counter:02d}.jpg">'
+    return tag
+s = re.sub(r'<img\b[^>]*>', fallback_img, s, flags=re.I)
 
 # Loading: prime due subito, le altre lazy. Decoding asincrono evita blocchi del rendering.
 def imgfix(m):
