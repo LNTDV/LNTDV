@@ -43,6 +43,33 @@ jobs:
           print("CSS esterno:",len(css),"byte; HTML:",p.stat().st_size,"byte")
           PY
 
+      - name: Apply final LNTDV layout and checkout overrides
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          s=re.sub(r'\\s*<label><input type="radio" name="checkoutPayment" value="Apple Pay"> <span>Apple Pay</span></label>\\s*', '\\n', s)
+          s=re.sub(r'\\s*<label><input type="radio" name="checkoutPayment" value="Google Pay"> <span>Google Pay</span></label>\\s*', '\\n', s)
+          p.write_text(s,encoding="utf-8")
+          css=Path("assets/css/site-generated.css")
+          extra=r'''
+          /* LNTDV FINAL OVERRIDES */
+          body{background:#f4eadf!important}
+          main{background:#f4eadf!important;max-width:1500px!important}
+          .grid{background:#f4eadf!important;align-items:start!important}
+          .card{background:#fff!important}
+          .lntdv-photo-stage{width:100%;background:#f4eadf;display:flex;align-items:center;justify-content:center;overflow:hidden}
+          .lntdv-photo-stage img{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;display:block!important;background:#f4eadf!important}
+          @media(min-width:1101px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:26px!important}}
+          @media(min-width:701px) and (max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important}}
+          @media(max-width:700px){.grid{grid-template-columns:1fr!important;gap:18px!important}}
+          '''
+          css.write_text(css.read_text(encoding="utf-8")+'\n'+extra,encoding="utf-8")
+          print("Override finale applicato.")
+          PY
+
       - name: Validate local catalog
         run: |
           python - <<'PY'
