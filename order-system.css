@@ -414,3 +414,84 @@ img[id^="photo-"]{
 .grid .card .print-choice{order:3!important;width:100%!important;display:block!important;position:relative!important;clear:both!important;margin:10px 0 0!important;}
 .grid .card .print-choice .format-select{display:block!important;width:100%!important;box-sizing:border-box!important;}
 @media(max-width:700px){.grid .card{display:flex!important;flex-direction:column!important}.grid .card .photo-wrap,.grid .card .meta,.grid .card .print-choice{width:100%!important}.grid .card .print-choice{margin-top:10px!important}}
+
+
+/* LNTDV FINAL PHOTO/FORMAT HARD FIX v2026-09-19 */
+.grid .card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  min-width:0!important;
+}
+.grid .card .photo-wrap{
+  order:1!important;
+  width:100%!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+.grid .card .photo-wrap img,
+.grid .card > img,
+.grid .card img[id^="photo-"],
+.grid .card img{
+  order:1!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  image-orientation:from-image!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  margin:0 auto!important;
+  background:transparent!important;
+}
+.grid .card .meta{
+  order:2!important;
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  box-sizing:border-box!important;
+}
+.grid .card .print-choice{
+  order:-1!important;
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  clear:both!important;
+  margin:10px 0 12px!important;
+  padding:10px 11px!important;
+  visibility:visible!important;
+}
+.grid .card .print-choice label{
+  display:block!important;
+  width:100%!important;
+  margin:0 0 6px!important;
+}
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  min-height:44px!important;
+  box-sizing:border-box!important;
+  visibility:visible!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+}
+.grid .card.photo-vertical>img,
+.grid .card.photo-horizontal>img{
+  object-fit:contain!important;
+  background:transparent!important;
+}
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr!important;gap:18px!important;}
+  .grid .card img{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;}
+  .grid .card .print-choice{margin:10px 0 12px!important;padding:10px!important;}
+  .grid .card .format-select{min-height:46px!important;padding:11px 12px!important;font-size:14px!important;}
+}
