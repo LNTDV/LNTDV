@@ -128,7 +128,8 @@
   });
   const observer=new MutationObserver(()=>ensureCheckoutOptions());
   observer.observe(document.body,{childList:true,subtree:true});
-  fetch(SCRIPT_URL+"?action=config").then(r=>r.json()).then(x=>{if(x&&x.ok)BANK_IBAN=String(x.iban||"")}).catch(()=>{}).finally(()=>{rememberTrackingFromUrl();restore();refresh()});
+  fetch(ENDPOINT+'?action=config').then(r=>r.json()).then(x=>{if(x&&x.ok){BANK_IBAN=String(x.iban||'');BANK_HOLDER=String(x.accountHolder||'Edvinas Dragoni')}}).catch(()=>{});
+    fetch(SCRIPT_URL+"?action=config").then(r=>r.json()).then(x=>{if(x&&x.ok)BANK_IBAN=String(x.iban||"")}).catch(()=>{}).finally(()=>{rememberTrackingFromUrl();restore();refresh()});
 })();
 
 /* LNTDV MOBILE/WORKFLOW OVERRIDE v4
@@ -143,8 +144,10 @@
   const TRACKING_KEY='lntdv_tracking_orders_v2';
   const ENDPOINT='https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec';
   const PRICES={'Stampa fotografica':40,'Forex':50,'File digitale in alta risoluzione':25};
-  const COUNT_FIX_VERSION='20260919e';
+  const COUNT_FIX_VERSION='20260919f';
   const SHIPPING=10;
+  let BANK_IBAN='';
+  let BANK_HOLDER='Edvinas Dragoni';
   let busy=false;
   const $=id=>document.getElementById(id);
   const money=n=>'€'+Number(n||0).toFixed(2).replace('.',',');
@@ -153,7 +156,7 @@
   function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
   function cards(){return [...document.querySelectorAll('.card')]}
   function selected(){return cards().filter(c=>c.classList.contains('selected'))}
-  function delivery(){return document.querySelector('input[name="checkoutDelivery"]:checked')?.value||'Ritiro'}
+  function delivery(){return document.querySelector('input[name="checkoutDelivery"]:checked')?.value||document.querySelector('input[name="deliveryType"]:checked')?.value||'Ritiro'}
   function items(){return selected().map(card=>{
     const code=card.querySelector('.meta strong')?.textContent.trim()||'Fotografia';
     const format=card.querySelector('.format-select')?.value||'';
@@ -163,7 +166,7 @@
     return {card,code,format,image,orientation,price:Number(PRICES[format]||0),quantity};
   })}
   function totals(a){const subtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;return{subtotal,shipping,total:subtotal+shipping}}
-  function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format})))}
+  function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format,quantity:x.quantity})))}
   function restore(){
     const saved=read(CART_KEY,[]);
     if(!Array.isArray(saved))return;
@@ -175,6 +178,17 @@
       const s=card.querySelector('.format-select');if(s)s.value=hit.format||'';
       if(hit.quantity)card.dataset.quantity=Math.max(1,parseInt(hit.quantity,10)||1);
     });
+  }
+  function paymentInfo(){
+    let box=document.getElementById('lntdvPaymentDetails');
+    const panel=$('orderPanel');
+    if(!panel)return;
+    if(!box){box=document.createElement('div');box.id='lntdvPaymentDetails';box.style.cssText='margin:14px 0;padding:14px 15px;border:1px solid rgba(91,64,50,.16);border-radius:12px;background:#fffdf9;color:#3d281d;font:12px/1.55 Arial,sans-serif;';
+      const target=$('completePayment')?.closest('.checkout-bottom')||$('completePayment')?.parentNode||panel.querySelector('.checkout-bottom');
+      if(target)target.parentNode.insertBefore(box,target);
+    }
+    const a=items(),p=totals(a),previewId='LNTDV-PREPARAZIONE';
+    box.innerHTML='<strong>Dopo il riepilogo</strong><br>Conferma l’ordine per ricevere i dati definitivi del pagamento.<br><br><strong>Bonifico bancario</strong><br>IBAN: <strong>'+esc(BANK_IBAN||'verrà indicato nella conferma')+'</strong><br>Intestatario: <strong>'+esc(BANK_HOLDER)+'</strong><br>Causale: <strong>'+previewId+'</strong> (la causale definitiva sarà l’ID ordine).<br><span style="display:block;margin-top:7px;opacity:.78">Per i pagamenti online, la verifica Nexi XPay è gestita lato server. Non inserire dati della carta nel sito se non viene aperto il portale Nexi.</span>';
   }
   function normalizePayment(){
     const inputs=[...document.querySelectorAll('input[name="checkoutPayment"]')];
@@ -188,6 +202,7 @@
   }
   function render(){
     normalizePayment();
+    paymentInfo();
     const a=items(),p=totals(a),bar=$('orderBar');
     if(bar){const show=a.length>0;bar.classList.toggle('show',show);bar.classList.toggle('active',show);bar.setAttribute('aria-hidden',show?'false':'true')}
     if($('orderBarCount'))$('orderBarCount').textContent=a.reduce((n,x)=>n+Math.max(1,x.quantity||1),0)+' foto';
@@ -204,7 +219,7 @@
       if(!a.length)$('paymentStatus').textContent='Seleziona almeno una fotografia.';
       else if(!complete)$('paymentStatus').textContent='Scegli il formato per ogni fotografia.';
       else if(!name||!validEmail)$('paymentStatus').textContent='Inserisci nome e un indirizzo email valido.';
-      else $('paymentStatus').textContent='Ordine pronto per l’invio.';
+      else $('paymentStatus').textContent='Ordine pronto per l’invio. Dopo il riepilogo riceverai ID, causale, IBAN e intestatario.';
     }
     saveCart();
   }
