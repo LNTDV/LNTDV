@@ -311,3 +311,29 @@ img[id^="photo-"]{
     border-radius:999px!important;
   }
 }
+
+/* LNTDV HARD INITIAL STATE — 2026-09-19
+   Prevent any checkout/order UI from appearing during HTML parse or before JS initializes.
+   It becomes visible only when explicitly set to aria-hidden="false" after a photo selection.
+*/
+#orderPanel:not([aria-hidden="false"]){
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderBar:not([aria-hidden="false"]){
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+#orderPanel[aria-hidden="false"]{
+  visibility:visible!important;
+  opacity:1!important;
+}
+#orderBar[aria-hidden="false"]{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
