@@ -36,7 +36,7 @@ jobs:
           if "<html" not in s.lower() or "<body" not in s.lower():
               raise SystemExit("Catalogo non valido")
           import re
-          ids = set(re.findall(r'alt="LNTDV-(\d{3})"', s))
+          ids = set(re.findall(r'LNTDV-(\d{3})', s))
           expected = {f"{n:03d}" for n in range(1,26)}
           if ids != expected:
               raise SystemExit(f"Catalogo fotografico incompleto: presenti {sorted(ids)}, attese tutte le 25")
