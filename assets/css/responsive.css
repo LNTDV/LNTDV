@@ -19,3 +19,36 @@ main{width:100%}
   main{padding-left:24px;padding-right:24px}
   .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:24px!important}
 }
+
+/* LNTDV layout definitivo: desktop multi-colonna, mobile singola, spazio beige tra le foto */
+body{background:#f4eadf!important}
+main{max-width:1500px!important;background:#f4eadf}
+.grid{background:#f4eadf!important;align-items:start!important}
+.card{background:#fff!important}
+.lntdv-photo-stage{
+  width:100%;
+  background:#f4eadf;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.lntdv-photo-stage img{
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  display:block!important;
+  background:#f4eadf!important;
+}
+@media(min-width:1101px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:26px!important}
+}
+@media(min-width:701px) and (max-width:1100px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important}
+}
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr!important;gap:18px!important}
+  .lntdv-photo-stage{min-height:0}
+}
