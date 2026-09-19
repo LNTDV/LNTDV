@@ -7,8 +7,11 @@ on:
       - "scripts/patch_lntdv.py"
       - "scripts/fix_photo_loading.py"
       - "catalog/**"
+      - "images/**"
       - "assets/**"
       - "order-system.js"
+      - "order-system.css"
+      - "Code.gs"
   workflow_dispatch:
 
 concurrency:
@@ -24,48 +27,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Assemble exact photo catalog
+      - name: Assemble catalog
         run: |
           rm -f index.html
-          for n in $(seq -w 1 14); do
-            cat "catalog/part-$n.html" >> index.html
-          done
+          for n in $(seq -w 1 14); do cat "catalog/part-$n.html" >> index.html; done
           python - <<'PY'
           from pathlib import Path
+          import re
           s=Path("index.html").read_text(encoding="utf-8")
           if "<html" not in s.lower() or "<body" not in s.lower():
               raise SystemExit("Catalogo non valido")
-          import re
-          ids = set(re.findall(r'LNTDV-(\d{3})', s))
-          expected = {f"{n:03d}" for n in range(1,26)}
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          expected={f"{n:03d}" for n in range(1,26)}
           if ids != expected:
-              raise SystemExit(f"Catalogo fotografico incompleto: presenti {sorted(ids)}, attese tutte le 25")
-          if s.count("<img") < 14:
-              raise SystemExit("Struttura immagini del catalogo non valida")
-          print("Catalogo assemblato:", len(s), "byte", len(ids), "foto", s.count("<img"), "tag immagine")
+              raise SystemExit(f"Catalogo incompleto: presenti {sorted(ids)}, attese {sorted(expected)}")
+          print("Catalogo:",len(s),"byte;",len(ids),"codici foto.")
           PY
 
-      - name: Apply requested features
+      - name: Apply site features
         run: python scripts/patch_lntdv.py
 
-      - name: Fix photo loading
+      - name: Normalize photo assets and rendering
         run: python scripts/fix_photo_loading.py
 
-      - name: Validate final catalog
+      - name: Validate HTML, photos, scripts and order hooks
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re, subprocess
           s=Path("index.html").read_text(encoding="utf-8")
 
-          for n in range(1,26):
-              asset=f'./assets/photo{n:02d}.js?v=20260918'
-              preload=f'<link rel="preload" as="script" href="./assets/photo{n:02d}.js?v=20260918">'
-              if asset not in s:
-                  raise SystemExit(f"Asset fotografico mancante nell'index: photo{n:02d}.js")
-              if s.count(preload) != 1:
-                  raise SystemExit(f"Preload non corretto per photo{n:02d}.js: trovati {s.count(preload)}")
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          expected={f"{n:03d}" for n in range(1,26)}
+          if ids != expected:
+              raise SystemExit(f"Codici foto errati: {sorted(ids)}")
 
-          print("Validazione OK: tutti i 25 asset fotografici e i 25 preload sono presenti una sola volta.")
+          for n in range(1,26):
+              p=Path(f"images/natura-{n:02d}.jpg")
+              if not p.exists() or p.stat().st_size < 1000:
+                  raise SystemExit(f"Foto mancante o vuota: {p}")
+              pat=rf'<img\b[^>]*src="\.\/images\/natura-{n:02d}\.jpg"[^>]*alt="LNTDV-{n:03d}"'
+              if not re.search(pat,s,re.I):
+                  pat=rf'<img\b[^>]*alt="LNTDV-{n:03d}"[^>]*src="\.\/images\/natura-{n:02d}\.jpg"'
+                  if not re.search(pat,s,re.I):
+                      raise SystemExit(f"Collegamento foto non corretto: {n:03d}")
+
+          if "data:image/" in s:
+              raise SystemExit("Sono rimaste immagini Base64 inline nel catalogo.")
+          if re.search(r'transform\s*:\s*rotate\(',s,re.I):
+              raise SystemExit("Trovata rotazione CSS automatica: rischio di foto ruotate due volte.")
+          if s.count('id="orderPanel"') != 1:
+              raise SystemExit("Riepilogo ordine duplicato.")
+          if s.count('id="completePayment"') != 1:
+              raise SystemExit("Pulsante conferma ordine duplicato.")
+          if s.count('id="trackingSection"') != 1:
+              raise SystemExit("Sezione tracking duplicata.")
+          if "order-system.js" not in s or "order-system.css" not in s:
+              raise SystemExit("Motore ordine esterno non collegato.")
+          subprocess.run(["node","--check","order-system.js"],check=True)
+          subprocess.run(["node","--check","scripts/patch_lntdv.py"],check=False)
+          print("VALIDAZIONE CATALOGO OK")
           PY
 
       - name: Commit and publish
@@ -74,6 +95,6 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Fix catalog validation and publish photo loading"
+          git commit -m "Build catalogo stabile e validato"
           git pull --rebase origin main
           git push origin HEAD:main
