@@ -164,7 +164,20 @@
     const quantity=Math.max(1,parseInt(card.dataset.quantity||'1',10)||1);
     return {card,code,format,image,orientation,price:Number(PRICES[format]||0),quantity};
   })}
-  function totals(a){const subtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;return{subtotal,shipping,total:subtotal+shipping}}
+  function promoTotal(a){
+    const count=a.reduce((n,x)=>n+Math.max(1,Number(x.quantity)||1),0);
+    if(count===1)return 50;
+    if(count===2)return 80;
+    if(count===3)return 120;
+    return null;
+  }
+  function totals(a){
+    const normalSubtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);
+    const promo=promoTotal(a);
+    const subtotal=promo!==null?promo:normalSubtotal;
+    const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;
+    return{subtotal,normalSubtotal,promo,shipping,total:subtotal+shipping}
+  }
   function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format,quantity:x.quantity})))}
   function restore(){
     const saved=read(CART_KEY,[]);
@@ -187,6 +200,14 @@
       if(target)target.parentNode.insertBefore(box,target);
     }
     const a=items(),p=totals(a),previewId='LNTDV-PREPARAZIONE';
+    let promoNote=document.getElementById('lntdvPromoNote');
+    if(!promoNote){
+      promoNote=document.createElement('div');
+      promoNote.id='lntdvPromoNote';
+      promoNote.style.cssText='margin:10px 0 14px;padding:11px 13px;border:1px solid #d8c5ae;border-radius:10px;background:#fffaf3;color:#5a3b2b;font:12px/1.5 Arial,sans-serif;text-align:center;';
+      const list=$('orderList');
+      if(list?.parentNode)list.parentNode.insertBefore(promoNote,list);
+    }
     box.innerHTML='<strong>Dopo il riepilogo</strong><br>Conferma l’ordine per ricevere i dati definitivi del pagamento.<br><br><strong>Bonifico bancario</strong><br>IBAN: <strong>'+esc(BANK_IBAN||'verrà indicato nella conferma')+'</strong><br>Intestatario: <strong>'+esc(BANK_HOLDER)+'</strong><br>Causale: <strong>'+previewId+'</strong> (la causale definitiva sarà l’ID ordine).<br><span style="display:block;margin-top:7px;opacity:.78">Per i pagamenti online, la verifica Nexi XPay è gestita lato server. Non inserire dati della carta nel sito se non viene aperto il portale Nexi.</span>';
   }
   function normalizePayment(){
@@ -208,6 +229,13 @@
     if($('orderBarTotal'))$('orderBarTotal').textContent=money(p.total);
     if($('summaryCount'))$('summaryCount').textContent=String(a.reduce((n,x)=>n+Math.max(1,x.quantity||1),0));
     if($('orderTotal'))$('orderTotal').textContent=money(p.total);
+    const promoNote=$('lntdvPromoNote');
+    if(promoNote){
+      promoNote.innerHTML=a.length
+        ? '<strong>Promozione dedicata:</strong> 1 foto €50 · 2 foto €80 · 3 foto €120'+(p.promo!==null?'<br><span style="opacity:.8">Totale promozionale applicato alla selezione.</span>':'<br><span style="opacity:.8">Per più di 3 foto si applicano i normali prezzi del catalogo.</span>')
+        : '';
+      promoNote.style.display=a.length?'block':'none';
+    }
     if($('orderList'))$('orderList').innerHTML=a.length?a.map((x,i)=>'<div class="checkout-photo-row"><div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div><div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div><div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div><div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div></div><div class="checkout-photo-price">'+money(x.price)+'</div></div>').join(''):'<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     const name=$('customerName')?.value.trim()||'',email=$('customerEmail')?.value.trim()||'';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -269,7 +297,7 @@
       }
     }
     const p=totals(a),id=orderId(),t=token();
-    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:Math.max(1,Number(x.quantity)||1)})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:a.length>=3?'Promozione terza foto':'',deliveryType:delivery(),requestedTracking:true,trackingToken:t};
+    const payload={orderId:id,paymentMethod:'Bonifico bancario',paymentStatus:'IN_ATTESA_DI_PAGAMENTO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:Math.max(1,Number(x.quantity)||1)})),subtotal:p.subtotal,baseTotal:p.subtotal,shippingFee:p.shipping,total:p.total,promotion:p.promo!==null?'Promozione dedicata: 1 foto €50, 2 foto €80, 3 foto €120':'',deliveryType:delivery(),requestedTracking:true,trackingToken:t};
     busy=true;write(LAST_ORDER_KEY,{orderId:id,token:t,email,total:p.total,pending:true,createdAt:new Date().toISOString()});
     if($('completePayment'))$('completePayment').disabled=true;
     if($('paymentStatus'))$('paymentStatus').innerHTML='<strong>Invio ordine in corso…</strong><br>Verifica della registrazione sul sistema ordini.';
