@@ -19,7 +19,7 @@ s = re.sub(r'\n?\s*<link[^>]+rel=["\']preload["\'][^>]+photo\d{2}\.js[^>]*>', ''
 s = re.sub(r'transform\s*:\s*rotate\([^;}]*(?:\);?)', '', s, flags=re.I)
 s = re.sub(r'\s+src=["\']data:image/[^"\']+["\']', '', s, flags=re.I)
 
-# Ogni fotografia usa esclusivamente il proprio JPG, prima per codice alt.
+# Elimina anche i vecchi bundle JS Base64 incorporati nei frammenti del catalogo.\n# Le foto sono ora file JPG separati: lasciare questi blocchi nel documento rende\n# index.html enorme e può bloccare il caricamento del browser.\ns = re.sub(r'<script[^>]*>\\s*window\\.LNTDV_PHOTO_\\d{2}\\s*=\\s*"data:image/[^"]*"\\s*;?\\s*</script>', '', s, flags=re.I)\ns = re.sub(r'window\\.LNTDV_PHOTO_\\d{2}\\s*=\\s*"data:image/[^"]*"\\s*;?', '', s, flags=re.I)\n\n# Ogni fotografia usa esclusivamente il proprio JPG, prima per codice alt.
 for n in range(1, 26):
     code = f"{n:03d}"
     jpg = f"./images/natura-{n:02d}.jpg"
