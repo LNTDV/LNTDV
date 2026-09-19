@@ -71,11 +71,11 @@ function doPost(e) {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || ''}); }
-  if (p.action === 'confirm') return confirmOrder_(p.orderId || '', p.token || '', p.email || '', p.callback || '');
-  if (p.action === 'order') return orderWindow_(p.orderId || '', p.key || '');
-  if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || '', p.key || '');
-  if (p.action === 'track') return trackOrder_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
-  if (p.action === 'shipment') return shipmentStatus_(p.orderId || '', p.email || '', p.token || '', p.callback || '');
+  if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
+  if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
+  if (p.action === 'xpayVerify') return verifyXpayOrder_(p.orderId || p.ordine || '', p.key || '');
+  if (p.action === 'track') return trackOrder_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
+  if (p.action === 'shipment') return shipmentStatus_(p.orderId || p.ordine || '', p.email || '', p.token || '', p.callback || '');
   return HtmlService.createHtmlOutput('<!doctype html><html lang="it"><body style="font-family:Arial;padding:30px;background:#f3eadc;color:#3d281d"><h2>La Nostra Terra da Vicino</h2><p>Servizio ordini attivo.</p></body></html>');
 }
 
