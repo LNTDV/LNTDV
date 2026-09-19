@@ -324,6 +324,11 @@ function ensureOrderEditTrigger_() {
   if (!exists) ScriptApp.newTrigger('onOrderCheckboxEdit_').forSpreadsheet(ss).onEdit().create();
 }
 
+function ensureCopyshopReplyTrigger_() {
+  const exists = ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() === 'processCopyshopEmails_');
+  if (!exists) ScriptApp.newTrigger('processCopyshopEmails_').timeBased().everyHours(1).create();
+}
+
 function onOrderCheckboxEdit_(e) {
   try {
     if (!e || !e.range) return;
