@@ -115,9 +115,8 @@ s += """\n<style id="lntdv-final-orderbar-mobile">
 p.write_text(s,encoding="utf-8")
 print("Published source prepared:",len(s),"bytes",s.count("<article"),"articles",s.count("<img"),"images")
 
-# Carica un solo motore ordine, dopo tutti gli script inline del catalogo.
-# Questo evita doppie submission e permette al capture handler del carrello di avere il controllo.
-marker = '<script id="' + 'lntdv-external-order-system' + '"'
-if marker not in s:
-    assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919">\n<script id="lntdv-external-order-system" src="./order-system.js?v=20260919"></script>'''
-    s=s.replace('</body>', assets+'</body>', 1)
+# Carica sempre un solo motore ordine nell'index appena assemblato.
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919">\n<script id="lntdv-external-order-system" src="./order-system.js?v=20260919"></script>'''
+if '</body>' not in s:
+    raise SystemExit("index.html senza </body>")
+s=s.replace('</body>', assets+'</body>', 1)
