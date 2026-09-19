@@ -690,15 +690,3 @@ main{background:#f4eadf!important;max-width:1500px!important}
 .lntdv-photo-stage img{background:#fbf6ef!important}
 .meta strong{display:inline-block!important;align-self:flex-end!important;margin-left:auto!important;padding:7px 11px!important;border:1px solid #5a3b2b!important;border-radius:7px!important;background:#fbf6ef!important;color:#5a3b2b!important}
 .meta small{align-self:flex-end!important;text-align:right!important}
-
-
-/* LNTDV FIX — caricamento foto stabile + striscia marrone titolo */
-header h1{position:relative;display:table;margin:14px auto 0;padding:0 18px 16px}
-header h1::after{content:"";display:block;width:180px;height:5px;margin:14px auto 0;background:#5a3b2b;border-radius:1px}
-
-/* Evita sfarfallii durante il caricamento: spazio riservato prima del decode */
-.grid .card{content-visibility:visible!important;contain:layout paint!important}
-.lntdv-photo-stage{position:relative!important;contain:layout paint!important;content-visibility:visible!important;min-height:0!important}
-.lntdv-photo-stage[data-photo-orientation="horizontal"]{aspect-ratio:4/3!important}
-.lntdv-photo-stage[data-photo-orientation="vertical"]{aspect-ratio:3/4!important}
-.lntdv-photo-stage img{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;display:block!important;visibility:visible!important;opacity:1!important;transition:none!important;animation:none!important}
