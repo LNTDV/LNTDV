@@ -613,3 +613,21 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   window.addEventListener('load',apply,{once:true});
 })();
+
+
+/* LNTDV — FIRST PHOTO RENDER REFRESH — 2026-09-19 */
+(function(){
+  function refreshFirstPhoto(){
+    const card=[...document.querySelectorAll('.card')].find(c=>(c.querySelector('.meta strong')?.textContent||'').trim()==='LNTDV-001');
+    const img=card?.querySelector('img');
+    if(!img||img.dataset.lntdvFirstRefresh==='1')return;
+    img.loading='eager';img.decoding='sync';img.fetchPriority='high';
+    const src=img.getAttribute('src')||'';
+    if(src.startsWith('./images/natura-01.jpg')&&!/[?&]v=/.test(src)){
+      img.dataset.lntdvFirstRefresh='1';
+      img.src=src+(src.includes('?')?'&':'?')+'v=20260919';
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshFirstPhoto,{once:true});else refreshFirstPhoto();
+  window.addEventListener('load',refreshFirstPhoto,{once:true});
+})();
