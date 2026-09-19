@@ -8,8 +8,8 @@ s=p.read_text(encoding="utf-8")
 
 # Rimuove i metodi di pagamento non utilizzati dal checkout LNTDV.
 # Il flusso attivo usa il bonifico e la conferma server-side dell'ordine.
-s = re.sub(r"<label[^>]*>\\s*<input[^>]*value=[\"'](?:Apple Pay|Google Pay)[\"'][\\s\\S]*?</label>", "", s, flags=re.I)
-s = re.sub(r'<option[^>]*>\\s*(?:Apple Pay|Google Pay)\\s*</option>', '', s, flags=re.I)
+s = re.sub(r"<label[^>]*>\s*<input[^>]*value=[\"'](?:Apple Pay|Google Pay)[\"'][\s\S]*?</label>", "", s, flags=re.I)
+s = re.sub(r'<option[^>]*>\s*(?:Apple Pay|Google Pay)\s*</option>', '', s, flags=re.I)
 
 # Remove legacy inline checkout/tracking implementations.
 # The external order-system.js + tracking.js are the single runtime engines.
