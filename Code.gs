@@ -55,7 +55,7 @@ function doPost(e) {
     sheet.getRange(row, 14).insertCheckboxes().setValue(true);
     const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${deliveryType}`;
     const promotionText = payload.promotion ? `Promozione applicata: ${payload.promotion}\n` : '';
-    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: ${paymentMethod || 'Carta'}\n\nL'ordine è stato registrato. Riceverai le indicazioni relative al pagamento secondo il metodo selezionato.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: ${''}\n\nL'ordine è stato registrato. Riceverai le indicazioni relative al pagamento secondo il metodo selezionato.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     // Invia sempre prima la copia amministrativa all'indirizzo fisso del progetto.
     MailApp.sendEmail({
       to: OWNER_EMAIL,
@@ -69,7 +69,7 @@ function doPost(e) {
       body: body
     });
     if (paymentStatus === 'PAGATO') {
-      const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: ${paymentMethod || 'non specificato'}\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+      const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: ${''}\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
       MailApp.sendEmail({to: customer.email, subject: `Pagamento confermato ${orderId} — La Nostra Terra da Vicino`, body: paymentBody});
     }
     return json_({ok:true, orderId:orderId, trackingToken:trackingToken, paymentStatus:paymentStatus, subtotal:subtotal, shipping:shipping, total:total});
