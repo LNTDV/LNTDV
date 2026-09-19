@@ -115,8 +115,8 @@ img#photo-001 + *{opacity:1!important;}
 </style>
 
 <style id="lntdv-photo-color-final">\n.catalog img, .card img, .pic img, img[id^="photo-"]{filter:contrast(1.22) brightness(.92) saturate(1.04)!important;-webkit-filter:contrast(1.22) brightness(.92) saturate(1.04)!important;opacity:1!important;mix-blend-mode:normal!important;backdrop-filter:none!important;}\n.catalog .pic::before,.catalog .pic::after,.card .pic::after{background-image:none!important;backdrop-filter:none!important;}\n</style>\n"""\n\ns += """\n<style id="id="lntdv-natural-photo-orientation"">\n/* Mantieni l'orientamento e le proporzioni reali delle fotografie: nessun crop 4:3. */\n.card img,.photo-card img,.photo-wrap img,.pic img,img[id^="photo-"]{width:100%!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;display:block!important;transform:none!important;}\n.card:hover img,.photo-card:hover img,.pic:hover img{transform:none!important;}\n</style>\n\n<style id="lntdv-final-orderbar-mobile">
-.order-bar{position:fixed!important;left:auto!important;right:18px!important;bottom:18px!important;z-index:999999!important;width:min(520px,calc(100vw - 36px))!important;max-width:calc(100vw - 36px)!important;min-width:0!important;box-sizing:border-box!important;transform:translateY(0)!important;}
-@media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important;min-width:0!important;}}
+.order-bar{position:fixed!important;left:auto!important;right:18px!important;bottom:18px!important;z-index:999999!important;width:max-content!important;max-width:calc(100vw - 36px)!important;min-width:0!important;box-sizing:border-box!important;transform:translateY(0)!important;}
+@media(max-width:760px){.order-bar{left:auto!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:max-content!important;max-width:calc(100vw - 20px)!important;min-width:0!important;}}
 </style>
 """
 p.write_text(s,encoding="utf-8")
