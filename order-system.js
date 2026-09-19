@@ -175,7 +175,7 @@
     const normalSubtotal=a.reduce((s,x)=>s+x.price*x.quantity,0);
     const promo=promoTotal(a);
     const subtotal=promo!==null?promo:normalSubtotal;
-    const shipping=delivery().toLowerCase().includes('sped')?SHIPPING:0;
+    const photoCount=a.reduce((n,x)=>n+Math.max(1,Number(x.quantity)||1),0); const shipping=photoCount>2?SHIPPING:0;
     return{subtotal,normalSubtotal,promo,shipping,total:subtotal+shipping}
   }
   function saveCart(){write(CART_KEY,items().map(x=>({code:x.code,format:x.format,quantity:x.quantity})))}
