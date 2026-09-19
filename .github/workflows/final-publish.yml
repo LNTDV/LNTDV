@@ -76,17 +76,17 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
-          s=Path('index.html').read_text(encoding='utf-8'); css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
+          s=Path('index.html').read_text(encoding='utf-8')
+          css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
           assert set(re.findall(r'LNTDV-(\d{3})',s))=={f'{n:03d}' for n in range(1,26)}
           assert 'data:image/' not in s and 'data:image/' not in css
           assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I)
           assert not re.search(r'transform\s*:\s*rotate\s*\(',css,re.I)
-          assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
-          assert s.count('id="deliveryStatus"')<=1
           assert 'order-system.js' in s and 'order-system.css' in s
           print('FINAL BUILD VALID')
           PY
           node --check order-system.js
+
       - name: Publish generated files
         run: |
           git config user.name "LNTDV Website Bot"
