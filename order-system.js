@@ -347,7 +347,11 @@
 
       resetSelection(false);
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email la conferma della richiesta e i dettagli dell’ordine.';
+        const mailSubject=encodeURIComponent('Richiesta ordine '+id+' — La Nostra Terra da Vicino');
+        const mailBody=encodeURIComponent('Buongiorno,\\n\\nrichiesta ordine '+id+' inviata dal sito LNTDV.\\n\\nIl riepilogo completo dell’ordine è stato registrato nel sistema Google Fogli.\\n\\nCordiali saluti.');
+        const gmailUrl='https://mail.google.com/mail/?view=cm&fs=1&to=info.lanostraterradavicino@gmail.com&su='+mailSubject+'&body='+mailBody;
+        const appleUrl='mailto:info.lanostraterradavicino@gmail.com?subject='+mailSubject+'&body='+mailBody;
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata e collegata a Google Fogli.<br><br><strong>Scegli come inviare la mail predisposta:</strong><br><br><a href="'+gmailUrl+'" target="_blank" rel="noopener" style="display:inline-block;padding:10px 16px;margin:4px;border-radius:8px;text-decoration:none;background:#f3f0e8;color:#3b2b20;font-weight:600;">Apri Gmail</a><a href="'+appleUrl+'" style="display:inline-block;padding:10px 16px;margin:4px;border-radius:8px;text-decoration:none;background:#f3f0e8;color:#3b2b20;font-weight:600;">Apri Apple Mail</a><br><small>Destinatario: info.lanostraterradavicino@gmail.com</small>';
       }
       if($('orderPanel')){
         $('orderPanel').classList.add('active');
