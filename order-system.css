@@ -811,9 +811,5 @@ img[id^="photo-"]{
 /* LNTDV FINAL ORIENTATION FIX — 2026-09-19
    Correzioni richieste per la visualizzazione cliente.
 */
-.card[data-photo-code="LNTDV-003"] img,
-.card[data-code="LNTDV-003"] img{transform:rotate(-90deg)!important;}
-.card[data-photo-code="LNTDV-006"] img,
-.card[data-code="LNTDV-006"] img,
-.card[data-photo-code="LNTDV-007"] img,
-.card[data-code="LNTDV-007"] img{transform:rotate(90deg)!important;}
+.card[data-photo-code="LNTDV-003"] img,.grid .card:nth-child(3) img{transform:rotate(-90deg)!important;}
+.card[data-photo-code="LNTDV-006"] img,.grid .card:nth-child(6) img,.card[data-photo-code="LNTDV-007"] img,.grid .card:nth-child(7) img{transform:rotate(90deg)!important;}
