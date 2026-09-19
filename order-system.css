@@ -672,3 +672,138 @@ img[id^="photo-"]{
     min-height:10px!important;
   }
 }
+
+
+/* LNTDV CATALOGO — DEFINITIVE SINGLE COLUMN PHOTO CARDS 2026-09-19 */
+.grid,section.grid,section.catalog{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:22px!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.grid .card,.catalog .card,.photo-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.grid .card .lntdv-photo-stage,.grid .card .photo-wrap,.catalog .card .lntdv-photo-stage,.catalog .card .photo-wrap{
+  order:1!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:2px solid #6b4734!important;
+  border-radius:14px!important;
+  box-sizing:border-box!important;
+  line-height:0!important;
+}
+.grid .card .lntdv-photo-stage img,.grid .card .photo-wrap img,.grid .card>img,.grid .card img,
+.catalog .card .lntdv-photo-stage img,.catalog .card .photo-wrap img,.catalog .card img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  transform:none!important;
+}
+.grid .card .meta,.catalog .card .meta{
+  order:2!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:0!important;
+}
+.grid .card .print-choice,.catalog .card .print-choice{
+  order:1!important;
+  width:100%!important;
+  margin:0 0 10px!important;
+  padding:10px 11px!important;
+  box-sizing:border-box!important;
+  border:1px solid #b99a7d!important;
+  border-radius:11px!important;
+  background:#fcfaf7!important;
+  display:block!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+.grid .card .print-choice label,.catalog .card .print-choice label{
+  display:block!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+  color:#6b4734!important;
+}
+.grid .card .format-select,.catalog .card .format-select{
+  display:block!important;
+  width:100%!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:none!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border:1px solid #b99a7d!important;
+  border-radius:9px!important;
+  background:#fffaf3!important;
+  color:#4b2f22!important;
+  font-size:15px!important;
+  line-height:1.2!important;
+}
+.grid .card .meta strong,.catalog .card .meta strong{
+  order:2!important;
+  display:block!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+}
+.grid .card .meta small,.catalog .card .meta small{
+  order:3!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:700px){
+  .grid,section.grid,section.catalog{grid-template-columns:1fr!important;gap:20px!important;}
+  .grid .card .lntdv-photo-stage,.grid .card .photo-wrap,.catalog .card .lntdv-photo-stage,.catalog .card .photo-wrap{
+    margin-bottom:10px!important;
+    border-radius:13px!important;
+  }
+  .grid .card .lntdv-photo-stage img,.grid .card .photo-wrap img,.grid .card img,.catalog .card img{
+    border-radius:11px!important;
+  }
+  .grid .card .print-choice,.catalog .card .print-choice{
+    padding:10px!important;
+    border-radius:10px!important;
+  }
+  .grid .card .format-select,.catalog .card .format-select{
+    height:46px!important;
+    min-height:46px!important;
+    font-size:16px!important;
+  }
+}
