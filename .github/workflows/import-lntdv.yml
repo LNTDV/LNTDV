@@ -35,8 +35,8 @@ jobs:
           s=Path("index.html").read_text(encoding="utf-8")
           if "<html" not in s.lower() or "<body" not in s.lower():
               raise SystemExit("Catalogo non valido")
-          if s.count("<article") < 20 or s.count("<img") < 20:
-              raise SystemExit("Il catalogo non contiene tutte le fotografie")
+          if s.count("<article") < 25 or s.count("<img") < 14:
+              raise SystemExit("Il catalogo non contiene tutte le 25 schede fotografiche")
           print("Catalogo assemblato:", len(s), "byte", s.count("<article"), "articoli", s.count("<img"), "immagini")
           PY
 
