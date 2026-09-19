@@ -71,7 +71,11 @@ if 'id="orderConfirmation"' not in s:
       <div id="confirmationMailActions" class="confirmation-actions"></div>
     </section>
 '''
-    s=s.replace('    </div>\n  </div>\n</div>\n\n<footer>', '    </div>\n'+confirmation+'  </div>\n</div>\n\n<footer>', 1)
+    marker='    </div>\\n  </div>\\n</div>\\n\\n<section id="trackingSection"'
+    if marker in s:
+        s=s.replace(marker, '    </div>\\n'+confirmation+'  </div>\\n</div>\\n\\n<section id="trackingSection"', 1)
+    else:
+        s=s.replace('</footer>', confirmation+'</footer>', 1)
 
 # Tracking
 if 'id="trackingSection"' not in s:
