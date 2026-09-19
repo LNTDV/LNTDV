@@ -351,7 +351,7 @@
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
 
       if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Riceverai via email le coordinate per il bonifico bancario e il riepilogo dell’ordine.';
+        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Le istruzioni per il pagamento vengono inviate tramite la mail predisposta.';
       }
 
       resetSelection(false);
@@ -365,7 +365,7 @@
         const chooserEl=document.getElementById('lntdvMailChooser');
         chooserEl.querySelector('.lntdv-mail-close').addEventListener('click',()=>chooserEl.remove());
         chooserEl.addEventListener('click',e=>{if(e.target===chooserEl)chooserEl.remove();});
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail predisposta.';
+        $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail con le istruzioni di pagamento.';
       }
       if($('orderPanel')){
         const panel=$('orderPanel');
