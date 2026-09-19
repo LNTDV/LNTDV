@@ -181,3 +181,7 @@ s += """\n
 }
 </style>
 """
+
+
+p.write_text(s,encoding="utf-8")
+print("Final rendering overrides written:",len(s),"bytes")
