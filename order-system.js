@@ -4,6 +4,7 @@
   const ORDER_KEY="lntdv_last_order_v3";
   const TRACKING_KEY="lntdv_tracking_orders_v1";
   const PAYMENT_KEY="lntdv_pending_payment_v1";
+  const QTY_KEY="lntdv_order_quantities_v1";
   let BANK_IBAN="";
   const prices={"Stampa fotografica":40,"Forex":50,"File digitale in alta risoluzione":25};
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbybuGw5n1qyD0gKYdUm6nSYzimId6akDmKCeULqA5J7zRWB9Tr280N4oo92kX/exec";
@@ -22,14 +23,15 @@
       const select=card.querySelector(".format-select");
       const format=select?.value||"";
       const orientation=(card.dataset.orientation||"").trim();
-      return {code,format,price:prices[format]||0,image:card.querySelector("img")?.src||"",orientation};
+      const quantity=Math.max(1,parseInt(card.dataset.quantity||"1",10)||1);
+      return {code,format,price:prices[format]||0,image:card.querySelector("img")?.src||"",orientation,quantity};
     });
   }
   // PREZZI FISSI, SENZA BUNDLE:
   // Stampa fotografica €40 · Forex €50 · Digitale €25.
   // Ogni riga viene calcolata come prezzo del formato × quantità.
   // Esempio obbligatorio: Forex €50 + Digitale €25 = €75.
-  function totalBase(a){return a.reduce((s,x)=>s+(Number(prices[x.format])||0),0)}
+  function totalBase(a){return a.reduce((s,x)=>s+((Number(prices[x.format])||0)*Math.max(1,Number(x.quantity)||1)),0)}
   function pricing(a){
     const base=totalBase(a);
     return {base,promo:null,total:base};
@@ -50,13 +52,14 @@
     </div>`;
     button.parentNode.insertBefore(wrap,button);
   }
-  function save(){write(KEY,items().map(x=>({code:x.code,format:x.format,orientation:x.orientation})))}
+  function save(){write(KEY,items().map(x=>({code:x.code,format:x.format,orientation:x.orientation,quantity:x.quantity})))}
   function restore(){
     const saved=read(KEY); if(!Array.isArray(saved))return;
     document.querySelectorAll(".card").forEach(card=>{
       const code=card.querySelector(".meta strong")?.textContent.trim();
       const hit=saved.find(x=>x.code===code); if(!hit)return;
       card.classList.add("selected"); card.setAttribute("aria-pressed","true");
+      if(hit.quantity)card.dataset.quantity=Math.max(1,parseInt(hit.quantity,10)||1);
       const s=card.querySelector(".format-select"); if(s)s.value=hit.format||"";
     });
   }
@@ -77,6 +80,7 @@
   function open(){refresh();$("orderPanel")?.classList.add("active");$("orderPanel")?.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
   function close(){$("orderPanel")?.classList.remove("active");$("orderPanel")?.setAttribute("aria-hidden","true");document.body.style.overflow=""}
   document.addEventListener("click",e=>{if(e.target.closest(".card")&&!e.target.closest("select,option,input,button,a"))setTimeout(refresh,0)});
+  document.addEventListener("click",e=>{const q=e.target.closest(".lntdv-qty");if(!q)return;const code=q.dataset.code||"";const delta=parseInt(q.dataset.delta||"0",10)||0;const card=[...document.querySelectorAll(".card.selected")].find(x=>(x.querySelector(".meta strong")?.textContent.trim()||"")===code);if(card){card.dataset.quantity=Math.max(1,(parseInt(card.dataset.quantity||"1",10)||1)+delta);refresh()}});
   document.addEventListener("change",e=>{if(e.target.classList.contains("format-select")){const c=e.target.closest(".card");c?.classList.add("selected");c?.setAttribute("aria-pressed","true");refresh()}});
   ["customerName","customerEmail","customerStreet","customerZip","customerCity","customerNote"].forEach(id=>$(id)?.addEventListener("input",refresh));
   $("openOrder")?.addEventListener("click",e=>{e.preventDefault();open()});
@@ -86,7 +90,7 @@
     const a=items(),email=$("customerEmail").value.trim();
     if(!a.length||a.some(x=>!x.format)||!$("customerName").value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){refresh();return}
     const orderId="LNTDV-"+Date.now().toString(36).toUpperCase(),trackingToken=makeToken(),pinfo=pricing(a),t=pinfo.total,button=$("completePayment");
-    const payload={orderId,paymentMethod:"BONIFICO",paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:Number(prices[x.format])||0,quantity:1})),total:t,baseTotal:t,promotion:null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken};
+    const payload={orderId,paymentMethod:"BONIFICO",paymentStatus:"IN_ATTESA_DI_PAGAMENTO",orderStatus:"ORDINE RICEVUTO",customer:{name:$("customerName").value.trim(),email,street:$("customerStreet").value.trim(),zip:$("customerZip").value.trim(),city:$("customerCity").value.trim(),note:$("customerNote").value.trim()},items:a.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:Number(prices[x.format])||0,quantity:Math.max(1,Number(x.quantity)||1)})),total:t,baseTotal:t,promotion:null,deliveryType:$("lntdvDelivery")?.value||"Copisteria — Viale Romagna 43, 20133 Milano",requestedTracking:true,trackingToken};
     button.disabled=true;$("paymentStatus").textContent="Invio ordine in corso…";
     try{
       // Invio diretto al Web App Apps Script senza aprire Gmail/Mail.
