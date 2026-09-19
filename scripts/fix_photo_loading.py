@@ -152,7 +152,8 @@ final_css = r'''<style id="lntdv-final-photo-rendering">
   height:auto!important;
   max-width:100%!important;
   max-height:100%!important;
-  rotate:90deg!important;
+  rotate:0deg!important;
+  transform:none!important;
   transform-origin:center center!important;
 }
 .lntdv-photo-stage[data-photo-orientation="horizontal"] img{transform:none!important}
