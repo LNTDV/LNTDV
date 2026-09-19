@@ -62,6 +62,17 @@ if 'name="deliveryType"' not in s:
         <div class="checkout-section-title">Pagamento</div>'''
     s=s.replace(needle,delivery,1)
 
+# Conferma ordine separata dal riepilogo: viene mostrata solo dopo l'invio riuscito.
+if 'id="orderConfirmation"' not in s:
+    confirmation='''    <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
+      <div class="confirmation-kicker">ORDINE REGISTRATO</div>
+      <h2>Conferma ordine</h2>
+      <p id="orderConfirmationText">La richiesta è stata registrata correttamente.</p>
+      <div id="confirmationMailActions" class="confirmation-actions"></div>
+    </section>
+'''
+    s=s.replace('    </div>\n  </div>\n</div>\n\n<footer>', '    </div>\n'+confirmation+'  </div>\n</div>\n\n<footer>', 1)
+
 # Tracking
 if 'id="trackingSection"' not in s:
     tracking='''<section id="trackingSection" class="tracking-section" aria-labelledby="trackingTitle">
