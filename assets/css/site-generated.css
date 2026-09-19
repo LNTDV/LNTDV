@@ -757,3 +757,17 @@ img[alt^="LNTDV-"]{
   }
 }
 </style>
+
+<style id="lntdv-no-blank-placeholders-20260919">
+/* Evita riquadri marroni vuoti causati dal content-visibility durante lo scroll. */
+.grid .card,
+.grid .card .lntdv-photo-stage,
+.grid .card .lntdv-photo-stage img{
+  content-visibility:visible!important;
+  contain:none!important;
+}
+.grid .card .lntdv-photo-stage img[loading="eager"]{
+  visibility:visible!important;
+  opacity:1!important;
+}
+</style>
