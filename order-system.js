@@ -259,17 +259,21 @@
     if(shouldRender) render();
   }
 
-  // The catalog's existing card handler selects/deselects cards.
-  // This listener only refreshes the order state; it never toggles the card twice.
+  // After the very first catalog selection, open the order summary immediately.
+  // Use a delayed check so the catalog's own selection handler has finished first.
+  function ensureOrderSummary(){
+    if(selected().length && !$('orderPanel')?.classList.contains('active')){
+      openPanel();
+    }else{
+      render();
+    }
+  }
+
   document.addEventListener('click',e=>{
     if(e.target.closest('#openOrder') || e.target.closest('#closeOrder')) return;
     if(e.target.closest('.card') && !e.target.closest('select,option,input,button,a')){
-      setTimeout(()=>{
-        render();
-        if(selected().length && !$('orderPanel')?.classList.contains('active')){
-          openPanel();
-        }
-      },0);
+      setTimeout(ensureOrderSummary,0);
+      setTimeout(ensureOrderSummary,80);
     }
   },false);
 
@@ -302,8 +306,9 @@
           card.setAttribute('aria-pressed','false');
         }
       }
-      render();
       updateMaterialNotes();
+      setTimeout(ensureOrderSummary,0);
+      setTimeout(ensureOrderSummary,80);
     }
     if(e.target.matches?.('input[name="deliveryType"],input[name="checkoutDelivery"]')) render();
   },false);
