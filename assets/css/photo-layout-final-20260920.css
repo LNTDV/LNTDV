@@ -1,73 +1,76 @@
-/* LNTDV — layout foto definitivo 2026-09-20
-   Foto realmente centrata, nessun rettangolo laterale, dati allineati.
+/* LNTDV — responsive photo grid definitivo — 2026-09-20
+   Desktop: 4 colonne, tablet: 3, telefono: 2.
+   Stessa struttura per foto, formato, codice e orientamento.
 */
 .grid{
   width:100%!important;
   max-width:100%!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
+  margin:0 auto!important;
+  padding:0!important;
   box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:26px!important;
+  align-items:start!important;
 }
 .grid .card{
   width:100%!important;
-  max-width:100%!important;
-  margin:0 auto 34px!important;
+  min-width:0!important;
+  margin:0!important;
   padding:0!important;
   display:flex!important;
   flex-direction:column!important;
-  align-items:center!important;
-  text-align:center!important;
+  align-items:stretch!important;
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
   transform:none!important;
 }
 .grid .card .lntdv-photo-stage{
-  order:1!important;
   width:100%!important;
-  max-width:100%!important;
   height:auto!important;
   min-height:0!important;
-  margin:0 auto 12px!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
   padding:0!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   box-sizing:border-box!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  border-radius:0!important;
-  overflow:visible!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border:2px solid #5a3b2b!important;
+  border-radius:10px!important;
   line-height:0!important;
 }
 .grid .card .lntdv-photo-stage>img{
   display:block!important;
-  width:auto!important;
-  max-width:min(92vw,760px)!important;
+  width:100%!important;
   height:auto!important;
-  max-height:72vh!important;
+  max-width:100%!important;
+  max-height:none!important;
   min-width:0!important;
   min-height:0!important;
   margin:0 auto!important;
   padding:0!important;
   object-fit:contain!important;
   object-position:center center!important;
-  background:transparent!important;
-  border:2px solid #5a3b2b!important;
-  border-radius:10px!important;
-  box-shadow:none!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:8px!important;
   box-sizing:border-box!important;
+  transform:none!important;
+  rotate:0deg!important;
+  image-orientation:from-image!important;
 }
 .grid .card .meta{
-  order:2!important;
-  width:min(92vw,760px)!important;
-  max-width:760px!important;
-  margin:0 auto!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
   padding:0!important;
   display:flex!important;
   flex-direction:column!important;
-  align-items:center!important;
+  align-items:stretch!important;
   text-align:center!important;
   background:transparent!important;
   border:0!important;
@@ -76,71 +79,68 @@
 }
 .grid .card .print-choice{
   width:100%!important;
-  max-width:100%!important;
-  margin:0 auto 6px!important;
+  margin:8px 0 5px!important;
   padding:0!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
 }
 .grid .card .format-select{
   display:block!important;
   width:100%!important;
-  max-width:100%!important;
-  min-height:42px!important;
-  margin:0 auto!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  margin:0!important;
+  padding:0 12px!important;
   box-sizing:border-box!important;
   text-align:center!important;
   text-align-last:center!important;
   color:#5a3b2b!important;
-  border-color:#cdb8a5!important;
+  background:#fffaf3!important;
+  border:1px solid #b99a7d!important;
+  border-radius:10px!important;
+  font:600 14px/48px Arial,sans-serif!important;
 }
 .grid .card .meta>strong,
 .grid .card .meta>span,
 .grid .card .meta>small{
   display:block!important;
   width:100%!important;
-  max-width:100%!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  box-sizing:border-box!important;
   text-align:center!important;
   color:#5a3b2b!important;
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
 }
-.grid .card .meta>strong{
-  padding:7px 10px 2px!important;
-  font-size:15px!important;
-  font-weight:800!important;
-  letter-spacing:1.4px!important;
+.grid .card .meta>strong{padding:7px 6px 2px!important;font-size:14px!important;font-weight:800!important;letter-spacing:1.2px!important}
+.grid .card .meta>span{padding:2px 6px!important;font-size:11px!important}
+.grid .card .meta>small{padding:2px 6px 8px!important;font-size:11px!important}
+.grid .card .lntdv-rotate-clockwise{transform:rotate(90deg)!important;transform-origin:center center!important}
+
+@media (min-width:701px) and (max-width:1100px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important}
 }
-.grid .card .meta>span{padding:2px 10px!important;font-size:13px!important}
-.grid .card .meta>small{padding:2px 10px 8px!important;font-size:12px!important}
-.grid .card:hover,
-.grid .card:focus,
-.grid .card.selected{
-  border:0!important;
-  outline:none!important;
-  box-shadow:none!important;
-  transform:none!important;
-}
-.grid .card .lntdv-rotate-clockwise{
-  transform:rotate(90deg)!important;
-  transform-origin:center center!important;
-}
-@media(max-width:700px){
-  .grid .card{margin-bottom:28px!important}
-  .grid .card .lntdv-photo-stage>img{
-    max-width:92vw!important;
-    max-height:68vh!important;
+@media (max-width:700px){
+  main{padding-left:10px!important;padding-right:10px!important}
+  .grid{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
   }
-  .grid .card .meta{width:92vw!important}
-}
-@media(max-width:390px){
-  .grid .card .lntdv-photo-stage>img{
-    max-width:90vw!important;
-    max-height:64vh!important;
+  .grid .card .lntdv-photo-stage{border-radius:8px!important;border-width:1.5px!important}
+  .grid .card .lntdv-photo-stage>img{border-radius:7px!important}
+  .grid .card .format-select{
+    height:46px!important;min-height:46px!important;max-height:46px!important;
+    font-size:12px!important;line-height:46px!important;padding:0 5px!important;
   }
-  .grid .card .meta{width:90vw!important}
+  .grid .card .meta>strong{font-size:12px!important;letter-spacing:.8px!important;padding:6px 3px 2px!important}
+  .grid .card .meta>span{font-size:10px!important;padding:2px 3px!important}
+  .grid .card .meta>small{font-size:9px!important;padding:2px 3px 6px!important}
+}
+@media (max-width:380px){
+  .grid{gap:10px!important}
+  .grid .card .format-select{font-size:11px!important}
+  .grid .card .meta>strong{font-size:11px!important}
+  .grid .card .meta>small{font-size:8.5px!important}
 }
