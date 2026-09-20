@@ -1,11 +1,10 @@
-/* LNTDV — DEFINITIVE PHOTO FRAME FIX — 2026-09-20
-   The beige side panel was caused by the photo stage retaining a fixed
-   aspect-ratio/container larger than the actual image. The stage now has
-   no visual frame and the border belongs only to the image itself.
+/* LNTDV — FINAL PHOTO BORDER FIX — 2026-09-20
+   The photo stage is only a layout wrapper.
+   No beige side panel, frame or border may be drawn beside the image.
+   The border is applied only to the actual photograph.
 */
-.grid .card{
-  background:transparent!important;
-}
+.grid .card,
+.grid .card .lntdv-photo-stage{background:transparent!important}
 
 .grid .card .lntdv-photo-stage{
   width:100%!important;
@@ -19,19 +18,25 @@
   display:block!important;
   overflow:hidden!important;
   box-sizing:border-box!important;
-  background:transparent!important;
   border:0!important;
   border-radius:0!important;
   box-shadow:none!important;
 }
-
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
 .grid .card .lntdv-photo-stage>img{
   display:block!important;
   width:100%!important;
   max-width:100%!important;
   height:auto!important;
-  max-height:none!important;
   min-height:0!important;
+  max-height:none!important;
   aspect-ratio:auto!important;
   object-fit:fill!important;
   object-position:center!important;
@@ -43,37 +48,30 @@
   border-radius:10px!important;
   box-shadow:none!important;
 }
-
-.grid .card .lntdv-photo-stage::before,
-.grid .card .lntdv-photo-stage::after{
-  content:none!important;
-  display:none!important;
-  background:none!important;
+.grid .card .lntdv-photo-stage[data-photo-orientation="horizontal"],
+.grid .card .lntdv-photo-stage[data-photo-orientation="vertical"]{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
   border:0!important;
-  box-shadow:none!important;
+  background:transparent!important;
 }
-
 @media(max-width:700px){
   .grid .card .lntdv-photo-stage{
     width:100%!important;
     max-width:100%!important;
     height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
     aspect-ratio:auto!important;
-    margin:0!important;
-    padding:0!important;
-    display:block!important;
-    background:transparent!important;
     border:0!important;
+    background:transparent!important;
     border-radius:0!important;
   }
-
   .grid .card .lntdv-photo-stage>img{
     width:100%!important;
     max-width:100%!important;
     height:auto!important;
     max-height:none!important;
+    aspect-ratio:auto!important;
     object-fit:fill!important;
     border:1px solid #6b4734!important;
     border-radius:10px!important;
