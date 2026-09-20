@@ -506,3 +506,16 @@ main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!i
 @media(max-width:430px){
   .info-menu-button{top:12px!important;right:12px!important;left:auto!important;bottom:auto!important;width:44px!important;height:44px!important}
 }
+
+/* LNTDV — MENU SECONDARIO DEFINITIVO — 2026-09-20 */
+#infoMenuButton.info-menu-button{
+ position:fixed!important;top:16px!important;right:16px!important;left:auto!important;bottom:auto!important;
+ display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+ width:48px!important;height:48px!important;padding:0!important;margin:0!important;
+ flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+ border:1px solid #b99a7d!important;border-radius:50%!important;background:#fbf6ef!important;color:#4b2f22!important;
+ box-shadow:0 8px 24px rgba(75,47,34,.20)!important;z-index:2147483000!important;
+}
+#infoMenuButton.info-menu-button span{display:block!important;width:20px!important;height:2px!important;background:#4b2f22!important;border-radius:2px!important;opacity:1!important;visibility:visible!important;margin:0!important;padding:0!important;}
+#infoDrawer.info-drawer{z-index:2147482999!important;}
+@media(max-width:430px){#infoMenuButton.info-menu-button{top:12px!important;right:12px!important;width:46px!important;height:46px!important}}
