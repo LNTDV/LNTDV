@@ -418,7 +418,7 @@
     const lines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\\n');
     const body='BUONGIORNO,\\n\\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\\n\\nRIEPILOGO DELL’ORDINE\\n'+lines+'\\n\\nTOTALE: '+money(total)+'\\n\\nPAGAMENTO TRAMITE BONIFICO BANCARIO\\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\\nIBAN: '+BANK_TRANSFER.iban+'\\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\\n\\nCORDIALI SALUTI.';
     const gmail='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-    const apple='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const apple='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     document.getElementById('lntdvMailChooser')?.remove();
     const el=document.createElement('div');
     el.id='lntdvMailChooser'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
