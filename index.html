@@ -788,6 +788,7 @@
       const selected = card.classList.toggle('selected');
       card.setAttribute('aria-pressed', selected ? 'true' : 'false');
       const total = document.querySelectorAll('.card.selected').length;
+      window.dispatchEvent(new CustomEvent('lntdv-selection-changed',{detail:{selected: selected, total: total, code: card.querySelector('.meta strong')?.textContent.trim()||''}}));
       const summary = document.getElementById('selectionSummary');
       if(summary){
         const summaryLabel = summary.querySelector('span');
