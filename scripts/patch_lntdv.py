@@ -115,9 +115,9 @@ if 'assets/css/checkout.css' not in s:
 # Il carrello unico resta nell'engine esterno order-system.js.
 # Il tracking resta nel modulo esterno tracking.js.
 if 'assets/js/tracking.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260920-fix2" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260920-fix3" defer></script>\n</body>',1)
 if 'assets/js/checkout.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260920-fix2" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260920-fix3" defer></script>\n</body>',1)
 
 # Delivery value into payload when the legacy payload exists.
 s=s.replace('''      total:total,
@@ -168,8 +168,8 @@ s += """
 # Deduplica gli asset dell'ordine prima di inserirli: Safari/iOS non deve eseguire il motore due volte.
 s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\s*', '', s, flags=re.I)
 s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\s*', '', s, flags=re.I)
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920-fix2">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260920-fix2"></script>'''
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920-fix3">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260920-fix3"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
@@ -439,7 +439,7 @@ s=re.sub(r'<img\\b[^>]*>',_img_attrs,s,flags=re.I)
 
 # External modules: CSS and JS are intentionally separate from the catalog markup.
 module_css='''<link rel="stylesheet" href="./assets/css/performance.css?v=20260920"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260920">'''
-module_js='''<script defer src="./assets/js/performance.js?v=20260920-fix2"></script><script defer src="./assets/js/catalog-performance.js?v=20260920-fix2"></script>'''
+module_js='''<script defer src="./assets/js/performance.js?v=20260920-fix3"></script><script defer src="./assets/js/catalog-performance.js?v=20260920-fix3"></script>'''
 if 'assets/css/performance.css' not in s:
     s=s.replace('</head>',module_css+'</head>',1)
 if 'assets/js/performance.js' not in s:
@@ -448,8 +448,8 @@ if 'assets/js/performance.js' not in s:
 
 
 # Final runtime cache-bust: source catalog files may already contain older module tags.
-s = s.replace('v=20260919', 'v=20260920-fix2')
-s = re.sub(r'v=20260920(?!-fix2)', 'v=20260920-fix2', s)
+s = s.replace('v=20260919', 'v=20260920-fix3')
+s = re.sub(r'v=20260920(?!-fix2)', 'v=20260920-fix3', s)
 
 # LNTDV ROOT BUILD PATH FIX 2026-09-20
 # catalog/part-14.html is also viewable under /catalog/, so its relative
