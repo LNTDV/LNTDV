@@ -30,6 +30,7 @@ function doPost(e) {
     const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
     ensureHeader_(sheet);
     try { ensureCopyshopReplyTrigger_(); } catch (_) {}
+    try { ensureFinalCopyshopTrigger_(); } catch (_) {}
     const cfg = getSettings_();
     const customer = payload.customer || {};
     const items = Array.isArray(payload.items) ? payload.items : [];
