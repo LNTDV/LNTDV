@@ -26,7 +26,7 @@ def default_choice(code):
 <select id="format-{int(code)}" class="format-select" aria-label="Scegli il formato per questa fotografia">
 <option value="">Seleziona formato</option>
 <option value="Stampa fotografica">Stampa fotografica — €40</option>
-<option value="Forex">Forex — €50</option>
+<option value="Forex">Pannello – Forex — €50</option>
 <option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>
 </select>
 </div>'''
