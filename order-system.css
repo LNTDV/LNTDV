@@ -168,7 +168,6 @@ html.lntdv-order-open,body.lntdv-order-open{overflow:hidden!important}
   #orderBar .order-bar-info{max-width:calc(100vw - 150px)!important;gap:6px!important}
   #orderBar .order-bar-label{font-size:8px!important;letter-spacing:.7px!important}
   #orderBar .order-bar-info strong{font-size:9px!important}
-  #orderBar .order-bar-total{font-size:14px!important}
   #orderBar .order-button{padding:9px 10px!important;font-size:8px!important}
 }
 @media(max-width:360px){
@@ -199,7 +198,6 @@ html.lntdv-order-open,body.lntdv-order-open{overflow:hidden!important}
   overflow-y:auto!important;
   overflow-x:hidden!important;
 }
-#orderPanel .checkout-photo-list{max-height:none!important;overflow:visible!important}
 @media(max-width:560px){
   #orderPanel .modal-content.order-checkout{
     width:100%!important;
@@ -207,10 +205,7 @@ html.lntdv-order-open,body.lntdv-order-open{overflow:hidden!important}
     padding:16px!important;
     border-radius:16px!important;
   }
-  #orderPanel .checkout-head{gap:10px!important}
-  #orderPanel .checkout-grid{grid-template-columns:1fr!important}
   #orderPanel .checkout-bottom{flex-direction:column!important;align-items:stretch!important;gap:12px!important}
-  #orderPanel .checkout-submit{width:100%!important;min-height:48px!important}
 }
 
 
