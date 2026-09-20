@@ -1,0 +1,168 @@
+/* LNTDV — FOTO CENTRATA + CORNICE MARRONE + IDENTIFICATIVO 2026-09-20 */
+
+/* La fotografia occupa una sola area, perfettamente centrata nella pagina. */
+.grid .card{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .lntdv-photo-stage{
+  order:1!important;
+  width:88%!important;
+  max-width:760px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0 auto 10px!important;
+  padding:0!important;
+  display:block!important;
+  align-self:center!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  line-height:0!important;
+  box-sizing:border-box!important;
+}
+
+/* La cornice marrone è applicata SOLO alla fotografia, non a un rettangolo laterale. */
+.grid .card .lntdv-photo-stage > img{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0 auto!important;
+  padding:0!important;
+  background:transparent!important;
+  border:2px solid #5a3b2b!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+}
+
+/* Il formato mantiene la stessa larghezza della fotografia ed è centrato. */
+.grid .card .meta{
+  order:2!important;
+  width:88%!important;
+  max-width:760px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.grid .card .print-choice{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto 5px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.grid .card .format-select{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+
+/* LNTDV, categoria e orientamento: stesso marrone del riepilogo (#5a3b2b). */
+.grid .card .meta > strong,
+.grid .card .meta > span,
+.grid .card .meta > small{
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#5a3b2b!important;
+}
+.grid .card .meta > strong{
+  order:2!important;
+  display:block!important;
+  padding:6px 10px 2px!important;
+  font-weight:800!important;
+  letter-spacing:1.4px!important;
+}
+.grid .card .meta > span{
+  order:3!important;
+  display:block!important;
+  padding:2px 10px!important;
+}
+.grid .card .meta > small{
+  order:4!important;
+  display:block!important;
+  padding:2px 10px 8px!important;
+  color:#5a3b2b!important;
+}
+
+.grid .card:hover,
+.grid .card:focus,
+.grid .card.selected{
+  border:0!important;
+  outline:none!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage,
+  .grid .card .meta{
+    width:88%!important;
+    max-width:760px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .grid .card .lntdv-photo-stage > img{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+  .grid .card .meta > strong{
+    color:#5a3b2b!important;
+    font-size:15px!important;
+  }
+  .grid .card .meta > span{
+    color:#5a3b2b!important;
+    font-size:13px!important;
+  }
+  .grid .card .meta > small{
+    color:#5a3b2b!important;
+    font-size:12px!important;
+  }
+}
+
+/* Le rotazioni già definite per 006 e 007 restano invariate. */
+.grid .card .lntdv-rotate-clockwise{
+  transform:rotate(90deg)!important;
+  transform-origin:center center!important;
+}
