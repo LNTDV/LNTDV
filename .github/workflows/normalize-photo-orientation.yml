@@ -1,8 +1,10 @@
 name: Normalize photo orientation
 
 on:
+  workflow_dispatch:
   push:
     paths:
+      - "images/natura-*.jpg"
       - ".github/workflows/normalize-photo-orientation.yml"
 
 permissions:
@@ -14,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
 
       - name: Normalize all 25 JPEG orientations
         shell: bash
@@ -30,8 +35,7 @@ jobs:
               with Image.open(p) as im:
                   fixed = ImageOps.exif_transpose(im)
                   exif = fixed.getexif()
-                  if 274 in exif:
-                      del exif[274]
+                  exif[274] = 1
                   fixed.save(p, "JPEG", quality=95, optimize=True, exif=exif.tobytes())
           PY
 
