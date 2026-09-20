@@ -418,147 +418,52 @@
     if(e.key==='Escape') closePanel();
   });
 
-  $('completePayment')?.addEventListener('click',async e=>{
+  function showMailChooser(id,list,total){
+    const to='info.lanostraterradavicino@gmail.com';
+    const subject='Richiesta ordine '+id+' — La Nostra Terra da Vicino';
+    const lines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\\n');
+    const body='BUONGIORNO,\\n\\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\\n\\nRIEPILOGO DELL’ORDINE\\n'+lines+'\\n\\nTOTALE: '+money(total)+'\\n\\nPAGAMENTO TRAMITE BONIFICO BANCARIO\\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\\nIBAN: '+BANK_TRANSFER.iban+'\\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\\n\\nCORDIALI SALUTI.';
+    const gmail='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const apple='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    document.getElementById('lntdvMailChooser')?.remove();
+    const el=document.createElement('div');
+    el.id='lntdvMailChooser'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+    el.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;';
+    el.innerHTML='<div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)"><button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">Scegli l’app per aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a id="lntdvGmailBtn" href="'+esc(gmail)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700">Gmail</a><a id="lntdvAppleMailBtn" href="'+esc(apple)+'" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#cdb8a5;color:#3d281d;text-decoration:none;font-weight:700">Apple Mail</a></div></div>';
+    document.body.appendChild(el);
+    el.querySelector('#lntdvMailClose').onclick=()=>el.remove();
+    el.onclick=e=>{if(e.target===el)el.remove();};
+  }
+
+  $('completePayment')?.addEventListener('click',e=>{
     e.preventDefault();
     if(busy)return;
-
     const list=items();
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
-    const phone=$('customerPhone')?.value.trim()||'';
-    const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
+    const validEmail=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
-    if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){
-      render();
-      return;
-    }
-
-    const t=totals(list);
-    const id=orderId();
-    const trackingToken=token();
-    const payload={
-      orderId:id,
-      paymentMethod:'BONIFICO BANCARIO',
-      paymentStatus:'IN_ATTESA_DI_BONIFICO',
-      orderStatus:'ORDINE RICEVUTO',
-      customer:{
-        name,
-        email,
-        street:$('customerStreet')?.value.trim()||'',
-        zip:$('customerZip')?.value.trim()||'',
-        city:$('customerCity')?.value.trim()||'',
-        note:$('customerNote')?.value.trim()||''
-      },
-      items:list.map(x=>({
-        title:x.code,
-        format:x.format,
-        orientation:x.orientation,
-        price:x.price,
-        quantity:x.quantity
-      })),
-      subtotal:t.subtotal,
-      baseTotal:t.subtotal,
-      shippingFee:t.shipping,
-      total:t.total,
-      promotion:'',
-      deliveryType:deliveryValue(),
-      requestedTracking:true,
-      notificationEmail:'info.lanostraterradavicino@gmail.com',
-      notificationClients:['Gmail','Apple Mail'],
-      replyTo:email,
-      trackingToken
-    };
-
+    if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){ render(); return; }
+    const t=totals(list), id=orderId(), trackingToken=token();
+    const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
     busy=true;
     if($('completePayment')) $('completePayment').disabled=true;
-    if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine in corso…';
-
-    let sent=false;
-    try{
-      await postPayload(payload);
-      // The Apps Script endpoint receives the order through the hidden form POST.
-      // Do not block the customer on the optional JSONP confirmation: some mobile
-      // browsers/WebViews block cross-origin script callbacks even when the POST
-      // has already reached Google Apps Script.
-      try{
-        await confirmSubmittedOrder(id,trackingToken,email);
-      }catch(confirmationError){
-        console.warn('LNTDV: conferma remota non disponibile; il POST dell’ordine è già stato inviato.',confirmationError);
-      }
-      sent=true;
-      rememberTracking(id,trackingToken);
-      write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
-
-      if($('paymentStatus')){
-        $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>Le istruzioni per il pagamento vengono inviate tramite la mail predisposta.';
-      }
-
-      resetSelection(false);
-      if($('paymentStatus')){
-        const mailSubject=encodeURIComponent('Richiesta ordine '+id+' — La Nostra Terra da Vicino');
-        const orderLines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\\n');
-        const mailBody=encodeURIComponent('BUONGIORNO,\\n\\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\\n\\nRIEPILOGO DELL’ORDINE\\n'+orderLines+'\\n\\nTOTALE: '+money(t.total)+'\\n\\nPAGAMENTO TRAMITE BONIFICO BANCARIO\\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\\nIBAN: '+BANK_TRANSFER.iban+'\\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\\n\\nPER COMUNICAZIONI RELATIVE AL PAGAMENTO, UTILIZZARE QUESTA MAIL: INFO.LANOSTRATERRADAVICINO@GMAIL.COM.\\n\\nIL RIEPILOGO COMPLETO DELL’ORDINE È STATO REGISTRATO NEL SISTEMA GOOGLE FOGLI.\\n\\nCORDIALI SALUTI.');
-        // Encode every field: otherwise spaces, &, €, apostrophes and newlines can break the compose URL.
-        const to='info.lanostraterradavicino@gmail.com';
-        const qs='to='+encodeURIComponent(to)+'&su='+encodeURIComponent(mailSubject)+'&body='+encodeURIComponent(mailBody);
-        const gmailWebUrl='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&'+qs;
-        const gmailAppUrl='googlegmail://co?'+qs;
-        const gmailIntentUrl='intent://co?'+qs+'#Intent;scheme=googlegmail;package=com.google.android.gm;end';
-        const appleUrl='mailto:'+to+'?subject='+encodeURIComponent(mailSubject)+'&body='+encodeURIComponent(mailBody);
-        const chooser='<div id="lntdvMailChooser" role="dialog" aria-modal="true" aria-label="Scegli app email" style="position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;"><div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center;"><button type="button" class="lntdv-mail-close" aria-label="Chiudi" style="position:absolute;right:14px;top:10px;border:0;background:none;font-size:30px;color:#5a3b2b;cursor:pointer;">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:8px;">ORDINE '+esc(id)+'</div><h3 style="margin:0 0 10px;font-size:25px;">Ordine registrato</h3><p style="margin:0 0 22px;line-height:1.55;">La richiesta è stata registrata. Scegli come aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><button type="button" id="lntdvGmailBtn" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border:0;border-radius:999px;background:#5a3b2b;color:#fff;font-weight:700;cursor:pointer;">Gmail</button><button type="button" id="lntdvAppleMailBtn" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border:0;border-radius:999px;background:#cdb8a5;color:#3d281d;font-weight:700;cursor:pointer;">Apple Mail</button></div><p style="margin:18px 0 0;font-size:11px;opacity:.75;">Su Android Gmail apre l’app se installata; su iPhone/iPad Mail apre l’app email configurata. Se non disponibile, viene usata la versione web.</p></div></div>';
-        document.getElementById('lntdvMailChooser')?.remove();
-        document.body.insertAdjacentHTML('beforeend',chooser);
-        const chooserEl=document.getElementById('lntdvMailChooser');
-        chooserEl.querySelector('.lntdv-mail-close').addEventListener('click',()=>chooserEl.remove());
-        chooserEl.addEventListener('click',e=>{if(e.target===chooserEl)chooserEl.remove();});
-        chooserEl.querySelector('#lntdvGmailBtn').addEventListener('click',function(){
-          const ua=navigator.userAgent||'';
-          const android=/Android/i.test(ua), ios=/iPhone|iPad|iPod/i.test(ua);
-          let fallback;
-          if(android){
-            // Android browsers may block custom schemes; first open Gmail Web in a user-initiated tab.
-            const w=window.open(gmailWebUrl,'_blank','noopener,noreferrer');
-            if(!w){
-              fallback=setTimeout(()=>{window.location.href=gmailWebUrl;},150);
-              window.location.href=gmailIntentUrl;
-            }
-          }else if(ios){
-            // iOS can hand the compose URL to Gmail when installed; fall back to Gmail Web.
-            fallback=setTimeout(()=>{window.location.href=gmailWebUrl;},1200);
-            window.location.href=gmailAppUrl;
-          }else{
-            window.open(gmailWebUrl,'_blank','noopener,noreferrer') || (window.location.href=gmailWebUrl);
-          }
-          setTimeout(()=>{if(fallback) clearTimeout(fallback);},2000);
-        });
-        chooserEl.querySelector('#lntdvAppleMailBtn').addEventListener('click',function(){
-          window.location.href=appleUrl;
-        });
-        $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail con le istruzioni di pagamento.';
-      }
-      document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(function(el){el.hidden=true;});
-      if($('orderBar')) $('orderBar').classList.remove('show','active');
-
-      if($('orderPanel')){
-        const panel=$('orderPanel');
-        panel.classList.add('active');
-        panel.setAttribute('aria-hidden','false');
-        panel.dataset.state='confirmed';
-        const submit=$('completePayment');
-        if(submit) submit.style.display='none';
-        const title=panel.querySelector('.modal-title');
-        if(title) title.textContent='Ordine confermato';
-        const intro=panel.querySelector('.checkout-head p');
-        if(intro) intro.textContent='La richiesta è stata registrata. Ora puoi scegliere l’app per inviare la mail predisposta.';
-      }
-    }catch(err){
-      if($('paymentStatus')) $('paymentStatus').textContent='Non è stato possibile inviare l’ordine. Controlla la connessione e riprova.';
-    }finally{
-      busy=false;
-      if(!sent) render();
+    showMailChooser(id,list,t.total);
+    rememberTracking(id,trackingToken);
+    write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
+    resetSelection(false);
+    if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
+    document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
+    if($('orderBar')) $('orderBar').classList.remove('show','active');
+    if($('orderPanel')){
+      const panel=$('orderPanel'); panel.classList.add('active'); panel.setAttribute('aria-hidden','false'); panel.dataset.state='confirmed';
+      const submit=$('completePayment'); if(submit) submit.style.display='none';
+      const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine confermato';
     }
+    // Send the order in the background; the customer is never blocked by Google Apps Script.
+    postPayload(payload).catch(err=>console.warn('LNTDV: invio ordine remoto non confermato',err));
+    busy=false;
   });
 
   // Start clean on every catalog entry: no stale selection from a previous visit.
