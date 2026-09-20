@@ -166,8 +166,8 @@ s += """
 
 # Load exactly one external order engine after the generated catalog.
 # Deduplica gli asset dell'ordine prima di inserirli: Safari/iOS non deve eseguire il motore due volte.
-s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\\s*', '', s, flags=re.I)
-s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\\s*', '', s, flags=re.I)
+s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\s*', '', s, flags=re.I)
+s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\s*', '', s, flags=re.I)
 assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920i">
 <script id="lntdv-external-order-system" src="./order-system.js?v=20260920g"></script>'''
 if '</body>' not in s:
