@@ -104,11 +104,21 @@ jobs:
 
       - name: Check Apps Script public deployment
         run: |
-          curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec?action=config' -o /tmp/apps.json
+          ENDPOINT=$(python - <<'PY'
+          import re
+          s=open('order-system.js',encoding='utf-8').read()
+          m=re.search(r"const ENDPOINT='([^']+)'",s)
+          assert m, 'Apps Script ENDPOINT non trovato'
+          print(m.group(1))
+          PY
+          )
+          echo "Checking Apps Script: $ENDPOINT"
+          curl -fsSL --max-time 30 "$ENDPOINT?action=health" -o /tmp/apps.json
           python - <<'PY'
           import json
           raw=open('/tmp/apps.json',encoding='utf-8-sig',errors='replace').read().strip()
           data=json.loads(raw)
           assert isinstance(data,dict) and data.get('ok') is True, raw[:500]
+          assert data.get('service') == 'LNTDV Apps Script', raw[:500]
           print('APPS SCRIPT PUBLIC DEPLOYMENT OK')
           PY
