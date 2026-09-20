@@ -29,9 +29,9 @@
 
 
 
-<link rel="stylesheet" href="./assets/css/tracking.css?v=20260919">
-<link rel="stylesheet" href="./assets/css/checkout.css?v=20260919">
-<link rel="stylesheet" href="./assets/css/performance.css?v=20260919"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260919">
+<link rel="stylesheet" href="./assets/css/tracking.css?v=20260920-fix2">
+<link rel="stylesheet" href="./assets/css/checkout.css?v=20260920-fix2">
+<link rel="stylesheet" href="./assets/css/performance.css?v=20260920-fix2"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260920-fix2">
 
 
 
@@ -678,15 +678,6 @@
       <section class="checkout-block">
         <div class="checkout-section-title">Consegna</div>
         <div class="delivery-choice">
-          <label><input type="radio" name="checkoutDelivery" value="Ritiro" checked> <span><strong>Ritiro</strong><br><small>Da concordare a Milano · €0</small></span></label>
-          <label><input type="radio" name="checkoutDelivery" value="Spedizione"> <span><strong>Spedizione</strong><br><small>Italia · €10</small></span></label>
-        </div>
-        <div class="delivery-note" id="deliveryNote">Ritiro gratuito da concordare a Milano.</div>
-      </section>
-
-      <section class="checkout-block">
-        <div class="checkout-section-title">Consegna</div>
-        <div class="delivery-choice">
           <label class="delivery-option">
             <input type="radio" name="deliveryType" value="Ritiro" checked>
             <span><strong>Ritiro gratuito</strong><small>Da concordare a Milano</small></span>
@@ -701,10 +692,11 @@
 
       <section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
-        <div class="payment-choice">
-          <label><input type="radio" name="checkoutPayment" value="Carta"> <span>Carta</span></label>
-          
-          
+        <div class="bank-transfer-only">
+          <strong>Bonifico bancario</strong>
+          <span>Beneficiario: Giulia Principi</span>
+          <span>IBAN: LU538100SATI55551718</span>
+          <span>Causale: LNTDV + ID ordine</span>
         </div>
         <div id="paymentStatus" class="payment-status"></div>
       </section>
@@ -744,13 +736,7 @@
   </div>
 </section>
 
-<footer>Catalogo fotografico · La nostra terra da vicino · Edvinas Dragoni<br>Seleziona la fotografia e scegli il formato desiderato.    <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
-      <div class="confirmation-kicker">ORDINE REGISTRATO</div>
-      <h2>Conferma ordine</h2>
-      <p id="orderConfirmationText">La richiesta è stata registrata correttamente.</p>
-      <div id="confirmationMailActions" class="confirmation-actions"></div>
-    </section>
-</footer>
+<footer>Catalogo fotografico · La nostra terra da vicino · Edvinas Dragoni<br>Seleziona la fotografia e scegli il formato desiderato.</footer>
 
 <div class="collection-notice" aria-label="Informazione sulla raccolta">
   <span class="asterisk">*</span>
@@ -849,10 +835,10 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',resetSelections); else resetSelections();
 })();
 </script>
-<script src="./assets/js/tracking.js?v=20260919" defer></script>
-<script src="./assets/js/checkout.js?v=20260919" defer></script>
-<script defer src="./assets/js/performance.js?v=20260919"></script><script defer src="./assets/js/catalog-performance.js?v=20260919"></script><link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920i">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260920h"></script></body></html>
+<script src="./assets/js/tracking.js?v=20260920-fix2" defer></script>
+<script src="./assets/js/checkout.js?v=20260920-fix2" defer></script>
+<script defer src="./assets/js/performance.js?v=20260920-fix2"></script><script defer src="./assets/js/catalog-performance.js?v=20260920-fix2"></script><link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920-fix2">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260920-fix2"></script></body></html>
 
 
 
