@@ -1,5 +1,5 @@
 # LNTDV GitHub Pages deployment — static build
-# Triggered refresh: 2026-09-19
+# Triggered refresh: 2026-09-20 — final republish
 name: Deploy LNTDV catalog
 
 on:
