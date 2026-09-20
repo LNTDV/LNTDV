@@ -72,7 +72,7 @@ jobs:
           css=re.sub(r'\bLNDV\b','LNTDV',css,flags=re.I)
           Path('assets/css/site-generated.css').write_text(css,encoding='utf-8')
           s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>','',s,flags=re.I)
-          link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260919">'
+          link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260920">'
           if link not in s: s=s.replace('</head>',link+'\n</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
