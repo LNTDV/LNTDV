@@ -34,6 +34,19 @@ jobs:
           assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate',css,re.I|re.S), 'Rotazione CSS sulle immagini'
           assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
           assert 'order-system.js' in s and 'order-system.css' in s
+          assert s.count('site-generated.css') == 1
+          assert 'assets/js/checkout.js' not in s
+          assert 'assets/js/performance.js' not in s
+          assert 'scripts/platform-loader.js' not in s
+          # Verify every local stylesheet/script referenced by index.html exists.
+          for href in re.findall(r'<link[^>]+href=["\\']([^"\\']+\\.css)(?:\\?[^"\\']*)?["\\']', s, re.I):
+              if href.startswith('http'): continue
+              p=Path(href.split('?',1)[0].lstrip('./'))
+              assert p.exists(), f'CSS mancante: {p}'
+          for src in re.findall(r'<script[^>]+src=["\\']([^"\\']+\\.js)(?:\\?[^"\\']*)?["\\']', s, re.I):
+              if src.startswith('http'): continue
+              p=Path(src.split('?',1)[0].lstrip('./'))
+              assert p.exists(), f'JS mancante: {p}'
           for n in range(1,26):
               p=Path(f'images/natura-{n:02d}.jpg')
               assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
