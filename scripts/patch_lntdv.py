@@ -62,9 +62,9 @@ if 'name="deliveryType"' not in s:
         <div class="checkout-section-title">Pagamento</div>'''
     s=s.replace(needle,delivery,1)
 
-# La conferma non viene generata come sezione separata: order-system.js la mostra nel pannello checkout solo dopo l'invio riuscito.\n\n/* Pagamento: un solo metodo, bonifico bancario. */
-const _paymentRe = /<section class="checkout-block">\\s*<div class="checkout-section-title">Pagamento<\\/div>[\\s\\S]*?<\\/section>/i;
-const _paymentHtml = `<section class="checkout-block">
+# La conferma non viene generata come sezione separata: order-system.js la mostra nel pannello checkout solo dopo l'invio riuscito.\n\n# Pagamento: un solo metodo, bonifico bancario.
+payment_pattern = r'<section class="checkout-block">\\s*<div class="checkout-section-title">Pagamento</div>[\\s\\S]*?</section>'
+payment_html = '''<section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
         <div class="bank-transfer-only">
           <strong>Bonifico bancario</strong>
@@ -73,9 +73,10 @@ const _paymentHtml = `<section class="checkout-block">
           <span>Causale: LNTDV + ID ordine</span>
         </div>
         <div id="paymentStatus" class="payment-status"></div>
-      </section>`;
-s = s.replace(_paymentRe, _paymentHtml);
-s = s.replace(/<label[^>]*>\\s*<input[^>]*value=["']Carta["'][\\s\\S]*?<\\/label>/gi, '');
+      </section>'''
+s = re.sub(payment_pattern, payment_html, s, count=1, flags=re.I)
+s = re.sub(r'<label[^>]*>\\s*<input[^>]*value=["\']Carta["\'][\\s\\S]*?</label>', '', s, flags=re.I)
+
 # Tracking
 if 'id="trackingSection"' not in s:
     tracking='''<section id="trackingSection" class="tracking-section" aria-labelledby="trackingTitle">
