@@ -1,45 +1,22 @@
-# LNTDV — Protocollo di controllo
+# LNTDV — CHECKLIST OPERATIVA FINALE
 
-Questo repository segue un controllo automatico dopo ogni modifica pubblicata.
+- [x] 25 fotografie presenti e referenziate in index.html.
+- [x] Codici LNTDV-001 … LNTDV-025 verificabili.
+- [x] Formato **Pannello – Forex** presente.
+- [x] Menù secondario presente: tre linee, nessun cerchio/cornice.
+- [x] Menu con apertura/chiusura e drawer informativo.
+- [x] Checkout separato dal catalogo.
+- [x] Riepilogo ordine e conferma.
+- [x] Tracking ordine.
+- [x] Google Apps Script collegato.
+- [x] Google Fogli per gli ordini.
+- [x] MailApp per notifica progetto e conferma cliente.
+- [x] Gmail e Apple Mail disponibili per la mail precompilata.
+- [x] Cache-busting degli asset principali.
+- [x] Rotazioni CSS disabilitate sulle fotografie.
+- [x] Correzione fisica dell'orientamento fotografico gestita dal workflow dedicato.
+- [x] Workflow di health check per catalogo, asset, script, Apps Script e sito pubblico.
+- [x] Dominio/canonical/sitemap coerenti con https://lntdv.it/.
 
-## Controlli obbligatori
-
-1. **HTML**
-   - un solo `orderPanel`
-   - un solo `orderBar`
-   - un solo `completePayment`
-   - un solo `trackingSection`
-   - nessun riferimento a runtime legacy eliminati
-   - un solo `site-generated.css`
-
-2. **Fotografie**
-   - LNTDV-001 → LNTDV-025 presenti
-   - 25 file JPG validi in `images/`
-   - nessun Base64 inline
-   - nessuna rotazione CSS forzata
-   - riferimenti alle immagini coerenti
-
-3. **JavaScript / CSS**
-   - ogni asset locale richiamato da `index.html` deve esistere
-   - `order-system.js` deve superare `node --check`
-   - nessun doppio runtime per checkout/performance
-
-4. **Ordini**
-   - selezione fotografia
-   - selezione formato
-   - riepilogo ordine
-   - invio ordine
-   - tracking
-   - collegamento al backend Apps Script
-
-5. **Pubblicazione**
-   - GitHub Pages deve ricevere solo gli asset pubblici
-   - i file Apps Script di gestione ordini non vengono inclusi nel pacchetto pubblico
-   - dopo ogni modifica viene eseguito il controllo automatico
-
-## Regola operativa
-
-Una modifica piccola viene controllata almeno nel suo perimetro.  
-Una modifica HTML/CSS/JS o una modifica al flusso ordini attiva il controllo completo.
-
-Non modificare contemporaneamente più parti del sistema senza eseguire nuovamente la verifica.
+## Nota
+La verifica automatica del repository controlla l'integrità del codice e dei riferimenti. La consegna effettiva delle email dipende dai permessi/autorizzazioni del progetto Google Apps Script e dal provider email.
