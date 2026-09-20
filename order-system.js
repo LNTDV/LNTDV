@@ -13,6 +13,7 @@
   const SHIPPING=10;
   const BANK_TRANSFER={accountHolder:"Giulia Principi",iban:"LU538100SATI55551718",reasonPrefix:"LNTDV"};
   let busy=false;
+  let orderSummaryUnlocked=false;
 
   const $=id=>document.getElementById(id);
   const money=n=>'€'+Number(n||0).toFixed(2).replace('.',',');
@@ -69,7 +70,7 @@
     const bar=$('orderBar');
 
     if(bar){
-      const visible=list.length>0;
+      const visible=orderSummaryUnlocked && list.length>0;
       bar.classList.toggle('show',visible);
       bar.classList.toggle('active',visible);
       bar.setAttribute('aria-hidden',visible?'false':'true');
