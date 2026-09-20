@@ -82,13 +82,23 @@
     const orderList=$('orderList');
     if(orderList){
       orderList.innerHTML=list.length
-        ? list.map((x,i)=>'<div class="checkout-photo-row">'+
-          '<div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div>'+
-          '<div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div>'+
-          '<div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div>'+
-          '<div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div>'+'</div>'+
-          '<div class="checkout-photo-price">'+money(x.price*x.quantity)+'</div></div>').join('')
-        : '<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
+        ? list.map((x,i)=>{
+          const formatOptions=Object.keys(PRICES).map(f=>'<option value="'+esc(f)+'" '+(x.format===f?'selected':'')+'>'+esc(f)+' — '+money(PRICES[f])+'</option>').join('');
+          return '<article class="checkout-photo-card" data-code="'+esc(x.code)+'">'+
+            '<div class="checkout-photo-visual">'+
+              (x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+
+              '<span class="checkout-photo-index">'+String(i+1).padStart(2,'0')+'</span>'+
+              '<button type="button" class="checkout-remove" data-code="'+esc(x.code)+'" aria-label="Rimuovi '+esc(x.code)+'">×</button>'+
+            '</div>'+
+            '<div class="checkout-photo-copy">'+
+              '<div class="checkout-photo-title">'+esc(x.code)+'</div>'+
+              '<div class="checkout-photo-detail">'+esc(x.orientation||'')+'</div>'+
+              '<label class="checkout-format-label">FORMATO<select class="checkout-format-select" data-code="'+esc(x.code)+'" aria-label="Formato '+esc(x.code)+'">'+formatOptions+'</select></label>'+
+              '<div class="checkout-photo-footer"><strong>'+money(x.price*x.quantity)+'</strong><span>1 fotografia</span></div>'+
+            '</div>'+
+          '</article>';
+        }).join('')
+        : '<div class="checkout-empty">Nessuna fotografia selezionata.<br><button type="button" id="emptyAddPhotos" class="checkout-empty-action">+ AGGIUNGI FOTOGRAFIE</button></div>';
     }
 
     const name=$('customerName')?.value.trim()||'';
@@ -300,6 +310,45 @@
   // iPhone/Safari HARD FALLBACK: handle checkout controls in capture phase so
   // another catalog listener cannot cancel the tap before the order system sees it.
   document.addEventListener('click',function(e){
+    const remove=e.target.closest?.('.checkout-remove');
+    const add=e.target.closest?.('#continueCatalog,#emptyAddPhotos');
+    if(remove){
+      e.preventDefault();
+      const code=remove.dataset.code;
+      const card=cards().find(c=>(c.querySelector('.meta strong')?.textContent.trim()||'')===code);
+      if(card){
+        card.classList.remove('selected','lntdv-format-selected');
+        card.setAttribute('aria-pressed','false');
+        delete card.dataset.quantity;
+        const select=card.querySelector('.format-select');
+        if(select) select.value='';
+      }
+      render();
+      return;
+    }
+    if(add){
+      e.preventDefault();
+      closePanel();
+      const grid=document.querySelector('.grid');
+      if(grid) setTimeout(()=>grid.scrollIntoView({behavior:'smooth',block:'start'}),80);
+      return;
+    }
+    const format=e.target.closest?.('.checkout-format-select');
+    if(format){
+      e.preventDefault();
+      const code=format.dataset.code;
+      const card=cards().find(c=>(c.querySelector('.meta strong')?.textContent.trim()||'')===code);
+      if(card){
+        const mainSelect=card.querySelector('.format-select');
+        if(mainSelect){
+          mainSelect.value=format.value;
+          card.classList.add('selected');
+          card.setAttribute('aria-pressed','true');
+        }
+      }
+      render();
+      return;
+    }
     const open=e.target.closest?.('#openOrder');
     const close=e.target.closest?.('#closeOrder');
     if(open){ e.preventDefault(); e.stopImmediatePropagation(); openPanel(); return; }
@@ -307,6 +356,21 @@
   },true);
 
   document.addEventListener('change',function(e){
+    const checkoutFormat=e.target.closest?.('.checkout-format-select');
+    if(checkoutFormat){
+      const code=checkoutFormat.dataset.code;
+      const card=cards().find(c=>(c.querySelector('.meta strong')?.textContent.trim()||'')===code);
+      if(card){
+        const mainSelect=card.querySelector('.format-select');
+        if(mainSelect){
+          mainSelect.value=checkoutFormat.value;
+          card.classList.add('selected');
+          card.setAttribute('aria-pressed','true');
+        }
+      }
+      render();
+      return;
+    }
     const select=e.target.closest?.('.format-select');
     if(!select) return;
     const card=select.closest('.card');
