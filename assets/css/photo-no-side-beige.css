@@ -1,0 +1,45 @@
+/* LNTDV — FIX FOTO SENZA BORDO BEIGE LATERALE — 2026-09-20 */
+.grid .card .lntdv-photo-stage{
+  width:88%!important;
+  max-width:88%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    width:88%!important;
+    max-width:88%!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:auto!important;
+    margin:0 auto!important;
+  }
+  .grid .card .lntdv-photo-stage>img{
+    width:100%!important;
+    height:auto!important;
+    max-width:100%!important;
+    max-height:none!important;
+    object-fit:contain!important;
+  }
+}
