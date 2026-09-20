@@ -52,7 +52,7 @@ jobs:
 
       - name: Correct source photo orientation in GitHub Images
         run: |
-          if [ -f .lntdv-photo-orientation-v3 ]; then
+          if [ -f .lntdv-photo-orientation-v4 ]; then
             echo "SOURCE PHOTO ORIENTATION ALREADY APPLIED"
             exit 0
           fi
@@ -71,14 +71,14 @@ jobs:
                   else:
                       im=im.transpose(Image.Transpose.ROTATE_180)
                   im.save(p,format="JPEG",quality=95,optimize=True)
-          Path(".lntdv-photo-orientation-v3").write_text(
-              "Source images physically corrected: 006,007,018 clockwise; 008,009,011,015 180 degrees.\n",
+          Path(".lntdv-photo-orientation-v4").write_text(
+              "Source images physically corrected exactly once: 006,007,018 clockwise; 008,009,011,015 180 degrees.\n",
               encoding="utf-8")
           print("GITHUB SOURCE IMAGES ORIENTATION CORRECTED")
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add images/natura-06.jpg images/natura-07.jpg images/natura-08.jpg images/natura-09.jpg images/natura-11.jpg images/natura-15.jpg images/natura-18.jpg .lntdv-photo-orientation-v3
+          git add images/natura-06.jpg images/natura-07.jpg images/natura-08.jpg images/natura-09.jpg images/natura-11.jpg images/natura-15.jpg images/natura-18.jpg .lntdv-photo-orientation-v4
           git commit -m "Correct source photo orientations"
           git push origin HEAD:main
 
@@ -101,35 +101,7 @@ jobs:
             ./ _site/
 
           python - <<'PY'
-          from pathlib import Path
-          from PIL import Image, ImageOps
 
-          # Applica ESCLUSIVAMENTE le rotazioni indicate dall'autore.
-          # Nessuna inferenza basata su verticale/orizzontale viene applicata
-          # alle altre fotografie.
-          # 006, 007, 018 = 90° ORARIO
-          # 008, 009, 011, 015 = 180°
-          rotate_clockwise={6,7,18}
-          rotate_180={8,9,11,15}
-
-          for n in range(1,26):
-              p=Path(f"_site/images/natura-{n:02d}.jpg")
-              with Image.open(p) as src:
-                  im=ImageOps.exif_transpose(src).convert("RGB")
-                  original_size=im.size
-
-                  if n in rotate_clockwise:
-                      im=im.transpose(Image.Transpose.ROTATE_270)
-                  elif n in rotate_180:
-                      im=im.transpose(Image.Transpose.ROTATE_180)
-
-                  im.save(p,format="JPEG",quality=95,optimize=True)
-                  if n in rotate_clockwise and im.size == original_size:
-                      raise SystemExit(f"Rotazione 90° non applicata: {p}")
-          print("PUBLISHED PHOTO ORIENTATION OK")
-          PY
-
-          python - <<'PY'
           from pathlib import Path
           p = Path("_site/index.html")
           s = p.read_text(encoding="utf-8")
