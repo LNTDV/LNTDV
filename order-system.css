@@ -1302,3 +1302,103 @@ body>#orderPanel:not(.active)[aria-hidden="true"]{display:none!important;}
   .grid .card .meta small{margin:0!important;min-height:0!important;line-height:10px!important;}
   .grid .card .meta span{margin:0!important;line-height:12px!important;}
 }
+
+
+/* LNTDV — CORREZIONE VISIVA REALE DA SCREENSHOT — 2026-09-20 14:59 */
+.grid .card .photo-wrap img,
+.grid .card .lntdv-photo-stage img,
+.catalog .card .photo-wrap img,
+.catalog .card .lntdv-photo-stage img{
+  width:74%!important;
+  max-width:74%!important;
+  height:auto!important;
+}
+.grid .card .meta,
+.catalog .card .meta{
+  padding:8px 12px 10px!important;
+  text-align:left!important;
+}
+.grid .card .meta strong,
+.catalog .card .meta strong{
+  display:block!important;
+  font-size:18px!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+  letter-spacing:.4px!important;
+  margin:2px 0 5px!important;
+}
+.grid .card .meta small,
+.catalog .card .meta small{
+  display:block!important;
+  font-size:16px!important;
+  line-height:1.45!important;
+  font-weight:600!important;
+}
+.grid .card .meta span,
+.catalog .card .meta span{
+  font-size:16px!important;
+  line-height:1.45!important;
+  font-weight:600!important;
+}
+.grid .card .print-choice,
+.catalog .card .print-choice{
+  padding:9px 12px!important;
+  margin:5px 0 8px!important;
+  min-height:0!important;
+}
+.grid .card .print-choice label,
+.catalog .card .print-choice label{
+  display:block!important;
+  font-size:15px!important;
+  line-height:1.3!important;
+  font-weight:700!important;
+  margin-bottom:5px!important;
+}
+.grid .card .format-select,
+.catalog .card .format-select{
+  width:100%!important;
+  height:50px!important;
+  min-height:50px!important;
+  max-height:50px!important;
+  font-size:17px!important;
+  font-weight:600!important;
+  padding:0 12px!important;
+}
+@media(max-width:700px){
+  .grid .card .photo-wrap img,
+  .grid .card .lntdv-photo-stage img,
+  .catalog .card .photo-wrap img,
+  .catalog .card .lntdv-photo-stage img{
+    width:74%!important;
+    max-width:74%!important;
+  }
+  .grid .card .meta,
+  .catalog .card .meta{
+    padding:9px 10px 10px!important;
+  }
+  .grid .card .meta strong,
+  .catalog .card .meta strong{
+    font-size:17px!important;
+  }
+  .grid .card .meta small,
+  .catalog .card .meta small,
+  .grid .card .meta span,
+  .catalog .card .meta span{
+    font-size:15px!important;
+  }
+  .grid .card .print-choice,
+  .catalog .card .print-choice{
+    padding:8px 10px!important;
+    margin:5px 0 8px!important;
+  }
+  .grid .card .print-choice label,
+  .catalog .card .print-choice label{
+    font-size:14px!important;
+  }
+  .grid .card .format-select,
+  .catalog .card .format-select{
+    height:50px!important;
+    min-height:50px!important;
+    font-size:16px!important;
+  }
+}
