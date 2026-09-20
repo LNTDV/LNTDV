@@ -1,0 +1,66 @@
+/* LNTDV — PHOTO CENTER FINAL — 2026-09-20
+   Centra ogni fotografia nella propria scheda.
+   Il numero LNTDV e l'orientamento vengono mantenuti come metadati
+   e usati dal relativo script senza modificare l'immagine originale.
+*/
+.grid{
+  width:100%!important;
+  justify-items:center!important;
+}
+.grid .card{
+  width:100%!important;
+  max-width:none!important;
+  justify-self:stretch!important;
+  align-items:center!important;
+  text-align:left!important;
+}
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  object-position:center center!important;
+}
+.grid .card .meta{
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.grid .card[data-photo-orientation="vertical"] .lntdv-photo-stage>img{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.grid .card[data-photo-orientation="horizontal"] .lntdv-photo-stage>img{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+@media(max-width:700px){
+  .grid{
+    width:92%!important;
+    max-width:92%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    justify-items:center!important;
+  }
+  .grid .card,
+  .grid .card .lntdv-photo-stage,
+  .grid .card .meta{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .grid .card .lntdv-photo-stage{
+    justify-content:center!important;
+  }
+}
