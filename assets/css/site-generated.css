@@ -682,3 +682,27 @@ main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!i
     min-width:23px!important;
   }
 }
+
+
+/* LNTDV — INFO DRAWER / CHI SONO — 2026-09-20 */
+.info-drawer{
+  position:fixed!important;inset:0 0 0 auto!important;width:min(470px,92vw)!important;height:100vh!important;
+  z-index:2147482999!important;background:#faf7f1!important;color:#30241e!important;
+  box-shadow:-20px 0 70px rgba(30,20,14,.20)!important;
+  transform:translateX(105%)!important;transition:transform .5s cubic-bezier(.2,.8,.2,1)!important;
+  overflow-y:auto!important;overflow-x:hidden!important;border-left:1px solid rgba(91,64,50,.14)!important;
+  visibility:visible!important;opacity:1!important;
+}
+.info-drawer.open{transform:translateX(0)!important}
+.info-drawer-inner{padding:82px 34px 45px!important;position:relative!important}
+.info-drawer-close{position:absolute!important;right:24px!important;top:24px!important;border:0!important;background:transparent!important;color:#5b4032!important;font-size:30px!important;cursor:pointer!important}
+.info-drawer h2{font:400 42px Georgia,serif!important;color:#2f211a!important;margin:8px 0 24px!important}
+.info-nav{display:flex!important;flex-wrap:wrap!important;gap:7px!important;margin-bottom:30px!important;padding-bottom:22px!important;border-bottom:1px solid rgba(91,64,50,.14)!important}
+.info-nav a{display:inline-block!important;padding:8px 11px!important;border:1px solid rgba(91,64,50,.16)!important;border-radius:999px!important;text-decoration:none!important;font:9px Arial,sans-serif!important;letter-spacing:1px!important;text-transform:uppercase!important;color:#5b4032!important}
+.info-content section{display:block!important;padding:22px 0!important;border-bottom:1px solid rgba(91,64,50,.11)!important}
+.info-kicker{display:block!important;font:9px Arial,sans-serif!important;letter-spacing:2px!important;text-transform:uppercase!important;color:#765848!important}
+.info-content h3{font:27px Georgia,serif!important;font-weight:400!important;color:#2f211a!important;margin:6px 0 8px!important}
+.info-content p{font:13px/1.65 Arial,sans-serif!important;color:#756357!important}
+.social-links{display:flex!important;gap:8px!important;margin-top:13px!important}
+.social-links a{padding:9px 13px!important;border-radius:999px!important;background:#efe6db!important;color:#5b4032!important;text-decoration:none!important;font:10px Arial,sans-serif!important;letter-spacing:1px!important}
+@media(max-width:650px){.info-drawer{width:min(470px,94vw)!important}.info-drawer-inner{padding:72px 22px 35px!important}.info-drawer h2{font-size:34px!important}.info-nav a{font-size:9px!important}}
