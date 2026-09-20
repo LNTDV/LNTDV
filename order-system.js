@@ -2,7 +2,7 @@
 (function(){
   'use strict';
 
-  const ENDPOINT='https://script.google.com/macros/s/AKfycbzyVW5IhWSz-tnjWOOPVlfBdCiXZVkmKLDoOxBXUVpPXc17AE_BDcf0JDsVG8pD0/exec';
+  const ENDPOINT='https://script.google.com/macros/s/AKfycbzw1FGh5SVtWTb-20v6acj9IxUvB124dGiELWH-aZ70YuAKbYkaPmwX0ocf64/exec';
   const CART_KEY='lntdv_cart_v5';
   const TRACK_KEY='lntdv_tracking_v5';
   const PRICES={
