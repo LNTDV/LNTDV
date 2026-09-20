@@ -1,4 +1,12 @@
-/* LNTDV — FIX DEFINITIVO: nessun bordo/pannello beige laterale sulle foto — 2026-09-20 */
+/* LNTDV — DEFINITIVE PHOTO FRAME FIX — 2026-09-20
+   The beige side panel was caused by the photo stage retaining a fixed
+   aspect-ratio/container larger than the actual image. The stage now has
+   no visual frame and the border belongs only to the image itself.
+*/
+.grid .card{
+  background:transparent!important;
+}
+
 .grid .card .lntdv-photo-stage{
   width:100%!important;
   max-width:100%!important;
@@ -9,7 +17,7 @@
   margin:0!important;
   padding:0!important;
   display:block!important;
-  overflow:visible!important;
+  overflow:hidden!important;
   box-sizing:border-box!important;
   background:transparent!important;
   border:0!important;
@@ -25,17 +33,17 @@
   max-height:none!important;
   min-height:0!important;
   aspect-ratio:auto!important;
-  object-fit:contain!important;
+  object-fit:fill!important;
   object-position:center!important;
   margin:0!important;
   padding:0!important;
+  box-sizing:border-box!important;
   background:transparent!important;
-  border:0!important;
-  border-radius:0!important;
+  border:1px solid #6b4734!important;
+  border-radius:10px!important;
   box-shadow:none!important;
 }
 
-/* Nessun bordo generato da pseudo-elementi */
 .grid .card .lntdv-photo-stage::before,
 .grid .card .lntdv-photo-stage::after{
   content:none!important;
@@ -50,21 +58,24 @@
     width:100%!important;
     max-width:100%!important;
     height:auto!important;
+    min-height:0!important;
     max-height:none!important;
     aspect-ratio:auto!important;
     margin:0!important;
     padding:0!important;
+    display:block!important;
     background:transparent!important;
     border:0!important;
     border-radius:0!important;
   }
+
   .grid .card .lntdv-photo-stage>img{
     width:100%!important;
-    height:auto!important;
     max-width:100%!important;
+    height:auto!important;
     max-height:none!important;
-    object-fit:contain!important;
-    border:0!important;
-    border-radius:0!important;
+    object-fit:fill!important;
+    border:1px solid #6b4734!important;
+    border-radius:10px!important;
   }
 }
