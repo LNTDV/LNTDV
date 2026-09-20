@@ -481,3 +481,9 @@ main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!i
   z-index:1!important;
 }
 
+
+
+/* LNTDV — ORIENTAMENTO REALE FOTO — 2026-09-20 */
+.grid .card .lntdv-photo-stage,.grid .card .lntdv-photo-stage img{transform:none!important;rotate:none!important;image-orientation:from-image!important}
+.grid .card .lntdv-photo-stage{height:auto!important;aspect-ratio:auto!important}
+.grid .card .lntdv-photo-stage img{width:100%!important;height:auto!important;max-width:100%!important;max-height:none!important;object-fit:contain!important;object-position:center!important}
