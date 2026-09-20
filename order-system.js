@@ -264,7 +264,12 @@
   document.addEventListener('click',e=>{
     if(e.target.closest('#openOrder') || e.target.closest('#closeOrder')) return;
     if(e.target.closest('.card') && !e.target.closest('select,option,input,button,a')){
-      setTimeout(render,0);
+      setTimeout(()=>{
+        render();
+        if(selected().length && !$('orderPanel')?.classList.contains('active')){
+          openPanel();
+        }
+      },0);
     }
   },false);
 
