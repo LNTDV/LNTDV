@@ -220,15 +220,15 @@
       form.appendChild(input);
       document.body.append(frame,form);
       let done=false;
-      const finish=ok=>{
+      const finish=(ok,error)=>{
         if(done)return;
         done=true;
         setTimeout(()=>{try{frame.remove();form.remove();}catch(e){}},1000);
-        ok?resolve():reject(new Error('timeout'));
+        ok?resolve():reject(error||new Error('timeout'));
       };
       frame.addEventListener('load',()=>finish(true),{once:true});
       form.submit();
-      setTimeout(()=>finish(true),9000);
+      setTimeout(()=>finish(false,new Error('Timeout nella registrazione dell’ordine')),9000);
     });
   }
 
@@ -469,7 +469,13 @@
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
     try{
       await postPayload(payload);
-      try{ await confirmSubmittedOrder(id,trackingToken,email); }catch(verifyErr){ console.warn('LNTDV: verifica ordine non disponibile',verifyErr); }
+      let verified;
+      try{
+        verified=await confirmSubmittedOrder(id,trackingToken,email);
+      }catch(verifyErr){
+        throw new Error('L’ordine è stato inviato ma non è stato possibile verificarne la registrazione. Riprova tra qualche secondo.');
+      }
+      if(!verified || !verified.received) throw new Error('Registrazione ordine non confermata.');
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
       showMailChooser(id,list,t.total);
