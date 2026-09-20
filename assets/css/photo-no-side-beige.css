@@ -105,3 +105,68 @@
   border-radius:0!important;
   background:transparent!important;
 }
+
+
+/* LNTDV — DEFINITIVE NO-FRAME / NO-SIDE-PANEL OVERRIDE — 2026-09-20 15:17 */
+.grid .card,
+.grid .card .lntdv-photo-stage,
+.grid .card .lntdv-photo-stage > img{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+.grid .card{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.grid .card .lntdv-photo-stage{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+.grid .card .lntdv-photo-stage > img{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:initial!important;
+  object-position:initial!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage,
+  .grid .card .lntdv-photo-stage[data-photo-orientation="horizontal"],
+  .grid .card .lntdv-photo-stage[data-photo-orientation="vertical"]{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    overflow:visible!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .grid .card .lntdv-photo-stage > img{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+  }
+}
