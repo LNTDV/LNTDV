@@ -5,7 +5,7 @@
   const FORMAT_HTML =
     '<option value="">Seleziona formato</option>'+
     '<option value="Stampa fotografica">Stampa fotografica — €40</option>'+
-    '<option value="Forex">Forex — €50</option>'+
+    '<option value="Forex">Pannello – Forex — €50</option>'+
     '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
 
   function setupImage(img,index){
@@ -28,7 +28,7 @@
     const all=Array.from(document.querySelectorAll('.grid .card'));
     all.forEach(function(card){
       const code=card.querySelector('.meta strong')?.textContent.trim() || card.querySelector('img')?.alt || '';
-      if(!/^LNTDV-\\d{3}$/.test(code) || seen.has(code) || seen.size>=25){
+      if(!/^LNTDV-\d{3}$/.test(code) || seen.has(code) || seen.size>=25){
         card.remove();
         return;
       }
