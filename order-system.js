@@ -368,7 +368,13 @@
     }
     const open=e.target.closest?.('#openOrder');
     const close=e.target.closest?.('#closeOrder');
-    if(open){ e.preventDefault(); e.stopImmediatePropagation(); openPanel(); return; }
+    if(open){
+      e.preventDefault(); e.stopImmediatePropagation();
+      const list=items();
+      if(!list.length || !list.every(x=>!!x.format && PRICES[x.format]!=null)) return;
+      openPanel();
+      return;
+    }
     if(close){ e.preventDefault(); e.stopImmediatePropagation(); closePanel(); return; }
   },true);
 
