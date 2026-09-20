@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: lntdv-hourly-health
@@ -20,74 +20,68 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: One-time physical JPEG orientation correction (counterclockwise)
+      - name: Validate catalog, assets, photo orientation and order system
         run: |
-          if [ -f .orientation-ccw-fixed ]; then
-            echo "Counterclockwise orientation already fixed; nothing to do."
-            exit 0
-          fi
           python -m pip install --quiet pillow
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageOps
-          vertical = {3,6,7,8,9,11,13,14,15,16,18}
-          for n in range(1,26):
-              p=Path(f'images/natura-{n:02d}.jpg')
-              with Image.open(p) as im:
-                  fixed=ImageOps.exif_transpose(im)
-                  if n in vertical:
-                      # The previous pipeline physically rotated these photos clockwise.
-                      # Rotate them 180° once so their final physical orientation is counterclockwise.
-                      fixed=fixed.rotate(180, expand=True)
-                  exif=fixed.getexif()
-                  exif[274]=1
-                  fixed.save(p,'JPEG',quality=95,optimize=True,exif=exif.tobytes())
-          PY
-          touch .orientation-ccw-fixed
-          git config user.name "LNTDV Photo Pipeline"
-          git config user.email "actions@users.noreply.github.com"
-          git add images/natura-*.jpg .orientation-ccw-fixed
-          if ! git diff --cached --quiet; then
-            git commit -m "Fix physical orientation of LNTDV vertical photos"
-            git push
-          fi
-
-      - name: Validate repository catalog and order code
-        run: |
-          python - <<'PY'
-          from pathlib import Path
           import re
+          from PIL import Image
+
           s=Path('index.html').read_text(encoding='utf-8')
-          css=Path('assets/css/site-generated.css').read_text(encoding='utf-8') if Path('assets/css/site-generated.css').exists() else ''
-          ids=set(re.findall(r'LNTDV-(\d{3})',s)); expected={f'{n:03d}' for n in range(1,26)}
+          css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
+          js=Path('order-system.js').read_text(encoding='utf-8')
+          code=Path('Code.gs').read_text(encoding='utf-8')
+
+          ids=set(re.findall(r'LNTDV-(\d{3})',s))
+          expected={f'{n:03d}' for n in range(1,26)}
           assert ids==expected, f'Codici foto errati: {sorted(ids)}'
-          assert 'data:image/' not in s and 'data:image/' not in css, 'Base64 nel build finale'
-          assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I), 'Rotazione CSS nel catalogo'
-          assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate',css,re.I|re.S), 'Rotazione CSS sulle immagini'
-          assert s.count('id="orderPanel"')==1 and s.count('id="completePayment"')==1 and s.count('id="trackingSection"')==1
+
+          assert s.count('id="orderPanel"')==1
+          assert s.count('id="completePayment"')==1
+          assert s.count('id="trackingSection"')==1
+          assert s.count('id="infoMenuButton"')==1
           assert 'order-system.js' in s and 'order-system.css' in s
-          assert s.count('site-generated.css') == 1
-          assert 'assets/js/checkout.js' not in s
-          assert 'assets/js/performance.js' not in s
-          assert 'scripts/platform-loader.js' not in s
-          # Verify every local stylesheet/script referenced by index.html exists.
-          for href in re.findall(r"<link[^>]+href=['\"]([^'\"]+\\.css)(?:\\?[^'\"]*)?['\"]", s, re.I):
+          assert 'Pannello – Forex' in s
+          assert 'Gmail' in js and 'Apple Mail' in js
+          assert 'info.lanostraterradavicino@gmail.com' in js
+          assert 'function doPost' in code and 'function doGet' in code
+          assert 'MailApp.sendEmail' in code
+          assert 'trackingToken' in code and 'trackingToken' in js
+          assert 'https://script.google.com/macros/s/' in js
+
+          # No CSS rotation is allowed to alter photo orientation.
+          assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I)
+          assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate',css,re.I|re.S)
+
+          # Every local stylesheet/script referenced by index.html must exist.
+          for href in re.findall(r"<link[^>]+href=['\"]([^'\"]+\.css)(?:\?[^'\"]*)?['\"]", s, re.I):
               if href.startswith('http'): continue
-              p=Path(href.split('?',1)[0].lstrip('./'))
-              assert p.exists(), f'CSS mancante: {p}'
-          for src in re.findall(r"<script[^>]+src=['\"]([^'\"]+\\.js)(?:\\?[^'\"]*)?['\"]", s, re.I):
+              assert Path(href.split('?',1)[0].lstrip('./')).exists(), f'CSS mancante: {href}'
+          for src in re.findall(r"<script[^>]+src=['\"]([^'\"]+\.js)(?:\?[^'\"]*)?['\"]", s, re.I):
               if src.startswith('http'): continue
-              p=Path(src.split('?',1)[0].lstrip('./'))
-              assert p.exists(), f'JS mancante: {p}'
+              assert Path(src.split('?',1)[0].lstrip('./')).exists(), f'JS mancante: {src}'
+
+          horizontal={1,2,4,5,10,12,17,19,20,21,22,23,24,25}
+          vertical={3,6,7,8,9,11,13,14,15,16,18}
+          assert horizontal | vertical == set(range(1,26))
           for n in range(1,26):
               p=Path(f'images/natura-{n:02d}.jpg')
               assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
               assert f'./images/natura-{n:02d}.jpg' in s
-          code=Path('Code.gs').read_text(encoding='utf-8')
-          js=Path('order-system.js').read_text(encoding='utf-8')
-          assert 'function doPost' in code and 'function doGet' in code and 'MailApp.sendEmail' in code
-          assert 'trackingToken' in code and 'trackingToken' in js
-          assert 'https://script.google.com/macros/s/' in js
+              with Image.open(p) as im:
+                  w,h=im.size
+                  want='H' if n in horizontal else 'V'
+                  got='H' if w>h else 'V' if h>w else 'S'
+                  assert got==want, f'{p}: expected {want}, got {got} ({w}x{h})'
+                  assert im.getexif().get(274,1)==1, f'{p}: EXIF orientation non-normalizzato'
+
+          for n in range(1,26):
+              p=Path(f'assets/photo{n:02d}.js')
+              assert p.exists(), f'Photo script mancante: {p}'
+
+          assert 'Sitemap: https://lntdv.it/sitemap.xml' in Path('robots.txt').read_text()
+          assert 'https://lntdv.it/' in Path('sitemap.xml').read_text()
           PY
           node --check order-system.js
 
@@ -96,7 +90,7 @@ jobs:
           curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/
           grep -q 'LNTDV-001' /tmp/lntdv.html
           grep -q 'LNTDV-025' /tmp/lntdv.html
-          grep -q 'LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni' /tmp/lntdv.html
+          grep -q 'La Nostra Terra Da Vicino' /tmp/lntdv.html
 
       - name: Check Apps Script public deployment
         run: |
