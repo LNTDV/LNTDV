@@ -69,6 +69,37 @@
     });
   }
 
+
+  function preloadImageSet(){
+    const urls = Array.from({length:25}, function(_,i){
+      return "./images/natura-" + String(i+1).padStart(2,"0") + ".jpg";
+    });
+    const preload = function(url){
+      const img = new Image();
+      img.decoding = "async";
+      img.fetchPriority = "low";
+      img.src = url;
+    };
+    // Prime the cache in small batches so the first screen is not starved.
+    let cursor = 5;
+    function batch(){
+      const end = Math.min(cursor + 4, urls.length);
+      for(; cursor < end; cursor++) preload(urls[cursor]);
+      if(cursor < urls.length){
+        if("requestIdleCallback" in window){
+          requestIdleCallback(batch,{timeout:1200});
+        }else{
+          setTimeout(batch,250);
+        }
+      }
+    }
+    if("requestIdleCallback" in window){
+      requestIdleCallback(batch,{timeout:700});
+    }else{
+      setTimeout(batch,120);
+    }
+  }
+
   function preloadNearViewport(){
     // Carica subito solo le prime immagini; il browser gestisce il lazy-loading delle altre.
     document.querySelectorAll(".card img").forEach(function(img,index){
@@ -90,6 +121,7 @@
     enforceSingleCatalog();
     normalizeFormats();
     preloadNearViewport();
+    preloadImageSet();
     updateSelectionSummary();
     document.addEventListener("click",function(e){
       if(e.target.closest(".card") && !e.target.closest("select,option,input,button,a")){
