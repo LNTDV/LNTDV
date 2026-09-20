@@ -1,49 +1,142 @@
-/* LNTDV — PHOTO CENTER FINAL — 2026-09-20
-   Centra ogni fotografia nella propria scheda.
-   Il numero LNTDV e l'orientamento vengono mantenuti come metadati
-   e usati dal relativo script senza modificare l'immagine originale.
+/* LNTDV — PHOTO CENTER DEFINITIVE — 2026-09-20
+   Unica regola finale per il catalogo:
+   foto, selettore formato, codice e orientamento sono tutti centrati.
+   Nessun riquadro laterale viene creato dal layout.
 */
+
 .grid{
   width:100%!important;
   justify-items:center!important;
+  align-items:start!important;
 }
+
 .grid .card{
   width:100%!important;
-  max-width:none!important;
-  justify-self:stretch!important;
-  align-items:center!important;
-  text-align:left!important;
-}
-.grid .card .lntdv-photo-stage{
-  width:100%!important;
   max-width:100%!important;
+  justify-self:center!important;
+  align-self:start!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
   margin-left:auto!important;
   margin-right:auto!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .lntdv-photo-stage{
+  order:1!important;
+  width:88%!important;
+  max-width:88%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0 auto!important;
+  padding:0!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
 }
+
 .grid .card .lntdv-photo-stage>img{
   display:block!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
   object-position:center center!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:10px!important;
 }
+
 .grid .card .meta{
+  order:2!important;
+  width:88%!important;
+  max-width:88%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .print-choice{
+  order:1!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:8px auto 5px!important;
+  padding:0!important;
+  display:block!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .format-select{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  margin:0 auto!important;
+  padding:0 36px 0 12px!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+
+.grid .card .meta>strong,
+.grid .card .meta>span,
+.grid .card .meta>small{
   width:100%!important;
   max-width:100%!important;
   margin-left:auto!important;
   margin-right:auto!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
 }
-.grid .card[data-photo-orientation="vertical"] .lntdv-photo-stage>img{
-  margin-left:auto!important;
-  margin-right:auto!important;
+
+.grid .card .meta>strong{
+  order:2!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+  letter-spacing:1.4px!important;
+  padding:7px 10px 3px!important;
 }
-.grid .card[data-photo-orientation="horizontal"] .lntdv-photo-stage>img{
-  margin-left:auto!important;
-  margin-right:auto!important;
+
+.grid .card .meta>span{
+  order:3!important;
+  font-size:13px!important;
+  line-height:1.3!important;
+  padding:3px 10px!important;
 }
+
+.grid .card .meta>small{
+  order:4!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  padding:3px 10px 8px!important;
+}
+
 @media(max-width:700px){
   .grid{
     width:92%!important;
@@ -52,15 +145,69 @@
     margin-right:auto!important;
     justify-items:center!important;
   }
-  .grid .card,
-  .grid .card .lntdv-photo-stage,
-  .grid .card .meta{
+
+  .grid .card{
     width:100%!important;
     max-width:100%!important;
+    align-items:center!important;
+    text-align:center!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    width:88%!important;
+    max-width:88%!important;
     margin-left:auto!important;
     margin-right:auto!important;
-  }
-  .grid .card .lntdv-photo-stage{
+    display:flex!important;
+    align-items:center!important;
     justify-content:center!important;
+  }
+
+  .grid .card .lntdv-photo-stage>img{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+
+  .grid .card .meta{
+    width:88%!important;
+    max-width:88%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    align-items:center!important;
+    text-align:center!important;
+  }
+
+  .grid .card .print-choice{
+    width:100%!important;
+    margin:7px auto 5px!important;
+    text-align:center!important;
+  }
+
+  .grid .card .format-select{
+    width:100%!important;
+    height:48px!important;
+    min-height:48px!important;
+    max-height:48px!important;
+    margin:0 auto!important;
+    text-align:center!important;
+    text-align-last:center!important;
+    font-size:15px!important;
+  }
+
+  .grid .card .meta>strong{
+    font-size:16px!important;
+    text-align:center!important;
+  }
+
+  .grid .card .meta>span,
+  .grid .card .meta>small{
+    font-size:13px!important;
+    text-align:center!important;
   }
 }
