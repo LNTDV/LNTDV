@@ -97,6 +97,7 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
+  if (p.action === 'health') return json_({ok:true,service:'LNTDV Apps Script',version:'2026-09-20',site:SITE_URL});
   if (p.action === 'config') { const cfg = getSettings_(); return json_({ok:true, shippingPrice:Number(cfg.shippingPrice || 0), pickupText:cfg.pickupText, iban:cfg.iban || '', accountHolder:cfg.accountHolder || 'Edvinas Dragoni', paymentNote:'Pagamento esclusivamente tramite bonifico bancario. Beneficiario: Giulia Principi. IBAN: LU538100SATI55551718. Causale: LNTDV + numero ordine.'}); }
   if (p.action === 'confirm') return confirmOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
   if (p.action === 'order') return orderWindow_(p.orderId || p.ordine || '', p.key || '');
