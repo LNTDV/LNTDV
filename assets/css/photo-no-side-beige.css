@@ -1,18 +1,22 @@
-/* LNTDV — FIX FOTO SENZA BORDO BEIGE LATERALE — 2026-09-20 */
+/* LNTDV — FIX DEFINITIVO: nessun bordo/pannello beige laterale sulle foto — 2026-09-20 */
 .grid .card .lntdv-photo-stage{
-  width:88%!important;
-  max-width:88%!important;
+  width:100%!important;
+  max-width:100%!important;
   height:auto!important;
   min-height:0!important;
   max-height:none!important;
   aspect-ratio:auto!important;
-  margin:0 auto!important;
+  margin:0!important;
   padding:0!important;
   display:block!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   box-sizing:border-box!important;
   background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
 }
+
 .grid .card .lntdv-photo-stage>img{
   display:block!important;
   width:100%!important;
@@ -25,15 +29,34 @@
   object-position:center!important;
   margin:0!important;
   padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
 }
+
+/* Nessun bordo generato da pseudo-elementi */
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
 @media(max-width:700px){
   .grid .card .lntdv-photo-stage{
-    width:88%!important;
-    max-width:88%!important;
+    width:100%!important;
+    max-width:100%!important;
     height:auto!important;
     max-height:none!important;
     aspect-ratio:auto!important;
-    margin:0 auto!important;
+    margin:0!important;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
   }
   .grid .card .lntdv-photo-stage>img{
     width:100%!important;
@@ -41,5 +64,7 @@
     max-width:100%!important;
     max-height:none!important;
     object-fit:contain!important;
+    border:0!important;
+    border-radius:0!important;
   }
 }
