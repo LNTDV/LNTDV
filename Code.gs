@@ -67,7 +67,7 @@ function doPost(e) {
     sheet.getRange(row, 14).insertCheckboxes().setValue(true);
     const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${deliveryType}`;
     const promotionText = payload.promotion ? `Promozione applicata: ${payload.promotion}\n` : '';
-    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: BONIFICO BANCARIO\n\nDATI PER IL BONIFICO:\nBeneficiario: Giulia Principi\nIBAN: LU538100SATI55551718\nCausale: LNTDV ${orderId}\n\nL'ordine è stato registrato. Conserva l'ID ordine ${orderId} per identificare il pagamento.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
+    const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: BONIFICO BANCARIO\n\nDATI PER IL BONIFICO:\nBeneficiario: Giulia Principi\nIBAN: LU538100SATI55551718\nCausale: LNTDV ${orderId}\n\nL'ordine è stato registrato.\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: ${orderId}\nTOKEN: ${trackingToken}\nLINK TRACCIAMENTO: ${trackingUrl}\n\nConserva ID ordine e token: servono per verificare lo stato della richiesta.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     // Invia sempre prima la copia amministrativa all'indirizzo fisso del progetto.
     try {
       MailApp.sendEmail({
