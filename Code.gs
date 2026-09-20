@@ -37,8 +37,8 @@ function doPost(e) {
     if (!items.length) throw new Error('Nessuna fotografia selezionata.');
     if (!customer.name || !customer.email) throw new Error('Nome ed email sono obbligatori.');
     const deliveryType = String(payload.deliveryType || payload.pickup || 'Ritiro');
-    const photoCount = items.reduce((n, x) => n + Math.max(1, Number(x.quantity) || 1), 0);
-    const shipping = photoCount > 2 ? 10 : 0;
+    const requestedShipping = Number(payload.shippingFee);
+    const shipping = Number.isFinite(requestedShipping) && requestedShipping >= 0 ? requestedShipping : (deliveryType.toLowerCase().includes('sped') ? 10 : 0);
     const subtotal = Number(payload.baseTotal ?? Math.max(0, Number(payload.total || 0) - shipping));
     const total = Number(payload.total ?? (subtotal + shipping));
     const suppliedOrderId = String(payload.orderId || '').trim();
