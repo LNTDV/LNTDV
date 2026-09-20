@@ -117,7 +117,7 @@
         ? 'Scegli il formato per ogni fotografia.'
         : !ready
         ? 'Inserisci nome e un indirizzo email valido.'
-        : 'Ordine pronto per l’invio.';
+        : 'Dati completi. Premi “CONFERMA E INVIA ORDINE” per registrare la richiesta.';
     }
 
     saveCart();
