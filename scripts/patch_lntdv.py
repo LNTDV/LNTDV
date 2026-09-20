@@ -108,16 +108,16 @@ if 'id="trackingSection"' not in s:
 
 # Modular checkout/tracking assets: no inline phase CSS/JS.
 if 'assets/css/tracking.css' not in s:
-    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/tracking.css?v=20260919">\n</head>',1)
+    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/tracking.css?v=20260920">\n</head>',1)
 if 'assets/css/checkout.css' not in s:
-    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/checkout.css?v=20260919">\n</head>',1)
+    s=s.replace("</head>",'<link rel="stylesheet" href="./assets/css/checkout.css?v=20260920">\n</head>',1)
 
 # Il carrello unico resta nell'engine esterno order-system.js.
 # Il tracking resta nel modulo esterno tracking.js.
 if 'assets/js/tracking.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260919" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260920" defer></script>\n</body>',1)
 if 'assets/js/checkout.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260919" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260920" defer></script>\n</body>',1)
 
 # Delivery value into payload when the legacy payload exists.
 s=s.replace('''      total:total,
@@ -168,8 +168,8 @@ s += """
 # Deduplica gli asset dell'ordine prima di inserirli: Safari/iOS non deve eseguire il motore due volte.
 s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\\s*', '', s, flags=re.I)
 s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\\s*', '', s, flags=re.I)
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260919i">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260919g"></script>'''
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920i">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260920g"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
@@ -177,7 +177,7 @@ s=s.replace('</body>', assets+'</body>', 1)
 # FINAL CATALOG RENDERING FIX 2026-09-19
 # Appended last so it overrides older catalog rules.
 s += """\n
-<style id="lntdv-photo-and-format-final-20260919">
+<style id="lntdv-photo-and-format-final-20260920">
 .card img,.photo-card img,.photo-image img{
   opacity:1!important;filter:none!important;-webkit-filter:none!important;
   mix-blend-mode:normal!important;background:transparent!important;
@@ -232,7 +232,7 @@ s += """\n
 # opacity/transform of the whole card while scrolling and can make later
 # photographs and their format selectors look washed out on mobile browsers.
 s += """
-<style id="lntdv-static-catalog-rendering-20260919">
+<style id="lntdv-static-catalog-rendering-20260920">
 section.catalog, section.grid, .grid,
 .card, .photo-card, .photo-wrap, .photo-image, .meta, .print-choice,
 .format-select, .card img, .photo-card img, .photo-image img{
@@ -336,7 +336,7 @@ img[alt^="LNTDV-"]{
 # FINAL PHOTO CODE / ORIENTATION LABEL STYLE 2026-09-19
 # High-visibility brown labels for LNTDV-001..025, responsive on every platform.
 s += """
-<style id="lntdv-photo-code-label-final-20260919">
+<style id="lntdv-photo-code-label-final-20260920">
 .grid .card .meta>strong{
   display:block!important;
   width:100%!important;
@@ -403,7 +403,7 @@ s += """
 # Preserve the catalog sequence exactly as authored in catalog/part-01..14.
 # Only the requested orientation is applied to each photo.
 orientation_css = r'''
-<style id="lntdv-photo-orientation-final-20260919">
+<style id="lntdv-photo-orientation-final-20260920">
 /* Orientamento deterministico: nessuna rotazione CSS. L'orientamento reale della foto viene preservato. */
 .card:has(img[data-orientation="vertical"]) .photo-wrap,
 .card:has(img[data-orientation="horizontal"]) .photo-wrap{
@@ -438,8 +438,8 @@ def _img_attrs(m):
 s=re.sub(r'<img\\b[^>]*>',_img_attrs,s,flags=re.I)
 
 # External modules: CSS and JS are intentionally separate from the catalog markup.
-module_css='''<link rel="stylesheet" href="./assets/css/performance.css?v=20260919"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260919">'''
-module_js='''<script defer src="./assets/js/performance.js?v=20260919"></script><script defer src="./assets/js/catalog-performance.js?v=20260919"></script>'''
+module_css='''<link rel="stylesheet" href="./assets/css/performance.css?v=20260920"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260920">'''
+module_js='''<script defer src="./assets/js/performance.js?v=20260920"></script><script defer src="./assets/js/catalog-performance.js?v=20260920"></script>'''
 if 'assets/css/performance.css' not in s:
     s=s.replace('</head>',module_css+'</head>',1)
 if 'assets/js/performance.js' not in s:
