@@ -8,6 +8,7 @@
   const PRICES={
     'Stampa fotografica':40,
     'Forex':50,
+    'Pannello':null,
     'File digitale in alta risoluzione':25
   };
   const SHIPPING=35;
@@ -38,7 +39,8 @@
     const small=(card.querySelector('.meta small')?.textContent||'').trim();
     const orientation=(card.dataset.orientation||small.replace(/^Orientamento:\s*/i,'')).trim();
     const quantity=Math.max(1,parseInt(card.dataset.quantity||'1',10)||1);
-    return {card,code,format,image,orientation,quantity,price:Number(PRICES[format]||0)};
+    const materialNote=card.querySelector('.material-note')?.textContent.trim()||'';
+    return {card,code,format,image,orientation,quantity,materialNote,price:PRICES[format]};
   }
 
   function items(){ return selected().map(itemFromCard); }
@@ -85,7 +87,7 @@
           '<div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div>'+
           '<div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div>'+
           '<div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div>'+
-          '<div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div></div>'+
+          '<div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div>'+(x.format==='Pannello'?'<div class="checkout-photo-material">Supporto rigido · prezzo da definire</div>':'')+'</div>'+
           '<div class="checkout-photo-price">'+money(x.price*x.quantity)+'</div></div>').join('')
         : '<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     }
@@ -93,7 +95,7 @@
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
     const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const complete=list.length>0 && list.every(x=>!!x.format);
+    const complete=list.length>0 && list.every(x=>!!x.format && PRICES[x.format]!=null);
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
     const ready=complete && !!name && validEmail && addressReady;
@@ -103,7 +105,7 @@
       $('paymentStatus').textContent=!list.length
         ? 'Seleziona almeno una fotografia.'
         : !complete
-        ? 'Scegli il formato per ogni fotografia.'
+        ? (list.some(x=>x.format==='Pannello') ? 'Il supporto Pannello è selezionabile, ma il suo prezzo deve ancora essere configurato.' : 'Scegli il formato per ogni fotografia.')
         : !ready
         ? 'Inserisci nome e un indirizzo email valido.'
         : 'Ordine pronto per l’invio.';
@@ -224,6 +226,24 @@
     }
   },false);
 
+  function updateMaterialNotes(){
+    document.querySelectorAll('.card').forEach(card=>{
+      const select=card.querySelector('.format-select');
+      const note=card.querySelector('.material-note');
+      if(!select||!note)return;
+      const v=select.value;
+      note.textContent = v==='Forex'
+        ? 'Forex · PVC espanso rigido, leggero e resistente.'
+        : v==='Pannello'
+        ? 'Pannello · supporto rigido; prezzo da definire.'
+        : v==='Stampa fotografica'
+        ? 'Stampa fotografica · carta fotografica.'
+        : v==='File digitale in alta risoluzione'
+        ? 'File digitale · alta risoluzione.'
+        : 'Scegli il supporto e il formato desiderato.';
+    });
+  }
+
   document.addEventListener('change',e=>{
     const select=e.target.closest?.('.format-select');
     if(select){
@@ -238,6 +258,7 @@
         }
       }
       render();
+      updateMaterialNotes();
     }
     if(e.target.matches?.('input[name="deliveryType"],input[name="checkoutDelivery"]')) render();
   },false);
@@ -403,6 +424,7 @@
 
   // Start clean on every catalog entry: no stale selection from a previous visit.
   clearOldCarts();
+  updateMaterialNotes();
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',render,{once:true});
   }else{
