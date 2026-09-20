@@ -11,7 +11,7 @@ s = re.sub(r'<div class="collection-notice"[^>]*>[\\s\\S]*?</div>', '', s, flags
 s = re.sub(r'IL BONIFICO DEVE ESSERE EFFETTUATO ENTRO IL 15 OTTOBRE 2026\\\\n\\\\n', '', s, flags=re.I)
 
 # Rimuove i metodi di pagamento non utilizzati dal checkout LNTDV.
-# Il flusso attivo usa il metodo Carta e la conferma server-side dell'ordine.
+# Il flusso attivo usa esclusivamente il bonifico bancario; la conferma viene mostrata dal motore ordine esterno.
 s = re.sub(r"<label[^>]*>\s*<input[^>]*value=[\"'](?:Apple Pay|Google Pay)[\"'][\s\S]*?</label>", "", s, flags=re.I)
 s = re.sub(r'<option[^>]*>\s*(?:Apple Pay|Google Pay)\s*</option>', '', s, flags=re.I)
 
@@ -62,21 +62,20 @@ if 'name="deliveryType"' not in s:
         <div class="checkout-section-title">Pagamento</div>'''
     s=s.replace(needle,delivery,1)
 
-# Conferma ordine separata dal riepilogo: viene mostrata solo dopo l'invio riuscito.
-if 'id="orderConfirmation"' not in s:
-    confirmation='''    <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
-      <div class="confirmation-kicker">ORDINE REGISTRATO</div>
-      <h2>Conferma ordine</h2>
-      <p id="orderConfirmationText">La richiesta è stata registrata correttamente.</p>
-      <div id="confirmationMailActions" class="confirmation-actions"></div>
-    </section>
-'''
-    marker='    </div>\\n  </div>\\n</div>\\n\\n<section id="trackingSection"'
-    if marker in s:
-        s=s.replace(marker, '    </div>\\n'+confirmation+'  </div>\\n</div>\\n\\n<section id="trackingSection"', 1)
-    else:
-        s=s.replace('</footer>', confirmation+'</footer>', 1)
-
+# La conferma non viene generata come sezione separata: order-system.js la mostra nel pannello checkout solo dopo l'invio riuscito.\n\n/* Pagamento: un solo metodo, bonifico bancario. */
+const _paymentRe = /<section class="checkout-block">\\s*<div class="checkout-section-title">Pagamento<\\/div>[\\s\\S]*?<\\/section>/i;
+const _paymentHtml = `<section class="checkout-block">
+        <div class="checkout-section-title">Pagamento</div>
+        <div class="bank-transfer-only">
+          <strong>Bonifico bancario</strong>
+          <span>Beneficiario: Giulia Principi</span>
+          <span>IBAN: LU538100SATI55551718</span>
+          <span>Causale: LNTDV + ID ordine</span>
+        </div>
+        <div id="paymentStatus" class="payment-status"></div>
+      </section>`;
+s = s.replace(_paymentRe, _paymentHtml);
+s = s.replace(/<label[^>]*>\\s*<input[^>]*value=["']Carta["'][\\s\\S]*?<\\/label>/gi, '');
 # Tracking
 if 'id="trackingSection"' not in s:
     tracking='''<section id="trackingSection" class="tracking-section" aria-labelledby="trackingTitle">
@@ -115,9 +114,9 @@ if 'assets/css/checkout.css' not in s:
 # Il carrello unico resta nell'engine esterno order-system.js.
 # Il tracking resta nel modulo esterno tracking.js.
 if 'assets/js/tracking.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260920" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/tracking.js?v=20260920-fix2" defer></script>\n</body>',1)
 if 'assets/js/checkout.js' not in s:
-    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260920" defer></script>\n</body>',1)
+    s=s.replace("</body>",'<script src="./assets/js/checkout.js?v=20260920-fix2" defer></script>\n</body>',1)
 
 # Delivery value into payload when the legacy payload exists.
 s=s.replace('''      total:total,
@@ -168,8 +167,8 @@ s += """
 # Deduplica gli asset dell'ordine prima di inserirli: Safari/iOS non deve eseguire il motore due volte.
 s = re.sub(r'<link id="lntdv-external-order-css"[^>]*>\s*', '', s, flags=re.I)
 s = re.sub(r'<script id="lntdv-external-order-system"[^>]*></script>\s*', '', s, flags=re.I)
-assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920i">
-<script id="lntdv-external-order-system" src="./order-system.js?v=20260920g"></script>'''
+assets='''<link id="lntdv-external-order-css" rel="stylesheet" href="./order-system.css?v=20260920-fix2">
+<script id="lntdv-external-order-system" src="./order-system.js?v=20260920-fix2"></script>'''
 if '</body>' not in s:
     raise SystemExit("index.html senza </body>")
 s=s.replace('</body>', assets+'</body>', 1)
@@ -439,7 +438,7 @@ s=re.sub(r'<img\\b[^>]*>',_img_attrs,s,flags=re.I)
 
 # External modules: CSS and JS are intentionally separate from the catalog markup.
 module_css='''<link rel="stylesheet" href="./assets/css/performance.css?v=20260920"><link rel="stylesheet" href="./assets/css/responsive.css?v=20260920">'''
-module_js='''<script defer src="./assets/js/performance.js?v=20260920"></script><script defer src="./assets/js/catalog-performance.js?v=20260920"></script>'''
+module_js='''<script defer src="./assets/js/performance.js?v=20260920-fix2"></script><script defer src="./assets/js/catalog-performance.js?v=20260920-fix2"></script>'''
 if 'assets/css/performance.css' not in s:
     s=s.replace('</head>',module_css+'</head>',1)
 if 'assets/js/performance.js' not in s:
