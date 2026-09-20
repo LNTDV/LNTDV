@@ -456,6 +456,36 @@ s = s.replace('src="../assets/', 'src="./assets/')
 s = s.replace('href="../scripts/', 'href="./scripts/')
 s = s.replace('src="../scripts/', 'src="./scripts/')
 
+# FINAL HOME CATALOG VISIBILITY FIX 2026-09-20
+# The catalog is the homepage. Tracking remains a lower section and must never
+# replace or overlay the catalog on initial load.
+s += """
+<style id="lntdv-home-catalog-visible-final">
+html,body{scroll-behavior:auto!important}
+main{display:block!important;visibility:visible!important;opacity:1!important}
+main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!important}
+.grid .card{display:block!important;visibility:visible!important;opacity:1!important}
+#trackingSection,.tracking-section{
+  position:relative!important;
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  z-index:1!important;
+}
+</style>
+<script id="lntdv-home-start-final">
+(function(){
+  function startCatalog(){
+    if(location.search.indexOf("ordine=")===-1 && location.search.indexOf("token=")===-1){
+      try{window.scrollTo(0,0)}catch(e){}
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",startCatalog);
+  else startCatalog();
+})();
+</script>
+"""
+
 p.write_text(s,encoding="utf-8")
 print("Final rendering overrides written:",len(s),"bytes")
 
