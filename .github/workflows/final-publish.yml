@@ -19,7 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate 25 photos from repository Images
         run: |
-          python - <<'PY'
+          python -m pip install --disable-pip-version-check --quiet pillow
+          python - <<'PY
           from pathlib import Path
           from PIL import Image, ImageOps
           images=Path('images')
@@ -67,7 +68,7 @@ jobs:
           css=re.sub(r'\bLNDV\b','LNTDV',css,flags=re.I)
           Path('assets/css/site-generated.css').write_text(css,encoding='utf-8')
           s=re.sub(r'<style\b[^>]*>[\s\S]*?</style>','',s,flags=re.I)
-          s=re.sub(r'<link[^>]+href=["']\\./assets/css/site-generated\\.css[^>]*>\\s*','',s,flags=re.I)
+          s=re.sub(r"<link[^>]+href=[\"']\\./assets/css/site-generated\\.css[^>]*>\\s*",'',s,flags=re.I)
           link='<link rel="stylesheet" href="./assets/css/site-generated.css?v=20260920">'
           s=s.replace('</head>',link+'\n</head>',1)
           p.write_text(s,encoding='utf-8')
