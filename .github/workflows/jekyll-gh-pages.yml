@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -50,6 +50,38 @@ jobs:
           print("STATIC CATALOG OK:", len(s), "bytes")
           PY
 
+      - name: Correct source photo orientation in GitHub Images
+        run: |
+          if [ -f .lntdv-photo-orientation-v3 ]; then
+            echo "SOURCE PHOTO ORIENTATION ALREADY APPLIED"
+            exit 0
+          fi
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps
+          rotate_clockwise={6,7,18}
+          rotate_180={8,9,11,15}
+          for n in sorted(rotate_clockwise | rotate_180):
+              p=Path(f"images/natura-{n:02d}.jpg")
+              with Image.open(p) as src:
+                  im=ImageOps.exif_transpose(src).convert("RGB")
+                  if n in rotate_clockwise:
+                      im=im.transpose(Image.Transpose.ROTATE_270)
+                  else:
+                      im=im.transpose(Image.Transpose.ROTATE_180)
+                  im.save(p,format="JPEG",quality=95,optimize=True)
+          Path(".lntdv-photo-orientation-v3").write_text(
+              "Source images physically corrected: 006,007,018 clockwise; 008,009,011,015 180 degrees.\n",
+              encoding="utf-8")
+          print("GITHUB SOURCE IMAGES ORIENTATION CORRECTED")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/natura-06.jpg images/natura-07.jpg images/natura-08.jpg images/natura-09.jpg images/natura-11.jpg images/natura-15.jpg images/natura-18.jpg .lntdv-photo-orientation-v3
+          git commit -m "Correct source photo orientations"
+          git push origin HEAD:main
+
       - name: Prepare static Pages artifact
         run: |
           touch .nojekyll
@@ -68,14 +100,6 @@ jobs:
             --exclude='assets/photo*.js' \
             ./ _site/
 
-          # FINAL PHOTO ORIENTATION — DO NOT GENERICALLY ROTATE THE CATALOG.
-          # Apply only the exact corrections requested for the LNTDV sequence:
-          # 006, 007, 018 = 90° CLOCKWISE
-          # 008, 009, 011, 015 = 180°
-          # All other photographs keep their source orientation.
-          # EXIF is reset after the physical pixel rotation so every browser
-          # receives the same visible orientation.
-          python -m pip install --quiet pillow
           python - <<'PY'
           from pathlib import Path
           from PIL import Image, ImageOps
