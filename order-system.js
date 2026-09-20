@@ -113,6 +113,17 @@
     saveCart();
   }
 
+  function normalizeCheckoutLayer(){
+    const panel=$('orderPanel');
+    if(panel && panel.parentElement !== document.body){
+      document.body.appendChild(panel);
+    }
+    if(panel && !panel.classList.contains('active')){
+      panel.classList.remove('show','open');
+      panel.setAttribute('aria-hidden','true');
+    }
+  }
+
   function openPanel(){
     render();
     const panel=$('orderPanel');
@@ -437,6 +448,7 @@
 
   // Start clean on every catalog entry: no stale selection from a previous visit.
   clearOldCarts();
+  normalizeCheckoutLayer();
   updateMaterialNotes();
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',render,{once:true});
