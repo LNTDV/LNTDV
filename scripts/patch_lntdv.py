@@ -7,7 +7,7 @@ p=Path("index.html")
 s=p.read_text(encoding="utf-8")
 
 # Rimuove ogni riferimento alla vecchia scadenza del 15 ottobre dal catalogo e dalla conferma.
-s = re.sub(r'<div class="collection-notice"[^>]*>[\\s\\S]*?</div>', '', s, flags=re.I)
+s = re.sub(r'<div class="collection-notice"[^>]*>[\s\S]*?</div>', '', s, flags=re.I)
 s = re.sub(r'IL BONIFICO DEVE ESSERE EFFETTUATO ENTRO IL 15 OTTOBRE 2026\\\\n\\\\n', '', s, flags=re.I)
 
 # Rimuove i metodi di pagamento non utilizzati dal checkout LNTDV.
@@ -38,7 +38,7 @@ s=s.replace('.order-bar{position:fixed;left:22px;right:auto;', '.order-bar{posit
 s=s.replace('.order-bar{position:fixed;right:22px;left:auto;', '.order-bar{position:fixed;right:22px;left:auto;', 1)
 
 # Normalizza la sezione Consegna: una sola sezione, senza duplicati.
-s = re.sub(r'<section class="checkout-block">\\s*<div class="checkout-section-title">Consegna</div>[\\s\\S]*?<input type="radio" name="deliveryType" value="Spedizione"[\\s\\S]*?</section>\\s*', '', s, flags=re.I)
+s = re.sub(r'<section class="checkout-block">\s*<div class="checkout-section-title">Consegna</div>[\s\S]*?<input type="radio" name="deliveryType" value="Spedizione"[\s\S]*?</section>\s*', '', s, flags=re.I)
 # Ritiro / spedizione
 if 'name="deliveryType"' not in s:
     needle='''      <section class="checkout-block">
@@ -63,7 +63,7 @@ if 'name="deliveryType"' not in s:
     s=s.replace(needle,delivery,1)
 
 # La conferma non viene generata come sezione separata: order-system.js la mostra nel pannello checkout solo dopo l'invio riuscito.\n\n# Pagamento: un solo metodo, bonifico bancario.
-payment_pattern = r'<section class="checkout-block">\\s*<div class="checkout-section-title">Pagamento</div>[\\s\\S]*?</section>'
+payment_pattern = r'<section class="checkout-block">\s*<div class="checkout-section-title">Pagamento</div>[\s\S]*?</section>'
 payment_html = '''<section class="checkout-block">
         <div class="checkout-section-title">Pagamento</div>
         <div class="bank-transfer-only">
@@ -75,7 +75,7 @@ payment_html = '''<section class="checkout-block">
         <div id="paymentStatus" class="payment-status"></div>
       </section>'''
 s = re.sub(payment_pattern, payment_html, s, count=1, flags=re.I)
-s = re.sub(r'<label[^>]*>\\s*<input[^>]*value=["\']Carta["\'][\\s\\S]*?</label>', '', s, flags=re.I)
+s = re.sub(r'<label[^>]*>\s*<input[^>]*value=["\']Carta["\'][\s\S]*?</label>', '', s, flags=re.I)
 
 # Tracking
 if 'id="trackingSection"' not in s:
@@ -127,7 +127,7 @@ s=s.replace('''      total:total,
     };''',1)
 
 # Rimuove definitivamente la vecchia regola che ruotava le foto verticali di 90°.
-s=re.sub(r'\\.card\\.photo-vertical>img\\s*\\{[^}]*transform\\s*:\\s*rotate\\([^}]*\\)[^}]*\\}', '', s, flags=re.I)
+s=re.sub(r'\\.card\\.photo-vertical>img\s*\\{[^}]*transform\s*:\s*rotate\\([^}]*\\)[^}]*\\}', '', s, flags=re.I)
 
 # Mantiene un solo elemento di stato consegna: ID duplicati rompono querySelector/getElementById su alcuni flussi.
 delivery_seen=0
