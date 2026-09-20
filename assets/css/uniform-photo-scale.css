@@ -1,0 +1,99 @@
+/* LNTDV — UNIFORM MOBILE PHOTO SCALE + READABILITY — 2026-09-20 */
+.grid .card .lntdv-photo-stage{
+  width:94%!important;
+  max-width:94%!important;
+  margin:0 auto!important;
+  aspect-ratio:4/3!important;
+  height:auto!important;
+  max-height:60vh!important;
+  overflow:hidden!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+}
+.grid .card .meta{
+  width:94%!important;
+  max-width:94%!important;
+  margin:0 auto!important;
+}
+.grid .card .format-select{
+  height:52px!important;
+  min-height:52px!important;
+  max-height:52px!important;
+  font-size:16px!important;
+  font-weight:600!important;
+  line-height:52px!important;
+}
+.grid .card .meta>strong{
+  font-size:17px!important;
+  line-height:1.25!important;
+  letter-spacing:1.5px!important;
+  padding:9px 12px 4px!important;
+}
+.grid .card .meta>span{
+  font-size:14px!important;
+  line-height:1.35!important;
+  padding:4px 12px!important;
+}
+.grid .card .meta>small{
+  font-size:14px!important;
+  line-height:1.4!important;
+  padding:4px 12px 9px!important;
+}
+@media(max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    width:88%!important;
+    max-width:88%!important;
+    aspect-ratio:4/3!important;
+    max-height:52vh!important;
+    border-radius:10px!important;
+  }
+  .grid .card .lntdv-photo-stage>img{
+    width:100%!important;
+    height:100%!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    object-fit:contain!important;
+  }
+  .grid .card .meta{
+    width:88%!important;
+    max-width:88%!important;
+  }
+  .grid .card .print-choice{
+    margin:6px 0 5px!important;
+  }
+  .grid .card .format-select{
+    height:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    padding:0 38px 0 13px!important;
+    font-size:16px!important;
+    line-height:50px!important;
+  }
+  .grid .card .meta>strong{
+    font-size:17px!important;
+    line-height:1.25!important;
+    padding:9px 12px 4px!important;
+    letter-spacing:1.5px!important;
+  }
+  .grid .card .meta>span{
+    font-size:14px!important;
+    line-height:1.35!important;
+    padding:4px 12px!important;
+  }
+  .grid .card .meta>small{
+    font-size:14px!important;
+    line-height:1.4!important;
+    padding:4px 12px 9px!important;
+  }
+}
