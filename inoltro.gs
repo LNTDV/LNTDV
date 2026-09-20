@@ -14,13 +14,55 @@ const CONFIG = {
   ]
 };
 
-function doGet() {
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  const action = String(p.action || '').toLowerCase();
+  if (action === 'track' || action === 'confirm') {
+    return lookupOrder_(p.orderId || p.ordine || '', p.token || '', p.email || '', p.callback || '');
+  }
   return jsonResponse_({
     ok: true,
     service: 'LNTDV inoltro ordini',
     status: 'online',
     time: new Date().toISOString()
   });
+}
+
+function lookupOrder_(orderId, token, email, callback) {
+  try {
+    orderId = String(orderId || '').trim();
+    token = String(token || '').trim().toUpperCase();
+    email = String(email || '').trim().toLowerCase();
+    if (!orderId || !token) throw new Error('ID ordine o token mancanti');
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss && ss.getSheetByName(CONFIG.SHEET_NAME);
+    if (!sheet) throw new Error('Foglio ordini non trovato');
+
+    const values = sheet.getDataRange().getValues();
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      const idOk = String(row[2] || '') === orderId;
+      const tokenOk = String(row[16] || '').toUpperCase() === token;
+      const emailOk = !email || String(row[6] || '').trim().toLowerCase() === email;
+      if (idOk && tokenOk && emailOk) {
+        const status = String(row[3] || 'ORDINE RICEVUTO');
+        const total = Number(row[12] || 0);
+        const data = {
+          ok:true,
+          received:true,
+          orderId:orderId,
+          status:status,
+          label:status.replace(/_/g,' '),
+          total:total
+        };
+        return jsonResponse_(data, callback);
+      }
+    }
+    return jsonResponse_({ok:false,error:'Ordine non trovato'}, callback);
+  } catch (err) {
+    return jsonResponse_({ok:false,error:String(err && err.message || err)}, callback);
+  }
 }
 
 function doPost(e) {
