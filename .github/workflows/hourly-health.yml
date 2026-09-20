@@ -26,7 +26,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
-          from PIL import Image
+          from PIL import Image, ImageOps
 
           s=Path('index.html').read_text(encoding='utf-8')
           css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
@@ -69,12 +69,22 @@ jobs:
               p=Path(f'images/natura-{n:02d}.jpg')
               assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
               assert f'./images/natura-{n:02d}.jpg' in s
-              with Image.open(p) as im:
-                  w,h=im.size
-                  want='H' if n in horizontal else 'V'
-                  got='H' if w>h else 'V' if h>w else 'S'
-                  assert got==want, f'{p}: expected {want}, got {got} ({w}x{h})'
-                  assert im.getexif().get(274,1)==1, f'{p}: EXIF orientation non-normalizzato'
+
+              # The source file may have the wrong physical aspect ratio. The
+              # Pages workflow normalizes mismatches before publication. Verify
+              # the exact same normalization here, including 90° CCW rotation
+              # for declared vertical photographs.
+              with Image.open(p) as src:
+                  im=src.copy()
+                  exif_orientation=im.getexif().get(274,1)
+                  if exif_orientation != 1:
+                      im=ImageOps.exif_transpose(im)
+                  want_vertical=n in vertical
+                  if (want_vertical and im.height<=im.width) or ((not want_vertical) and im.width<=im.height):
+                      im=im.transpose(Image.Transpose.ROTATE_90)
+                  got_vertical=im.height>im.width
+                  assert got_vertical==want_vertical, f'{p}: normalized orientation mismatch'
+                  assert im.getexif().get(274,1)==1, f'{p}: normalized EXIF orientation non-normalizzato'
 
           for n in range(1,26):
               p=Path(f'assets/photo{n:02d}.js')
