@@ -67,6 +67,49 @@ jobs:
             --exclude='RESTORE_NOTICE.txt' \
             --exclude='assets/photo*.js' \
             ./ _site/
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("_site/index.html")
+          s = p.read_text(encoding="utf-8")
+
+          replacements = {
+              '<meta name="apple-mobile-web-app-title" content="lntdv">':
+                  '<meta name="apple-mobile-web-app-title" content="LNTDV">',
+              '<title>lntdv – La Nostra Terra Da Vicino | Edvinas Dragoni</title>':
+                  '<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
+              '<meta name="application-name" content="lntdv – La Nostra Terra Da Vicino">':
+                  '<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">',
+              '<meta property="og:site_name" content="lntdv – La Nostra Terra Da Vicino">':
+                  '<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">',
+              '<meta property="og:description" content="Progetto fotografico lntdv – La Nostra Terra Da Vicino.">':
+                  '<meta property="og:description" content="Progetto fotografico LNTDV – La Nostra Terra Da Vicino.">',
+              '"name":"lntdv – La Nostra Terra Da Vicino","alternateName":"lntdv"':
+                  '"name":"LNTDV – La Nostra Terra Da Vicino","alternateName":"LNTDV","identifier":"LNTDV"',
+          }
+
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+
+          marker = '<meta name="description" content="LNTDV – La Nostra Terra Da Vicino: progetto fotografico di Edvinas Dragoni, un viaggio tra Natura, Tempo e Città.">'
+          if marker in s and '<meta name="keywords" content="LNTDV, La Nostra Terra Da Vicino, Edvinas Dragoni">' not in s:
+              s = s.replace(marker, marker + '\n<meta name="keywords" content="LNTDV, La Nostra Terra Da Vicino, Edvinas Dragoni">')
+
+          required = [
+              '<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
+              '<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">',
+              '<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">',
+              '"alternateName":"LNTDV"',
+              '"identifier":"LNTDV"',
+          ]
+          missing = [x for x in required if x not in s]
+          if missing:
+              raise SystemExit("Segnali SEO LNTDV mancanti nell'artefatto: " + repr(missing))
+
+          p.write_text(s, encoding="utf-8")
+          print("SEO ENTITY SIGNALS OK: LNTDV")
+          PY
+
           echo "Static Pages artifact pronto."
 
       - name: Setup Pages
