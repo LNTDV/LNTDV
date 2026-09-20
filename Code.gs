@@ -20,6 +20,7 @@ function setup() {
   formatSettings_(settings);
   ensureOrderEditTrigger_();
   ensureCopyshopReplyTrigger_();
+  ensureFinalCopyshopTrigger_();
 }
 
 function doPost(e) {
@@ -347,8 +348,8 @@ function onOrderCheckboxEdit_(e) {
       if (currentStatus === 'PAGATO') return;
       sheet.getRange(rowNumber, 15).setValue('PAGATO');
       sendPaymentConfirmationEmail_(values);
-      sendCopyshopOrderEmail_(values);
-      sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).setValue(true);
+      // La produzione viene raccolta in un unico invio il 15 ottobre 2026.
+      sheet.getRange(rowNumber, COPYSHOP_STATUS_COLUMN).setValue('IN_ATTESA_BATCH_2026-10-15');
       return;
     }
     const currentStatus = String(values[14] || 'NUOVO').toUpperCase();
@@ -369,14 +370,7 @@ function sendPaymentConfirmationEmail_(row) {
   const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
   const body = 'Gentile ' + name + ',\\n\\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' è stato ricevuto e verificato.\\n\\nIl tuo ordine è confermato.\\n\\nTotale pagato: €' + total + '\\nID ordine: ' + orderId + '\\n\\nPuoi seguire lo stato del tuo ordine qui:\\n' + trackingUrl + '\\n\\nEdvinas Dragoni\\nLa Nostra Terra da Vicino\\n\\n© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.';
   if (row[6]) MailApp.sendEmail({to:String(row[6]),subject:'Pagamento ricevuto e ordine confermato ' + orderId + ' — La Nostra Terra da Vicino',body});
-  try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-    const rowNumber = sheet.getDataRange().getValues().findIndex((r,i)=>i>0 && String(r[1])===orderId)+1;
-    if (rowNumber > 1 && !sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).getValue()) {
-      sendCopyshopOrderEmail_(sheet.getRange(rowNumber,1,1,COPYSHOP_LAST_MESSAGE_COLUMN).getValues()[0]);
-      sheet.getRange(rowNumber,COPYSHOP_SENT_COLUMN).setValue(true);
-    }
-  } catch (_) {}
+  // L'invio alla copisteria è volutamente differito al batch del 15 ottobre 2026.
 }
 
 
@@ -384,18 +378,21 @@ function shipmentStatus_(orderId, email, token, callback) {
   return trackOrder_(orderId, email, token, callback);
 }
 
-function markFinalCopyshopBatch_(key) {
-  const cfg = getSettings_();
-  if (String(key || '') !== cfg.adminKey) throw new Error('Accesso non autorizzato.');
+function processFinalCopyshopBatch_() {
+  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  if (today !== FINAL_COPYSHOP_DATE) return {ok:true,updated:0,date:FINAL_COPYSHOP_DATE,waiting:today < FINAL_COPYSHOP_DATE};
+
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  if (!sheet) throw new Error('Foglio Ordini non trovato.');
+  if (!sheet) return {ok:false,error:'Foglio Ordini non trovato.'};
   const values = sheet.getDataRange().getValues();
   let updated = 0;
+
   values.forEach((row, i) => {
     if (i === 0 || !row[1] || !row[6]) return;
     const payment = String(row[14] || '').toUpperCase();
     const sent = row[COPYSHOP_SENT_COLUMN - 1] === true;
     if (payment === 'PAGATO' && !sent) {
+      sendCopyshopOrderEmail_(row);
       sheet.getRange(i + 1, COPYSHOP_SENT_COLUMN).setValue(true);
       sheet.getRange(i + 1, COPYSHOP_STATUS_COLUMN).setValue('IN_LAVORAZIONE');
       sheet.getRange(i + 1, 15).setValue('IN_LAVORAZIONE');
@@ -404,6 +401,19 @@ function markFinalCopyshopBatch_(key) {
     }
   });
   return {ok:true,updated:updated,date:FINAL_COPYSHOP_DATE};
+}
+
+function ensureFinalCopyshopTrigger_() {
+  const exists = ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() === 'processFinalCopyshopBatch_');
+  if (exists) return;
+  const runAt = new Date('2026-10-15T09:00:00+02:00');
+  ScriptApp.newTrigger('processFinalCopyshopBatch_').timeBased().at(runAt).create();
+}
+
+function markFinalCopyshopBatch_(key) {
+  const cfg = getSettings_();
+  if (String(key || '') !== cfg.adminKey) throw new Error('Accesso non autorizzato.');
+  return processFinalCopyshopBatch_();
 }
 
 function confirmOrder_(orderId, token, email, callback) {
