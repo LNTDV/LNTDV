@@ -269,6 +269,12 @@
     }
   }
 
+  // Direct signal from the catalog selection handler: no click-listener race.
+  window.addEventListener('lntdv-selection-changed',function(){
+    setTimeout(ensureOrderSummary,0);
+    setTimeout(ensureOrderSummary,80);
+  });
+
   document.addEventListener('click',e=>{
     if(e.target.closest('#openOrder') || e.target.closest('#closeOrder')) return;
     if(e.target.closest('.card') && !e.target.closest('select,option,input,button,a')){
