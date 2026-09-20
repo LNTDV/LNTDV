@@ -198,6 +198,29 @@
     });
   }
 
+  function confirmSubmittedOrder(id, token, email){
+    return new Promise((resolve,reject)=>{
+      const cb='lntdvConfirm_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+      const script=document.createElement('script');
+      let finished=false;
+      const cleanup=()=>{try{delete window[cb]}catch(e){};try{script.remove()}catch(e){}};
+      const finish=(ok,data)=>{
+        if(finished)return;
+        finished=true;
+        cleanup();
+        ok ? resolve(data) : reject(new Error((data&&data.error)||'Ordine non verificato'));
+      };
+      window[cb]=function(data){
+        if(data && data.ok && data.received) finish(true,data);
+        else finish(false,data||{error:'Ordine non trovato'});
+      };
+      script.src=ENDPOINT+'?action=confirm&orderId='+encodeURIComponent(id)+'&token='+encodeURIComponent(token)+'&email='+encodeURIComponent(email)+'&callback='+encodeURIComponent(cb);
+      script.onerror=()=>finish(false,{error:'Impossibile verificare la registrazione dell’ordine'});
+      document.body.appendChild(script);
+      setTimeout(()=>finish(false,{error:'Timeout nella verifica dell’ordine'}),7000);
+    });
+  }
+
   function rememberTracking(id,t){
     const old=read(TRACK_KEY,[]);
     const list=Array.isArray(old)?old.filter(x=>x&&x.orderId!==id):[];
@@ -364,6 +387,9 @@
     let sent=false;
     try{
       await postPayload(payload);
+      // A form/iframe load only proves that the browser navigated to Apps Script.
+      // Confirm against the order endpoint before telling the customer the order is registered.
+      await confirmSubmittedOrder(id,trackingToken,email);
       sent=true;
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
