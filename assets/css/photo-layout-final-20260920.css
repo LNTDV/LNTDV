@@ -166,3 +166,132 @@
   transform:rotate(90deg)!important;
   transform-origin:center center!important;
 }
+
+
+/* LNTDV — CENTRATURA UNIVERSALE CROSS-DEVICE — 2026-09-20 */
+/* La foto viene centrata rispetto all'intera area disponibile, senza spostamenti
+   laterali e senza rettangoli beige. L'immagine mantiene sempre le proporzioni. */
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0 auto 10px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .lntdv-photo-stage > img{
+  display:block!important;
+  width:auto!important;
+  max-width:100%!important;
+  height:auto!important;
+  max-height:72vh!important;
+  min-width:0!important;
+  min-height:0!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:2px solid #5a3b2b!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+
+.grid .card .meta{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  align-items:center!important;
+  text-align:center!important;
+}
+
+.grid .card .print-choice,
+.grid .card .format-select,
+.grid .card .meta > strong,
+.grid .card .meta > span,
+.grid .card .meta > small{
+  margin-left:auto!important;
+  margin-right:auto!important;
+  text-align:center!important;
+}
+
+@media (max-width:700px){
+  .grid{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+
+  .grid .card{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    align-items:center!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    justify-content:center!important;
+  }
+
+  .grid .card .lntdv-photo-stage > img{
+    width:auto!important;
+    max-width:92vw!important;
+    height:auto!important;
+    max-height:68vh!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+
+  .grid .card .meta{
+    width:92%!important;
+    max-width:760px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+}
+
+@media (min-width:701px){
+  .grid .card .lntdv-photo-stage > img{
+    max-width:100%!important;
+    max-height:72vh!important;
+  }
+}
+
+@media (max-width:390px){
+  .grid .card .lntdv-photo-stage > img{
+    max-width:90vw!important;
+    max-height:64vh!important;
+  }
+}
+
+/* Le identificazioni 006 e 007 restano ruotate come già previsto. */
+.grid .card .lntdv-photo-stage > img.lntdv-rotate-clockwise{
+  transform:rotate(90deg)!important;
+  transform-origin:center center!important;
+}
