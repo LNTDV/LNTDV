@@ -77,3 +77,31 @@
     border-radius:10px!important;
   }
 }
+
+/* LNTDV — REMOVE PHOTO CARD FRAME COMPLETELY — 2026-09-20 15:15
+   The beige rectangle surrounding the photograph is not part of the photo.
+   Remove the card/stage/image frame so only the photograph remains visible.
+*/
+.grid .card,
+.grid .card:hover,
+.grid .card.selected,
+.grid .card .lntdv-photo-stage,
+.grid .card .lntdv-photo-stage>img{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+.grid .card{
+  border-radius:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.grid .card .lntdv-photo-stage{
+  border-radius:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  border-radius:0!important;
+  background:transparent!important;
+}
