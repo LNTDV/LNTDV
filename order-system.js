@@ -83,6 +83,13 @@
       mailButton.hidden=list.length===0;
       mailButton.disabled=list.length===0;
     }
+    const openButton=$('openOrder');
+    const completeSelection=list.length>0 && list.every(x=>!!x.format && PRICES[x.format]!=null);
+    if(openButton){
+      openButton.disabled=!completeSelection;
+      openButton.setAttribute('aria-disabled',completeSelection?'false':'true');
+      openButton.textContent='RIEPILOGO ORDINE →';
+    }
     if($('orderTotal')) $('orderTotal').textContent=money(t.total);
 
     const orderList=$('orderList');
@@ -399,6 +406,8 @@
   $('openOrder')?.addEventListener('click',e=>{
     e.preventDefault();
     e.stopPropagation();
+    const list=items();
+    if(!list.length || !list.every(x=>!!x.format && PRICES[x.format]!=null)) return;
     openPanel();
   });
 
@@ -437,8 +446,8 @@
     showMailChooser(orderId(),list,t.total);
   });
 
-  $('completePayment')?.addEventListener('click',e=>{
-    e.preventDefault();
+  async function submitOrder(e){
+    if(e){ e.preventDefault(); e.stopPropagation(); }
     if(busy)return;
     const list=items();
     const name=$('customerName')?.value.trim()||'';
@@ -451,24 +460,42 @@
     const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
     busy=true;
     if($('completePayment')) $('completePayment').disabled=true;
-    showMailChooser(id,list,t.total);
-    rememberTracking(id,trackingToken);
-    write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
-    resetSelection(false);
-    if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
-    document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
-    if($('orderBar')) $('orderBar').classList.remove('show','active');
-    const mailButton=$('orderMailSummary');
-    if(mailButton){ mailButton.hidden=true; mailButton.disabled=true; }
-    if($('orderPanel')){
-      const panel=$('orderPanel'); panel.classList.add('active'); panel.setAttribute('aria-hidden','false'); panel.dataset.state='confirmed';
-      const submit=$('completePayment'); if(submit) submit.style.display='none';
-      const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine confermato';
+    if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
+    try{
+      await postPayload(payload);
+      try{ await confirmSubmittedOrder(id,trackingToken,email); }catch(verifyErr){ console.warn('LNTDV: verifica ordine non disponibile',verifyErr); }
+      rememberTracking(id,trackingToken);
+      write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
+      showMailChooser(id,list,t.total);
+      resetSelection(false);
+      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
+      document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
+      if($('orderBar')) $('orderBar').classList.remove('show','active');
+      const mailButton=$('orderMailSummary');
+      if(mailButton){ mailButton.hidden=true; mailButton.disabled=true; }
+      if($('orderPanel')){
+        const panel=$('orderPanel'); panel.classList.add('active'); panel.setAttribute('aria-hidden','false'); panel.dataset.state='confirmed';
+        const submit=$('completePayment'); if(submit) submit.style.display='none';
+        const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine confermato';
+      }
+    }catch(err){
+      console.warn('LNTDV: invio ordine fallito',err);
+      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Non è stato possibile registrare l’ordine.</strong><br>Controlla la connessione e riprova.';
+      if($('completePayment')) $('completePayment').disabled=false;
+    }finally{
+      busy=false;
+      render();
     }
-    // Send the order in the background; the customer is never blocked by Google Apps Script.
-    postPayload(payload).catch(err=>console.warn('LNTDV: invio ordine remoto non confermato',err));
-    busy=false;
-  });
+  }
+
+  $('completePayment')?.addEventListener('click',submitOrder);
+  document.addEventListener('click',function(e){
+    const button=e.target.closest?.('#completePayment');
+    if(!button)return;
+    e.preventDefault();
+    e.stopPropagation();
+    submitOrder(e);
+  },true);
 
   // Start clean on every catalog entry: no stale selection from a previous visit.
   clearOldCarts();
