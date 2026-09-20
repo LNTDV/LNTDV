@@ -128,8 +128,12 @@
 <style id="lntdv-order-mail-summary-css">
 .order-bar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.order-mail-button{background:#cdb8a5!important;color:#3d281d!important}.order-mail-button[hidden]{display:none!important}@media(max-width:560px){.order-bar-actions{width:100%;justify-content:stretch}.order-bar-actions .order-button{flex:1;min-height:46px}.order-bar-info{width:100%}}
 </style>
-</head>
-<body><header><div class="brand">LNTDV · LA NOSTRA TERRA DA VICINO · EDVINAS DRAGONI</div><h1>LNTDV</h1><div style="margin:6px auto 0;font-family:Georgia,serif;font-size:clamp(24px,4vw,38px);font-weight:700">La Nostra Terra Da Vicino</div><p style="margin:8px auto 0;text-align:center;font-size:13px;letter-spacing:.6px;color:#5a3b2b"><strong>LNTDV — La Nostra Terra Da Vicino</strong> · sito ufficiale · progetto fotografico di Edvinas Dragoni</p><p style="margin:10px auto 0;text-align:center"><a href="./la-nostra-terra-da-vicino.html" style="color:#5a3b2b;font-weight:700">La Nostra Terra Da Vicino →</a></p><nav aria-label="Collegamenti LNTDV" style="margin:16px auto 0;text-align:center;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:12px"><a href="./lntdv.html">LNTDV / La Nostra Terra Da Vicino</a><a href="./catalogo.html">Catalogo fotografico</a><a href="./collegamenti.html">Collegamenti e stampa</a></nav><div class="intro">Un viaggio tra Natura, Tempo e Città</div><div class="legend"><span>Natura · 10</span><span>Tempo · 3</span><span>Natura vs Città · 12</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
+<style id="lntdv-title-bar-final">
+.lntdv-home-title-bar{width:100%;background:#5a3b2b;color:#fffaf3;text-align:center;padding:12px 16px;box-sizing:border-box;letter-spacing:1.6px;font:800 13px/1.25 Arial,sans-serif;text-transform:uppercase;border-bottom:3px solid #8a674f}
+.lntdv-home-title-bar strong{font-weight:800}
+@media(max-width:600px){.lntdv-home-title-bar{padding:11px 42px 11px 12px;font-size:11px;letter-spacing:1.1px}}
+</style></head>
+<body><div class="lntdv-home-title-bar" role="banner"><strong>LNTDV</strong> · LA NOSTRA TERRA DA VICINO · EDVINAS DRAGONI</div><header><div class="brand">LNTDV · LA NOSTRA TERRA DA VICINO · EDVINAS DRAGONI</div><h1>LNTDV</h1><div style="margin:6px auto 0;font-family:Georgia,serif;font-size:clamp(24px,4vw,38px);font-weight:700">La Nostra Terra Da Vicino</div><p style="margin:8px auto 0;text-align:center;font-size:13px;letter-spacing:.6px;color:#5a3b2b"><strong>LNTDV — La Nostra Terra Da Vicino</strong> · sito ufficiale · progetto fotografico di Edvinas Dragoni</p><p style="margin:10px auto 0;text-align:center"><a href="./la-nostra-terra-da-vicino.html" style="color:#5a3b2b;font-weight:700">La Nostra Terra Da Vicino →</a></p><nav aria-label="Collegamenti LNTDV" style="margin:16px auto 0;text-align:center;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:12px"><a href="./lntdv.html">LNTDV / La Nostra Terra Da Vicino</a><a href="./catalogo.html">Catalogo fotografico</a><a href="./collegamenti.html">Collegamenti e stampa</a></nav><div class="intro">Un viaggio tra Natura, Tempo e Città</div><div class="legend"><span>Natura · 10</span><span>Tempo · 3</span><span>Natura vs Città · 12</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
   <span style="display:inline-block;padding:10px 18px;border:1px solid #cdb8a5;border-radius:999px;background:#fbf6ef;color:#5a3b2b;font:600 11px Arial,sans-serif;letter-spacing:.7px;text-transform:uppercase;box-shadow:0 4px 14px rgba(61,40,29,.06)">Seleziona la foto e il formato desiderato</span>
 </div><section class="grid"><article class="card" data-orientation="horizontal">
 <span class="selection-check" aria-hidden="true">✓</span>
@@ -770,12 +774,12 @@
       <section class="checkout-block">
         <div class="checkout-section-title">I tuoi dati</div>
         <div class="checkout-fields">
-          <input id="customerName" type="text" placeholder="Nome e cognome *" required>
-          <input id="customerEmail" type="email" placeholder="Email *" required>
-          <input id="customerStreet" type="text" placeholder="Via e numero civico">
+          <input id="customerName" type="text" name="name" autocomplete="name" enterkeyhint="next" placeholder="Nome e cognome *" required>
+          <input id="customerEmail" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="next" placeholder="Email *" required>\n          <input id="customerPhone" type="tel" name="tel" autocomplete="tel" inputmode="tel" enterkeyhint="next" placeholder="Telefono">
+          <input id="customerStreet" type="text" name="street-address" autocomplete="street-address" enterkeyhint="next" placeholder="Via e numero civico">
           <div class="two-fields">
-            <input id="customerZip" type="text" placeholder="CAP">
-            <input id="customerCity" type="text" placeholder="Città">
+            <input id="customerZip" type="text" name="postal-code" autocomplete="postal-code" inputmode="numeric" enterkeyhint="next" placeholder="CAP">
+            <input id="customerCity" type="text" name="city" autocomplete="address-level2" enterkeyhint="next" placeholder="Città">
           </div>
           <textarea id="customerNote" placeholder="Note sull'ordine (facoltativo)"></textarea>
         </div>
