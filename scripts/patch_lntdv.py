@@ -448,11 +448,8 @@ if 'assets/js/performance.js' not in s:
 
 
 # Final runtime cache-bust: source catalog files may already contain older module tags.
-for _old, _new in {
-    'v=20260919': 'v=20260920-fix2',
-    'v=20260920': 'v=20260920-fix2',
-}.items():
-    s = s.replace(_old, _new)
+s = s.replace('v=20260919', 'v=20260920-fix2')
+s = re.sub(r'v=20260920(?!-fix2)', 'v=20260920-fix2', s)
 
 # LNTDV ROOT BUILD PATH FIX 2026-09-20
 # catalog/part-14.html is also viewable under /catalog/, so its relative
