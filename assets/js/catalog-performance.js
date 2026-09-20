@@ -9,7 +9,7 @@
     '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
 
   function setupImage(img,index){
-    img.loading = "eager";
+    img.loading = index < 2 ? "eager" : "lazy";
     img.decoding = "async";
     img.style.setProperty("transform","none","important");
     img.style.setProperty("rotate","none","important");
@@ -71,9 +71,9 @@
   }
 
   function preloadNearViewport(){
-    // Su iOS Safari/Chrome tutte le foto devono avere src reale ed essere eager.
-    document.querySelectorAll(".card img").forEach(function(img){
-      img.loading="eager";
+    // Carica subito solo le prime immagini; il browser gestisce il lazy-loading delle altre.
+    document.querySelectorAll(".card img").forEach(function(img,index){
+      img.loading = index < 2 ? "eager" : "lazy";
       if(img.dataset.src && !img.getAttribute("src")) img.src=img.dataset.src;
     });
   }
@@ -100,6 +100,9 @@
     document.addEventListener("change",function(e){
       if(e.target.matches(".format-select")) requestAnimationFrame(updateSelectionSummary);
     },{passive:true});
+    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      document.documentElement.classList.add("reduce-motion");
+    }
     document.documentElement.classList.add("lntdv-catalog-ready");
   }
 
