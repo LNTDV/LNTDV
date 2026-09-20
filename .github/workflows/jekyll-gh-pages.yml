@@ -68,10 +68,13 @@ jobs:
             --exclude='assets/photo*.js' \
             ./ _site/
 
-          # Normalize only files whose physical orientation does not match the
-          # catalog declaration. Vertical photographs are rotated 90° CCW
-          # (antiorario) and EXIF is reset, so the published pixels themselves
-          # have the correct orientation on every browser.
+          # FINAL PHOTO ORIENTATION — DO NOT GENERICALLY ROTATE THE CATALOG.
+          # Apply only the exact corrections requested for the LNTDV sequence:
+          # 006, 007, 018 = 90° CLOCKWISE
+          # 008, 009, 011, 015 = 180°
+          # All other photographs keep their source orientation.
+          # EXIF is reset after the physical pixel rotation so every browser
+          # receives the same visible orientation.
           python -m pip install --quiet pillow
           python - <<'PY'
           from pathlib import Path
@@ -89,6 +92,7 @@ jobs:
               p=Path(f"_site/images/natura-{n:02d}.jpg")
               with Image.open(p) as src:
                   im=ImageOps.exif_transpose(src).convert("RGB")
+                  original_size=im.size
 
                   if n in rotate_clockwise:
                       im=im.transpose(Image.Transpose.ROTATE_270)
@@ -101,6 +105,9 @@ jobs:
                   if want_vertical != is_vertical:
                       raise SystemExit(f"Orientamento pubblicato errato dopo la correzione: {p}")
                   im.save(p,format="JPEG",quality=95,optimize=True)
+                  # Fail loudly if a requested 90° turn did not change width/height.
+                  if n in rotate_clockwise and im.size == original_size:
+                      raise SystemExit(f"Rotazione 90° non applicata: {p}")
           print("PUBLISHED PHOTO ORIENTATION OK")
           PY
 
