@@ -22,6 +22,3 @@
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
-
-/* Final visibility override: three cream lines, no frame, top-right */
-(function(){var s=document.createElement("style");s.id="lntdv-menu-final-visibility";s.textContent="#infoMenuButton.info-menu-button{position:fixed!important;top:18px!important;right:18px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;z-index:2147483000!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}#infoMenuButton.info-menu-button span{display:block!important;width:24px!important;height:2px!important;background:#f4eadf!important;opacity:1!important;visibility:visible!important;border:0!important;box-shadow:none!important}";document.head.appendChild(s);})();
