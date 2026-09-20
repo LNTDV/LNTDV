@@ -10,7 +10,7 @@
     'Forex':50,
     'File digitale in alta risoluzione':25
   };
-  const SHIPPING=35;
+  const SHIPPING=10;
   const BANK_TRANSFER={accountHolder:"Giulia Principi",iban:"LU538100SATI55551718",reasonPrefix:"LNTDV"};
   let busy=false;
 
@@ -158,14 +158,13 @@
   function orderId(){ return 'LNTDV-'+Date.now().toString(36).toUpperCase(); }
 
   function deliveryValue(){
-    return $('lntdvDelivery')?.value ||
-      document.querySelector('input[name="deliveryType"]:checked')?.value ||
+    return document.querySelector('input[name="deliveryType"]:checked')?.value ||
       document.querySelector('input[name="checkoutDelivery"]:checked')?.value ||
       'Ritiro';
   }
 
   function deliveryFee(){
-    return deliveryValue()==='Ritiro Agorà' ? 10 : (deliveryValue()==='Spedizione' ? 35 : 0);
+    return deliveryValue()==='Spedizione' ? SHIPPING : 0;
   }
 
   function postPayload(payload){
@@ -380,21 +379,12 @@
         const gmailUrl='https://mail.google.com/mail/?view=cm&fs=1&to=info.lanostraterradavicino@gmail.com&su='+mailSubject+'&body='+mailBody;
         const appleUrl='mailto:info.lanostraterradavicino@gmail.com?subject='+mailSubject+'&body='+mailBody;
         const chooser='<div id="lntdvMailChooser" class="lntdv-mail-chooser" role="dialog" aria-modal="true" aria-label="Scegli app email"><div class="lntdv-mail-chooser-card"><button type="button" class="lntdv-mail-close" aria-label="Chiudi">×</button><div class="lntdv-mail-kicker">ORDINE '+esc(id)+'</div><h3>Scegli l’app per inviare la mail</h3><p>La richiesta è pronta. Scegli come aprirla.</p><div class="lntdv-mail-actions"><a href="'+gmailUrl+'" target="_blank" rel="noopener" class="lntdv-mail-btn">Gmail</a><a href="'+appleUrl+'" class="lntdv-mail-btn">Apple Mail</a></div></div></div>';
+        document.getElementById('lntdvMailChooser')?.remove();
         document.body.insertAdjacentHTML('beforeend',chooser);
         const chooserEl=document.getElementById('lntdvMailChooser');
         chooserEl.querySelector('.lntdv-mail-close').addEventListener('click',()=>chooserEl.remove());
         chooserEl.addEventListener('click',e=>{if(e.target===chooserEl)chooserEl.remove();});
         $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail con le istruzioni di pagamento.';
-      }
-      const confirmation=$('orderConfirmation');
-      if(confirmation){
-        confirmation.hidden=false;
-        const text=$('orderConfirmationText');
-        if(text) text.innerHTML='<strong>Ordine '+esc(id)+' registrato correttamente.</strong><br>La richiesta è stata ricevuta e il riepilogo è stato salvato nel sistema ordini.';
-        const actions=$('confirmationMailActions');
-        if(actions){
-          actions.innerHTML='<div class="confirmation-mail-note">La mail predisposta può essere aperta scegliendo Gmail o Apple Mail.</div>';
-        }
       }
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(function(el){el.hidden=true;});
       if($('orderBar')) $('orderBar').classList.remove('show','active');
