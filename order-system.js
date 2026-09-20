@@ -259,29 +259,17 @@
     if(shouldRender) render();
   }
 
-  // After the very first catalog selection, open the order summary immediately.
-  // Use a delayed check so the catalog's own selection handler has finished first.
+  // Selecting a photograph must NEVER open the order summary automatically.
+  // The customer reviews the entire catalog first, then uses the dedicated box
+  // at the end of the catalog to reach the order summary.
   function ensureOrderSummary(){
-    if(selected().length && !$('orderPanel')?.classList.contains('active')){
-      openPanel();
-    }else{
-      render();
-    }
+    render();
   }
 
-  // Direct signal from the catalog selection handler: no click-listener race.
   window.addEventListener('lntdv-selection-changed',function(){
-    setTimeout(ensureOrderSummary,0);
-    setTimeout(ensureOrderSummary,80);
+    setTimeout(render,0);
+    setTimeout(render,80);
   });
-
-  document.addEventListener('click',e=>{
-    if(e.target.closest('#openOrder') || e.target.closest('#closeOrder')) return;
-    if(e.target.closest('.card') && !e.target.closest('select,option,input,button,a')){
-      setTimeout(ensureOrderSummary,0);
-      setTimeout(ensureOrderSummary,80);
-    }
-  },false);
 
   function updateMaterialNotes(){
     document.querySelectorAll('.card').forEach(card=>{
