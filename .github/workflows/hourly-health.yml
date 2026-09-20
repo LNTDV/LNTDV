@@ -68,7 +68,7 @@ jobs:
 
       - name: Check Apps Script public deployment
         run: |
-          curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbzyVW5IhWSz-tnjWOOPVlfBdCiXZVkmKLDoOxBXUVpPXc17AE_BDcf0JDsVG8pD0/exec' -o /tmp/apps.json
+          curl -fsSL --max-time 30 'https://script.google.com/macros/s/AKfycbzyVW5IhWSz-tnjWOOPVlfBdCiXZVkmKLDoOxBXUVpPXc17AE_BDcf0JDsVG8pD0/exec?action=config' -o /tmp/apps.json
           python - <<'PY'
           import json
           raw=open('/tmp/apps.json',encoding='utf-8-sig',errors='replace').read().strip()
