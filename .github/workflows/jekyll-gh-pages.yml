@@ -50,36 +50,64 @@ jobs:
           print("STATIC CATALOG OK:", len(s), "bytes")
           PY
 
-      - name: Correct source photo orientation in GitHub Images
+      - name: Restore original source photos and apply only requested rotations
         run: |
-          if [ -f .lntdv-photo-orientation-v4 ]; then
-            echo "SOURCE PHOTO ORIENTATION ALREADY APPLIED"
+          if [ -f .lntdv-photo-orientation-v5 ]; then
+            echo "SOURCE PHOTO ORIENTATION V5 ALREADY APPLIED"
             exit 0
           fi
+
           python -m pip install --quiet pillow
-          python - <<'PY'
+
+          # The first generic orientation workflow physically changed the JPEGs.
+          # Restore the exact pre-normalization source bytes first, then apply
+          # ONLY the rotations explicitly requested for 006,007,008,009,011,015,018.
+          SOURCE_ORIGINALS_COMMIT="faa81fde313183e0a01db96f32e6e3a6dbf8224f"
+          TMP_DIR="$(mktemp -d)"
+
+          for n in $(seq -w 1 25); do
+            git show "$SOURCE_ORIGINALS_COMMIT:images/natura-$n.jpg" > "$TMP_DIR/natura-$n.jpg"
+          done
+
+          TMP_DIR="$TMP_DIR" python - <<'PY'
           from pathlib import Path
           from PIL import Image, ImageOps
-          rotate_clockwise={6,7,18}
-          rotate_180={8,9,11,15}
-          for n in sorted(rotate_clockwise | rotate_180):
-              p=Path(f"images/natura-{n:02d}.jpg")
-              with Image.open(p) as src:
-                  im=ImageOps.exif_transpose(src).convert("RGB")
+          import os
+
+          tmp = Path(os.environ["TMP_DIR"])
+          dst = Path("images")
+
+          rotate_clockwise = {6, 7, 18}
+          rotate_180 = {8, 9, 11, 15}
+
+          for n in range(1, 26):
+              src = tmp / f"natura-{n:02d}.jpg"
+              out = dst / f"natura-{n:02d}.jpg"
+
+              if n not in rotate_clockwise and n not in rotate_180:
+                  out.write_bytes(src.read_bytes())
+                  continue
+
+              with Image.open(src) as original:
+                  im = ImageOps.exif_transpose(original).convert("RGB")
                   if n in rotate_clockwise:
-                      im=im.transpose(Image.Transpose.ROTATE_270)
+                      im = im.transpose(Image.Transpose.ROTATE_270)
                   else:
-                      im=im.transpose(Image.Transpose.ROTATE_180)
-                  im.save(p,format="JPEG",quality=95,optimize=True)
-          Path(".lntdv-photo-orientation-v4").write_text(
-              "Source images physically corrected exactly once: 006,007,018 clockwise; 008,009,011,015 180 degrees.\n",
-              encoding="utf-8")
-          print("GITHUB SOURCE IMAGES ORIENTATION CORRECTED")
+                      im = im.transpose(Image.Transpose.ROTATE_180)
+                  exif = im.getexif()
+                  exif[274] = 1
+                  im.save(out, format="JPEG", quality=95, optimize=True, exif=exif.tobytes())
+
+          print("SOURCE PHOTOS RESTORED: only requested rotations applied")
           PY
+
+          rm -f .lntdv-photo-orientation-v3 .lntdv-photo-orientation-v4
+          printf '%s\n' "Original source bytes restored from pre-normalization commit; ONLY 006,007,018 clockwise and 008,009,011,015 180 degrees applied." > .lntdv-photo-orientation-v5
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add images/natura-06.jpg images/natura-07.jpg images/natura-08.jpg images/natura-09.jpg images/natura-11.jpg images/natura-15.jpg images/natura-18.jpg .lntdv-photo-orientation-v4
-          git commit -m "Correct source photo orientations"
+          git add -A
+          git commit -m "Restore original photo orientations exactly"
           git push origin HEAD:main
 
       - name: Prepare static Pages artifact
