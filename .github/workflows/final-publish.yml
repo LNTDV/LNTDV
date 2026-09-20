@@ -56,13 +56,17 @@ jobs:
           p=Path('index.html'); s=p.read_text(encoding='utf-8')
           s=re.sub(r'transform\s*:\s*rotate\s*\([^;}]*(?:;|})','transform:none!important;',s,flags=re.I)
           s=re.sub(r'\bLNDV\b','LNTDV',s,flags=re.I)
+          s=s.replace('../assets/','./assets/').replace('../images/','./images/')
           s=re.sub(r'<title>[\s\S]*?</title>','<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',s,count=1,flags=re.I)
           for pat in [r'<meta name="description"[^>]*>',r'<meta name="application-name"[^>]*>',r'<meta property="og:[^>]*>',r'<link rel="canonical"[^>]*>',r'<script type="application/ld\+json">[\s\S]*?</script>']:
               s=re.sub(pat,'',s,flags=re.I)
           meta='''<meta name="description" content="LNTDV – La Nostra Terra Da Vicino: progetto fotografico di Edvinas Dragoni, un viaggio tra Natura, Tempo e Città.">\n<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">\n<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">\n<meta property="og:title" content="LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni">\n<meta property="og:description" content="Progetto fotografico LNTDV – La Nostra Terra Da Vicino.">\n<meta property="og:url" content="https://lntdv.it/">\n<link rel="canonical" href="https://lntdv.it/">\n<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"LNTDV – La Nostra Terra Da Vicino","alternateName":"LNTDV","url":"https://lntdv.it/","description":"Progetto fotografico di Edvinas Dragoni: un viaggio tra Natura, Tempo e Città."}</script>'''
           s=s.replace('</head>',meta+'\n</head>',1)
           styles=re.findall(r'<style\b[^>]*>([\s\S]*?)</style>',s,re.I)
-          css='\n\n'.join(styles)+'\n' if styles else ''
+          base_html=Path('catalog/part-01.html').read_text(encoding='utf-8') if Path('catalog/part-01.html').exists() else ''
+          bm=re.search(r'<style\b[^>]*>([\s\S]*?)</style>',base_html,re.I)
+          base_css=bm.group(1) if bm else ''
+          css=base_css+'\n\n'+'\n\n'.join(styles)+'\n' if (base_css or styles) else ''
           css=re.sub(r'transform\s*:\s*rotate\s*\([^;}]*(?:;|})','transform:none!important;',css,flags=re.I)
           css=re.sub(r'\bLNDV\b','LNTDV',css,flags=re.I)
           Path('assets/css/site-generated.css').write_text(css,encoding='utf-8')
