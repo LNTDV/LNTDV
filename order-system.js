@@ -70,7 +70,7 @@
     const bar=$('orderBar');
 
     if(bar){
-      const visible=window.lntdvOrderSummaryUnlocked && list.length>0;
+      const visible=list.length>0;
       bar.classList.toggle('show',visible);
       bar.classList.toggle('active',visible);
       bar.setAttribute('aria-hidden',visible?'false':'true');
@@ -78,6 +78,11 @@
     if($('summaryCount')) $('summaryCount').textContent=String(t.count);
     if($('orderBarCount')) $('orderBarCount').textContent=t.count+' foto';
     if($('orderBarTotal')) $('orderBarTotal').textContent=money(t.total);
+    const mailButton=$('orderMailSummary');
+    if(mailButton){
+      mailButton.hidden=list.length===0;
+      mailButton.disabled=list.length===0;
+    }
     if($('orderTotal')) $('orderTotal').textContent=money(t.total);
 
     const orderList=$('orderList');
@@ -424,6 +429,14 @@
     el.onclick=e=>{if(e.target===el)el.remove();};
   }
 
+  $('orderMailSummary')?.addEventListener('click',e=>{
+    e.preventDefault();
+    const list=items();
+    if(!list.length)return;
+    const t=totals(list);
+    showMailChooser(orderId(),list,t.total);
+  });
+
   $('completePayment')?.addEventListener('click',e=>{
     e.preventDefault();
     if(busy)return;
@@ -445,6 +458,8 @@
     if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
     document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
     if($('orderBar')) $('orderBar').classList.remove('show','active');
+    const mailButton=$('orderMailSummary');
+    if(mailButton){ mailButton.hidden=true; mailButton.disabled=true; }
     if($('orderPanel')){
       const panel=$('orderPanel'); panel.classList.add('active'); panel.setAttribute('aria-hidden','false'); panel.dataset.state='confirmed';
       const submit=$('completePayment'); if(submit) submit.style.display='none';
