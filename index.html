@@ -46,33 +46,9 @@
 <link rel="stylesheet" href="./assets/css/photo-center-final.css?v=20260920-photo-center2">
 <link rel="stylesheet" href="./assets/css/photo-layout-final-20260920.css?v=20260920-final3">
 
-<!-- LNTDV image preloading: same /images originals, no duplicated/rotated photo data -->
+<!-- LNTDV performance: only the first visible photo is preloaded; remaining gallery images load lazily. -->
 <link rel="preload" as="image" href="./images/natura-01.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-02.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-03.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-04.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-05.jpg" fetchpriority="high">
 
-<link rel="preload" as="image" href="./images/natura-06.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-07.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-08.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-09.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-10.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-11.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-12.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-13.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-14.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-15.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-16.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-17.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-18.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-19.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-20.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-21.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-22.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-23.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-24.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="./images/natura-25.jpg" fetchpriority="high">
 
 <meta name="description" content="LNTDV è La Nostra Terra Da Vicino, progetto e mostra fotografica di Edvinas Dragoni. 25 fotografie tra Natura, Tempo e Natura vs Città, con collegamenti a Villadeati, Arese e stampa.">
 <meta name="application-name" content="LNTDV">
@@ -159,7 +135,7 @@
 </div><section class="grid"><article class="card" data-orientation="horizontal">
 <span class="selection-check" aria-hidden="true">✓</span>
 <div class="lntdv-photo-stage" data-photo-orientation="horizontal">
-<img src="./images/natura-01.jpg" alt="LNTDV-001" loading="eager" decoding="async" draggable="false" data-orientation="orizzontale">
+<img src="./images/natura-01.jpg" alt="LNTDV-001" loading="eager" fetchpriority="high" decoding="async" draggable="false" data-orientation="orizzontale">
 </div>
 <div class="meta">
 <div class="print-choice">
@@ -178,7 +154,7 @@
 </article><article class="card" data-orientation="horizontal">
 <span class="selection-check" aria-hidden="true">✓</span>
 <div class="lntdv-photo-stage" data-photo-orientation="horizontal">
-<img src="./images/natura-02.jpg" alt="LNTDV-002" loading="eager" decoding="async" draggable="false" data-orientation="orizzontale">
+<img src="./images/natura-02.jpg" alt="LNTDV-002" loading="lazy" decoding="async" draggable="false" data-orientation="orizzontale">
 </div>
 <div class="meta">
 <div class="print-choice">
