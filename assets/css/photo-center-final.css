@@ -182,12 +182,6 @@
 .grid .card .lntdv-photo-stage>img{
   transform-origin:center center!important;
 }
-
-/* Mantiene esclusivamente le rotazioni già previste per 006 e 007. */
-.grid .card .lntdv-rotate-clockwise{
-  transform:rotate(90deg)!important;
-}
-
 @media(max-width:700px){
   .grid{
     width:92%!important;
