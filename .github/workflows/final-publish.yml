@@ -36,8 +36,6 @@ jobs:
           s=re.sub(r'transform\s*:\s*rotate\s*\([^;}]*(?:;|})','transform:none!important;',s,flags=re.I)
           s=re.sub(r'\bLNDV\b','LNTDV',s,flags=re.I)
           s=s.replace('../assets/','./assets/').replace('../images/','./images/')
-          s=re.sub(r'\./images/(natura-\d{2}\.jpg)', r'https://raw.githubusercontent.com/LNTDV/LNTDV/main/images/\1', s)
-          s=re.sub(r'\./images/(natura-\d{2}\.jpg)', r'https://raw.githubusercontent.com/LNTDV/LNTDV/main/images/\1', s)
           s=re.sub(r'<title>[\s\S]*?</title>','<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',s,count=1,flags=re.I)
           for pat in [r'<meta name="description"[^>]*>',r'<meta name="application-name"[^>]*>',r'<meta property="og:[^>]*>',r'<link rel="canonical"[^>]*>',r'<script type="application/ld\+json">[\s\S]*?</script>']:
               s=re.sub(pat,'',s,flags=re.I)
