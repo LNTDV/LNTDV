@@ -445,6 +445,17 @@ if 'assets/css/performance.css' not in s:
 if 'assets/js/performance.js' not in s:
     s=s.replace('</body>',module_js+'</body>',1)
 
+
+
+# LNTDV ROOT BUILD PATH FIX 2026-09-20
+# catalog/part-14.html is also viewable under /catalog/, so its relative
+# ../assets and ../scripts paths are correct there but wrong after the file
+# is assembled as the root index.html. Normalize them for the root build.
+s = s.replace('href="../assets/', 'href="./assets/')
+s = s.replace('src="../assets/', 'src="./assets/')
+s = s.replace('href="../scripts/', 'href="./scripts/')
+s = s.replace('src="../scripts/', 'src="./scripts/')
+
 p.write_text(s,encoding="utf-8")
 print("Final rendering overrides written:",len(s),"bytes")
 
