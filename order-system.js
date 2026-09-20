@@ -494,14 +494,34 @@
         const mailSubject=encodeURIComponent('Richiesta ordine '+id+' — La Nostra Terra da Vicino');
         const orderLines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\\n');
         const mailBody=encodeURIComponent('BUONGIORNO,\\n\\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\\n\\nRIEPILOGO DELL’ORDINE\\n'+orderLines+'\\n\\nTOTALE: '+money(t.total)+'\\n\\nPAGAMENTO TRAMITE BONIFICO BANCARIO\\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\\nIBAN: '+BANK_TRANSFER.iban+'\\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\\n\\nPER COMUNICAZIONI RELATIVE AL PAGAMENTO, UTILIZZARE QUESTA MAIL: INFO.LANOSTRATERRADAVICINO@GMAIL.COM.\\n\\nIL RIEPILOGO COMPLETO DELL’ORDINE È STATO REGISTRATO NEL SISTEMA GOOGLE FOGLI.\\n\\nCORDIALI SALUTI.');
-        const gmailUrl='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to=info.lanostraterradavicino@gmail.com&su='+mailSubject+'&body='+mailBody;
+        const gmailWebUrl='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to=info.lanostraterradavicino@gmail.com&su='+mailSubject+'&body='+mailBody;
+        const gmailAppUrl='googlegmail://co?to=info.lanostraterradavicino@gmail.com&subject='+mailSubject+'&body='+mailBody;
+        const gmailIntentUrl='intent://co?to=info.lanostraterradavicino@gmail.com&subject='+mailSubject+'&body='+mailBody+'#Intent;scheme=googlegmail;package=com.google.android.gm;end';
         const appleUrl='mailto:info.lanostraterradavicino@gmail.com?subject='+mailSubject+'&body='+mailBody;
-        const chooser='<div id="lntdvMailChooser" role="dialog" aria-modal="true" aria-label="Scegli app email" style="position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;"><div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center;"><button type="button" class="lntdv-mail-close" aria-label="Chiudi" style="position:absolute;right:14px;top:10px;border:0;background:none;font-size:30px;color:#5a3b2b;cursor:pointer;">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:8px;">ORDINE '+esc(id)+'</div><h3 style="margin:0 0 10px;font-size:25px;">Ordine registrato</h3><p style="margin:0 0 22px;line-height:1.55;">La richiesta è stata registrata. Scegli come aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><a href="'+gmailUrl+'" target="_blank" rel="noopener" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700;">Gmail</a><a href="'+appleUrl+'" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#cdb8a5;color:#3d281d;text-decoration:none;font-weight:700;">Apple Mail</a></div><p style="margin:18px 0 0;font-size:11px;opacity:.75;">Se Gmail o Apple Mail non si apre, verifica l'app email predefinita del dispositivo.</p></div></div>';
+        const chooser='<div id="lntdvMailChooser" role="dialog" aria-modal="true" aria-label="Scegli app email" style="position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;"><div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center;"><button type="button" class="lntdv-mail-close" aria-label="Chiudi" style="position:absolute;right:14px;top:10px;border:0;background:none;font-size:30px;color:#5a3b2b;cursor:pointer;">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:8px;">ORDINE '+esc(id)+'</div><h3 style="margin:0 0 10px;font-size:25px;">Ordine registrato</h3><p style="margin:0 0 22px;line-height:1.55;">La richiesta è stata registrata. Scegli come aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><button type="button" id="lntdvGmailBtn" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border:0;border-radius:999px;background:#5a3b2b;color:#fff;font-weight:700;cursor:pointer;">Gmail</button><button type="button" id="lntdvAppleMailBtn" class="lntdv-mail-btn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border:0;border-radius:999px;background:#cdb8a5;color:#3d281d;font-weight:700;cursor:pointer;">Apple Mail</button></div><p style="margin:18px 0 0;font-size:11px;opacity:.75;">Su Android Gmail apre l’app se installata; su iPhone/iPad Mail apre l’app email configurata. Se non disponibile, viene usata la versione web.</p></div></div>';
         document.getElementById('lntdvMailChooser')?.remove();
         document.body.insertAdjacentHTML('beforeend',chooser);
         const chooserEl=document.getElementById('lntdvMailChooser');
         chooserEl.querySelector('.lntdv-mail-close').addEventListener('click',()=>chooserEl.remove());
         chooserEl.addEventListener('click',e=>{if(e.target===chooserEl)chooserEl.remove();});
+        chooserEl.querySelector('#lntdvGmailBtn').addEventListener('click',function(){
+          const ua=navigator.userAgent||'';
+          const android=/Android/i.test(ua), ios=/iPhone|iPad|iPod/i.test(ua);
+          let fallback;
+          if(android){
+            fallback=setTimeout(()=>{window.location.href=gmailWebUrl;},900);
+            window.location.href=gmailIntentUrl;
+          }else if(ios){
+            fallback=setTimeout(()=>{window.location.href=gmailWebUrl;},900);
+            window.location.href=gmailAppUrl;
+          }else{
+            window.location.href=gmailWebUrl;
+          }
+          setTimeout(()=>clearTimeout(fallback),1800);
+        });
+        chooserEl.querySelector('#lntdvAppleMailBtn').addEventListener('click',function(){
+          window.location.href=appleUrl;
+        });
         $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli l’app per inviare la mail con le istruzioni di pagamento.';
       }
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(function(el){el.hidden=true;});
