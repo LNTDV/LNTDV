@@ -80,11 +80,11 @@ jobs:
           from pathlib import Path
           from PIL import Image, ImageOps
 
-          vertical={3,6,7,8,9,11,13,14,15,16,18}
-          horizontal=set(range(1,26))-vertical
-
-          # Correzioni di orientamento richieste per le fotografie specifiche.
-          # ROTATE_90 = 90° in senso antiorario (Pillow); ROTATE_270 = 90° in senso orario.
+          # Applica ESCLUSIVAMENTE le rotazioni indicate dall'autore.
+          # Nessuna inferenza basata su verticale/orizzontale viene applicata
+          # alle altre fotografie.
+          # 006, 007, 018 = 90° ORARIO
+          # 008, 009, 011, 015 = 180°
           rotate_clockwise={6,7,18}
           rotate_180={8,9,11,15}
 
@@ -99,13 +99,7 @@ jobs:
                   elif n in rotate_180:
                       im=im.transpose(Image.Transpose.ROTATE_180)
 
-                  want_vertical=n in vertical
-                  is_vertical=im.height>im.width
-                  is_horizontal=im.width>im.height
-                  if want_vertical != is_vertical:
-                      raise SystemExit(f"Orientamento pubblicato errato dopo la correzione: {p}")
                   im.save(p,format="JPEG",quality=95,optimize=True)
-                  # Fail loudly if a requested 90° turn did not change width/height.
                   if n in rotate_clockwise and im.size == original_size:
                       raise SystemExit(f"Rotazione 90° non applicata: {p}")
           print("PUBLISHED PHOTO ORIENTATION OK")
