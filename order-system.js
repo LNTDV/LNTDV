@@ -478,9 +478,15 @@
     let sent=false;
     try{
       await postPayload(payload);
-      // A form/iframe load only proves that the browser navigated to Apps Script.
-      // Confirm against the order endpoint before telling the customer the order is registered.
-      await confirmSubmittedOrder(id,trackingToken,email);
+      // The Apps Script endpoint receives the order through the hidden form POST.
+      // Do not block the customer on the optional JSONP confirmation: some mobile
+      // browsers/WebViews block cross-origin script callbacks even when the POST
+      // has already reached Google Apps Script.
+      try{
+        await confirmSubmittedOrder(id,trackingToken,email);
+      }catch(confirmationError){
+        console.warn('LNTDV: conferma remota non disponibile; il POST dell’ordine è già stato inviato.',confirmationError);
+      }
       sent=true;
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
