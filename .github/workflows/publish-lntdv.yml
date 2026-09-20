@@ -27,23 +27,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build 25 JPG assets
+      - name: Validate 25 JPG assets from repository Images
         run: |
+          python -m pip install --disable-pip-version-check --quiet pillow
           python - <<'PY'
           from pathlib import Path
-          import base64,re
-          out=Path('images'); out.mkdir(exist_ok=True)
+          from PIL import Image, ImageOps
+          out=Path('images')
+          out.mkdir(exist_ok=True)
           for n in range(1,26):
-              src=Path(f'assets/photo{n:02d}.js'); dst=out/f'natura-{n:02d}.jpg'
-              text=src.read_text(encoding='utf-8') if src.exists() else ''
-              m=re.search(r'data:image/jpeg;base64,([A-Za-z0-9+/=]+)',text)
-              if m:
-                  data=base64.b64decode(m.group(1),validate=True)
-                  if len(data)<1000 or not data.startswith(b'\xff\xd8\xff'): raise SystemExit(f'JPG non valido: {src}')
-                  dst.write_bytes(data)
-              elif not (dst.exists() and dst.stat().st_size>1000 and dst.read_bytes().startswith(b'\xff\xd8\xff')):
-                  raise SystemExit(f'Foto mancante: {src} / {dst}')
-          print('25 JPG validati.')
+              dst=out/f'natura-{n:02d}.jpg'
+              if not dst.exists() or dst.stat().st_size <= 1000:
+                  raise SystemExit(f'Foto mancante nella repository Images: {dst}')
+              with Image.open(dst) as im:
+                  im.verify()
+              with Image.open(dst) as im:
+                  fixed=ImageOps.exif_transpose(im).convert('RGB')
+                  fixed.save(dst,format='JPEG',quality=95,optimize=True,progressive=True)
+          print('25 JPG repository Images OK.')
           PY
 
       - name: Assemble catalog
