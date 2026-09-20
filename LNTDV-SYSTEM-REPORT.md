@@ -26,7 +26,8 @@
 ## 4. Google Apps Script
 - `Code.gs`: `doPost`, `doGet`, Google Sheets e `MailApp.sendEmail`.
 - Tracking token verificato nel codice.
-- Deployment pubblico verificato dal workflow tramite endpoint `action=config`.
+- Il codice contiene `doGet?action=health` per una verifica esplicita del Web App.
+- La verifica pubblica del deployment deve risultare HTTP 200 prima di considerare operativo il collegamento Google Sheets/MailApp.
 
 ## 5. Orientamento fotografie
 Il sistema è stato riallineato: il workflow orario **non modifica più fisicamente le fotografie**. Controlla invece dimensioni, orientamento EXIF e presenza degli asset.
