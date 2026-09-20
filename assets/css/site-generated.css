@@ -526,3 +526,19 @@ main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!i
 #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}#infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}#infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
 #infoDrawer.info-drawer{z-index:2147482999!important}
 @media(max-width:700px){#infoMenuButton.info-menu-button{top:12px!important;right:12px!important;width:46px!important;height:46px!important}}
+
+
+/* LNTDV FINAL MENU — three lines only, no circle/frame */
+.info-menu-button{
+  width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;
+  left:18px!important;bottom:max(18px,env(safe-area-inset-bottom) + 12px)!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:#4b2f22!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:5px!important;cursor:pointer!important;z-index:10001!important;
+}
+.info-menu-button span{width:24px!important;height:2px!important;border:0!important;border-radius:0!important;background:#4b2f22!important;display:block!important;box-shadow:none!important}
+.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
+.info-menu-button.open span:nth-child(2){opacity:0!important}
+.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
+@media(max-width:700px){.info-menu-button{left:14px!important}.info-menu-button span{width:23px!important}}
