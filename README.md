@@ -1,34 +1,21 @@
-# LA NOSTRA TERRA DA VICINO
+# LNTDV — La Nostra Terra Da Vicino
 
-### Catalogo fotografico di Edvinas Dragoni — Arese 2026
+Versione operativa del progetto fotografico di Edvinas Dragoni.
 
-**La Nostra Terra da Vicino** è una raccolta di 25 fotografie dedicata al territorio, alla natura, al tempo e al rapporto tra ambiente naturale e spazio urbano.
+## Sistema
+- 25 fotografie nel catalogo principale.
+- Selezione fotografia + formato, incluso **Pannello – Forex**.
+- Riepilogo ordine, tracking e conferma.
+- Google Apps Script + Google Fogli per la registrazione degli ordini.
+- Notifica amministrativa e conferma cliente tramite MailApp.
+- Apertura della mail precompilata tramite **Gmail** oppure **Apple Mail**.
+- Menù secondario a tre linee, senza cerchio/cornice.
+- Orientamento fotografico gestito fisicamente sugli asset JPEG, senza rotazioni CSS.
+- Data operativa finale per il flusso copyshop: 15 ottobre 2026.
 
-## Percorsi
+## Pubblicazione
+Dominio: https://lntdv.it/
 
-- **Natura** — 10 fotografie
-- **Tempo** — 3 fotografie
-- **Natura vs Città** — 12 fotografie
+Repository: https://github.com/LNTDV/LNTDV
 
-## Catalogo
-
-Il catalogo pubblico è disponibile qui:
-
-👉 **https://lntdv.it/**
-
-La pagina utilizza direttamente il file fotografico storico del progetto, mantenendo l'ordine delle immagini già definito. La veste grafica finale è stata impostata con palette **marrone e beige**, adattata alla consultazione da smartphone e computer.
-
-Sono inoltre presenti:
-
-- visualizzazione uniforme delle fotografie senza deformarle;
-- indicazione **VERTICALE / ORIZZONTALE** in base alle proporzioni reali;
-- filtri per i percorsi fotografici;
-- selezione delle fotografie;
-- riepilogo dell'ordine;
-- visualizzazione ingrandita delle immagini;
-- rimozione della vecchia dicitura relativa alla consegna a casa.
-
-## Autore
-
-**Edvinas Dragoni**  
-La Nostra Terra da Vicino — 2026
+Ogni modifica deve essere verificata contro il catalogo, gli asset locali, l'ordine, il tracking, Apps Script e il sistema email prima della pubblicazione.
