@@ -232,7 +232,7 @@
       if(!select||!note)return;
       const v=select.value;
       note.textContent = v==='Forex'
-        ? 'Forex · pannello rigido in PVC espanso, leggero e resistente.'
+        ? 'Pannello – Forex · pannello rigido in PVC espanso, leggero e resistente.'
         : v==='Stampa fotografica'
         ? 'Stampa fotografica · carta fotografica.'
         : v==='File digitale in alta risoluzione'
