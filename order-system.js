@@ -427,19 +427,20 @@
     if(e.key==='Escape') closePanel();
   });
 
-  function showMailChooser(id,list,total){
+  function showMailChooser(id,list,total,trackingToken){
     const to='info.lanostraterradavicino@gmail.com';
     const subject='Richiesta ordine '+id+' — La Nostra Terra da Vicino';
-    const lines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\\n');
-    const body='BUONGIORNO,\\n\\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\\n\\nRIEPILOGO DELL’ORDINE\\n'+lines+'\\n\\nTOTALE: '+money(total)+'\\n\\nPAGAMENTO TRAMITE BONIFICO BANCARIO\\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\\nIBAN: '+BANK_TRANSFER.iban+'\\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\\n\\nCORDIALI SALUTI.';
+    const lines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\n');
+    const tokenText=trackingToken ? '\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: '+id+'\nTOKEN: '+trackingToken+'\nLINK TRACCIAMENTO: '+('https://lntdv.it/?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken)) : '';
+    const body='BUONGIORNO,\n\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\n\nRIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE: '+money(total)+tokenText+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
     const gmail='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const apple='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     document.getElementById('lntdvMailChooser')?.remove();
     const el=document.createElement('div');
     el.id='lntdvMailChooser'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
     el.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;';
-    el.innerHTML='<div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)"><button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">Scegli l’app per aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a id="lntdvGmailBtn" href="'+esc(gmail)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700">Gmail</a><a id="lntdvAppleMailBtn" href="'+esc(apple)+'" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#cdb8a5;color:#3d281d;text-decoration:none;font-weight:700">Apple Mail</a></div></div>';
-    document.body.appendChild(el);
+    el.innerHTML='<div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)"><button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">La richiesta è stata registrata. Scegli Gmail o Apple Mail per aprire la mail precompilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a id="lntdvGmailBtn" href="'+esc(gmail)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700">Gmail</a><a id="lntdvAppleMailBtn" href="'+esc(apple)+'" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#cdb8a5;color:#3d281d;text-decoration:none;font-weight:700">Apple Mail</a></div></div>';
+    if(trackingToken){ const info=el.querySelector('p'); if(info) info.insertAdjacentHTML('afterend','<div style="margin:0 0 18px;padding:12px 14px;border-radius:14px;background:#efe2d4;text-align:left;font-size:13px;line-height:1.55"><strong>ID ordine:</strong> '+esc(id)+'<br><strong>Token:</strong> '+esc(trackingToken)+'</div>'); }\n    document.body.appendChild(el);
     el.querySelector('#lntdvMailClose').onclick=()=>el.remove();
     el.onclick=e=>{if(e.target===el)el.remove();};
   }
@@ -449,7 +450,7 @@
     const list=items();
     if(!list.length)return;
     const t=totals(list);
-    showMailChooser(orderId(),list,t.total);
+    showMailChooser(orderId(),list,t.total,'');
   });
 
   async function submitOrder(e){
@@ -458,7 +459,7 @@
     const list=items();
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
-    const validEmail=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+    const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
     if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){ render(); return; }
@@ -478,7 +479,7 @@
       if(!verified || !verified.received) throw new Error('Registrazione ordine non confermata.');
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
-      showMailChooser(id,list,t.total);
+      showMailChooser(id,list,t.total,trackingToken);
       resetSelection(false);
       if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
