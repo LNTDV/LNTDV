@@ -455,12 +455,16 @@
     el.onclick=e=>{if(e.target===el)el.remove();};
   }
 
+  // Il riepilogo dell'ordine deve essere sempre mostrato PRIMA della scelta
+  // del client email. Il pulsante non apre più direttamente Gmail/Apple Mail:
+  // porta prima al riepilogo completo, dove il cliente controlla fotografie,
+  // formati, dati e totale. La scelta dell'email avviene solo dopo la conferma.
   $('orderMailSummary')?.addEventListener('click',e=>{
     e.preventDefault();
+    e.stopPropagation();
     const list=items();
     if(!list.length)return;
-    const t=totals(list);
-    showMailChooser(orderId(),list,t.total,'');
+    openPanel();
   });
 
   async function submitOrder(e){
