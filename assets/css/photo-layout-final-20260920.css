@@ -259,3 +259,45 @@
     max-width:200px!important;
   }
 }
+
+
+/* LNTDV — STANDARD UNIFORM PHOTO FRAME — MOBILE + DESKTOP */
+.grid .card .lntdv-photo-stage{
+  width:min(100%, 360px)!important;
+  height:360px!important;
+  aspect-ratio:1/1!important;
+  margin:0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#fbf6ef!important;
+  box-sizing:border-box!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0!important;
+}
+@media (min-width:701px){
+  .grid .card .lntdv-photo-stage{
+    width:min(100%, 360px)!important;
+    height:360px!important;
+  }
+}
+@media (max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    width:min(calc(100vw - 32px), 360px)!important;
+    height:min(calc(100vw - 32px), 360px)!important;
+  }
+}
+@media (max-width:380px){
+  .grid .card .lntdv-photo-stage{
+    width:calc(100vw - 24px)!important;
+    height:calc(100vw - 24px)!important;
+  }
+}
