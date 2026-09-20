@@ -39,11 +39,11 @@ jobs:
           assert 'assets/js/performance.js' not in s
           assert 'scripts/platform-loader.js' not in s
           # Verify every local stylesheet/script referenced by index.html exists.
-          for href in re.findall(r'<link[^>]+href=["\\']([^"\\']+\\.css)(?:\\?[^"\\']*)?["\\']', s, re.I):
+          for href in re.findall(r"<link[^>]+href=['\"]([^'\"]+\\.css)(?:\\?[^'\"]*)?['\"]", s, re.I):
               if href.startswith('http'): continue
               p=Path(href.split('?',1)[0].lstrip('./'))
               assert p.exists(), f'CSS mancante: {p}'
-          for src in re.findall(r'<script[^>]+src=["\\']([^"\\']+\\.js)(?:\\?[^"\\']*)?["\\']', s, re.I):
+          for src in re.findall(r"<script[^>]+src=['\"]([^'\"]+\\.js)(?:\\?[^'\"]*)?['\"]", s, re.I):
               if src.startswith('http'): continue
               p=Path(src.split('?',1)[0].lstrip('./'))
               assert p.exists(), f'JS mancante: {p}'
