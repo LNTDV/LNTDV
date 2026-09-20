@@ -1,0 +1,69 @@
+name: Normalize photo orientation
+
+on:
+  push:
+    paths:
+      - ".github/workflows/normalize-photo-orientation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Normalize all 25 JPEG orientations
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps
+
+          root = Path("images")
+          for n in range(1, 26):
+              p = root / f"natura-{n:02d}.jpg"
+              if not p.exists():
+                  raise SystemExit(f"Missing {p}")
+              with Image.open(p) as im:
+                  fixed = ImageOps.exif_transpose(im)
+                  exif = fixed.getexif()
+                  if 274 in exif:
+                      del exif[274]
+                  fixed.save(p, "JPEG", quality=95, optimize=True, exif=exif.tobytes())
+          PY
+
+      - name: Verify expected physical orientation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          horizontal = {1,2,4,5,10,12,17,19,20,21,22,23,24,25}
+          vertical = {3,6,7,8,9,11,13,14,15,16,18}
+          for n in range(1,26):
+              p = Path("images") / f"natura-{n:02d}.jpg"
+              with Image.open(p) as im:
+                  w,h=im.size
+                  want = "H" if n in horizontal else "V"
+                  got = "H" if w>h else "V" if h>w else "S"
+                  if got != want:
+                      raise SystemExit(f"{p}: expected {want}, got {got} ({w}x{h})")
+                  if im.getexif().get(274,1) != 1:
+                      raise SystemExit(f"{p}: EXIF orientation was not normalized")
+          PY
+
+      - name: Commit normalized JPEGs
+        shell: bash
+        run: |
+          git config user.name "LNTDV Photo Pipeline"
+          git config user.email "actions@users.noreply.github.com"
+          if git diff --quiet -- images; then
+            echo "No JPEG orientation changes were needed."
+            exit 0
+          fi
+          git add images/natura-*.jpg
+          git commit -m "Normalize physical orientation of 25 LNTDV photos"
+          git push
