@@ -53,23 +53,38 @@ function doPost(e) {
     const existing = sheet.getDataRange().getValues().findIndex((r, i) => i > 0 && String(r[1]) === orderId);
     if (existing > 0) return json_({ok:true, orderId:orderId, trackingToken:String(sheet.getRange(existing + 1, 16).getValue() || trackingToken), paymentStatus:String(sheet.getRange(existing + 1, 15).getValue() || paymentStatus), subtotal:Number(sheet.getRange(existing + 1, 9).getValue() || subtotal), shipping:Number(sheet.getRange(existing + 1, 10).getValue() || shipping), total:Number(sheet.getRange(existing + 1, 11).getValue() || total), duplicate:true});
     const row = sheet.getLastRow() + 1;
-    sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', true, paymentStatus === 'PAGATO' ? 'PAGATO' : receivedStatus, trackingToken]);
+    const lock = LockService.getScriptLock();
+    lock.waitLock(15000);
+    try {
+      sheet.appendRow([new Date(), orderId, customer.name || '', customer.street || '', customer.zip || '', customer.city || '', customer.email || '', itemText, subtotal, shipping, total, deliveryType, customer.note || '', true, paymentStatus === 'PAGATO' ? 'PAGATO' : receivedStatus, trackingToken]);
+      SpreadsheetApp.flush();
+    } finally {
+      lock.releaseLock();
+    }
     sheet.getRange(row, 14).insertCheckboxes().setValue(true);
     const deliveryText = deliveryType.toLowerCase().includes('sped') ? `Spedizione: €${shipping.toFixed(2)}` : `Ritiro: ${deliveryType}`;
     const promotionText = payload.promotion ? `Promozione applicata: ${payload.promotion}\n` : '';
     const body = `Gentile ${customer.name},\n\nabbiamo ricevuto la tua richiesta d'ordine.\n\nID ordine: ${orderId}\n\n${itemText}\n\nSubtotale: €${subtotal.toFixed(2)}\n${deliveryText}\nTotale: €${total.toFixed(2)}\n${promotionText}Metodo di pagamento: BONIFICO BANCARIO\n\nDATI PER IL BONIFICO:\nBeneficiario: Giulia Principi\nIBAN: LU538100SATI55551718\nCausale: LNTDV ${orderId}\n\nL'ordine è stato registrato. Conserva l'ID ordine ${orderId} per identificare il pagamento.\n\nSegui il tuo ordine in qualsiasi momento:\n${trackingUrl}\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
     // Invia sempre prima la copia amministrativa all'indirizzo fisso del progetto.
-    MailApp.sendEmail({
-      to: OWNER_EMAIL,
-      subject: `Nuovo ordine ${orderId}${paymentStatus === 'PAGATO' ? ' — PAGATO' : ''}`,
-      body: body
-    });
+    try {
+      MailApp.sendEmail({
+        to: OWNER_EMAIL,
+        subject: `Nuovo ordine ${orderId}${paymentStatus === 'PAGATO' ? ' — PAGATO' : ''}`,
+        body: body
+      });
+    } catch (mailErr) {
+      console.error('Invio copia amministrativa non riuscito: ' + mailErr);
+    }
 
-    MailApp.sendEmail({
-      to: customer.email,
-      subject: `Conferma ordine ${orderId} — La Nostra Terra da Vicino`,
-      body: body
-    });
+    try {
+      MailApp.sendEmail({
+        to: customer.email,
+        subject: `Conferma ordine ${orderId} — La Nostra Terra da Vicino`,
+        body: body
+      });
+    } catch (mailErr) {
+      console.error('Invio conferma cliente non riuscito: ' + mailErr);
+    }
     if (paymentStatus === 'PAGATO') {
       const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: BONIFICO BANCARIO\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
       MailApp.sendEmail({to: customer.email, subject: `Pagamento confermato ${orderId} — La Nostra Terra da Vicino`, body: paymentBody});
