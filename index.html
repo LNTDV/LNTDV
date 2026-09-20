@@ -60,28 +60,52 @@
 <meta property="og:description" content="Progetto fotografico lntdv – La Nostra Terra Da Vicino.">
 <meta property="og:url" content="https://lntdv.it/">
 <link rel="canonical" href="https://lntdv.it/">
-<script type="application/ld+json">{
+<script type="application/ld+json">
+{
   "@context":"https://schema.org",
-  "@type":"WebSite",
-  "@id":"https://lntdv.it/#website",
-  "name":"LNTDV – La Nostra Terra Da Vicino",
-  "alternateName":["LNTDV","La Nostra Terra Da Vicino"],
-  "url":"https://lntdv.it/",
-  "inLanguage":"it-IT",
-  "description":"Progetto fotografico di Edvinas Dragoni: 25 fotografie organizzate nei percorsi Natura, Tempo e Natura vs Città.",
-  "publisher":{
-    "@type":"Person",
-    "name":"Edvinas Dragoni"
-  },
-  "mainEntity":{
-    "@type":"CreativeWork",
-    "@id":"https://lntdv.it/#project",
-    "name":"La Nostra Terra Da Vicino",
-    "alternateName":"LNTDV",
-    "creator":{"@type":"Person","name":"Edvinas Dragoni"},
-    "url":"https://lntdv.it/"
-  }
-}</script>
+  "@graph":[
+    {
+      "@type":"WebSite",
+      "@id":"https://lntdv.it/#website",
+      "url":"https://lntdv.it/",
+      "name":"LNTDV – La Nostra Terra Da Vicino",
+      "alternateName":["LNTDV","La Nostra Terra Da Vicino"],
+      "inLanguage":"it-IT",
+      "description":"Progetto fotografico di Edvinas Dragoni: 25 fotografie organizzate nei percorsi Natura, Tempo e Natura vs Città.",
+      "publisher":{"@id":"https://lntdv.it/#person"}
+    },
+    {
+      "@type":"WebPage",
+      "@id":"https://lntdv.it/#webpage",
+      "url":"https://lntdv.it/",
+      "name":"LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni",
+      "isPartOf":{"@id":"https://lntdv.it/#website"},
+      "inLanguage":"it-IT",
+      "description":"Catalogo e progetto fotografico La Nostra Terra Da Vicino di Edvinas Dragoni, con 25 fotografie tra Natura, Tempo e Natura vs Città.",
+      "about":{"@id":"https://lntdv.it/#project"},
+      "mainEntity":{"@id":"https://lntdv.it/#project"}
+    },
+    {
+      "@type":"Person",
+      "@id":"https://lntdv.it/#person",
+      "name":"Edvinas Dragoni",
+      "url":"https://lntdv.it/"
+    },
+    {
+      "@type":"CreativeWork",
+      "@id":"https://lntdv.it/#project",
+      "url":"https://lntdv.it/",
+      "name":"La Nostra Terra Da Vicino",
+      "alternateName":"LNTDV",
+      "creator":{"@id":"https://lntdv.it/#person"},
+      "author":{"@id":"https://lntdv.it/#person"},
+      "inLanguage":"it-IT",
+      "description":"Progetto fotografico di Edvinas Dragoni composto da 25 fotografie e articolato nei percorsi Natura, Tempo e Natura vs Città.",
+      "keywords":["LNTDV","La Nostra Terra Da Vicino","Edvinas Dragoni","fotografia","Natura","Tempo","Natura vs Città"]
+    }
+  ]
+}
+</script>
 
 </head>
 <body><header><div class="brand">EDVINAS DRAGONI</div><h1>La Nostra Terra Da Vicino</h1><div class="intro">Un viaggio tra Natura, Tempo e Città</div><div class="legend"><span>Natura · 10</span><span>Tempo · 3</span><span>Natura vs Città · 12</span></div></header><main><div id="selectionSummary" aria-live="polite" style="margin:0 0 18px;text-align:center">
