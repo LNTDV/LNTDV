@@ -745,7 +745,11 @@
       card.setAttribute('aria-pressed', selected ? 'true' : 'false');
       const total = document.querySelectorAll('.card.selected').length;
       const summary = document.getElementById('selectionSummary');
-      if(summary) summary.textContent = total ? (total === 1 ? '1 fotografia selezionata' : total + ' fotografie selezionate') : 'Nessuna fotografia selezionata';
+      if(summary){
+        const summaryLabel = summary.querySelector('span');
+        const summaryText = total ? (total === 1 ? '1 fotografia selezionata' : total + ' fotografie selezionate') : 'Nessuna fotografia selezionata';
+        (summaryLabel || summary).textContent = summaryText;
+      }
     }
 
     card.addEventListener('click', function(e){
@@ -803,7 +807,10 @@
       if(el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed','false');
     });
     var summary=document.getElementById('selectionSummary');
-    if(summary) summary.textContent='Nessuna fotografia selezionata';
+    if(summary){
+      var summaryLabel=summary.querySelector('span');
+      (summaryLabel || summary).textContent='Nessuna fotografia selezionata';
+    }
     var bar=document.getElementById('orderBar');
     if(bar) bar.classList.remove('active');
     var count=document.getElementById('orderBarCount');
