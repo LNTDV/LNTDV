@@ -20,8 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Normalize physical JPEG orientation
+      - name: One-time physical JPEG orientation correction (counterclockwise)
         run: |
+          if [ -f .orientation-ccw-fixed ]; then
+            echo "Counterclockwise orientation already fixed; nothing to do."
+            exit 0
+          fi
           python -m pip install --quiet pillow
           python - <<'PY'
           from pathlib import Path
@@ -32,19 +36,21 @@ jobs:
               with Image.open(p) as im:
                   fixed=ImageOps.exif_transpose(im)
                   if n in vertical:
-                      fixed=fixed.rotate(90, expand=True)
+                      # The previous pipeline physically rotated these photos clockwise.
+                      # Rotate them 180° once so their final physical orientation is counterclockwise.
+                      fixed=fixed.rotate(180, expand=True)
                   exif=fixed.getexif()
                   exif[274]=1
                   fixed.save(p,'JPEG',quality=95,optimize=True,exif=exif.tobytes())
           PY
+          touch .orientation-ccw-fixed
           git config user.name "LNTDV Photo Pipeline"
           git config user.email "actions@users.noreply.github.com"
-          git add images/natura-*.jpg
+          git add images/natura-*.jpg .orientation-ccw-fixed
           if ! git diff --cached --quiet; then
-            git commit -m "Normalize physical orientation of 25 LNTDV photos"
+            git commit -m "Fix physical orientation of LNTDV vertical photos"
             git push
           fi
-
 
       - name: Validate repository catalog and order code
         run: |
