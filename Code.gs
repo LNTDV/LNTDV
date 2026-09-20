@@ -79,19 +79,10 @@ function doPost(e) {
       console.error('Invio copia amministrativa non riuscito: ' + mailErr);
     }
 
-    try {
-      MailApp.sendEmail({
-        to: customer.email,
-        subject: `Conferma ordine ${orderId} — La Nostra Terra da Vicino`,
-        body: body
-      });
-    } catch (mailErr) {
-      console.error('Invio conferma cliente non riuscito: ' + mailErr);
-    }
-    if (paymentStatus === 'PAGATO') {
-      const paymentBody = `Gentile ${customer.name},\n\nconfermiamo che il pagamento dell'ordine ${orderId} risulta PAGATO.\n\n${itemText}\n\nTotale pagato: €${total.toFixed(2)}\nMetodo di pagamento: BONIFICO BANCARIO\n\nConserva questa email come conferma del pagamento.\n\nEdvinas Dragoni\nLa Nostra Terra da Vicino`;
-      MailApp.sendEmail({to: customer.email, subject: `Pagamento confermato ${orderId} — La Nostra Terra da Vicino`, body: paymentBody});
-    }
+    // Il cliente NON riceve una mail alla semplice registrazione dell'ordine.
+    // La conferma al cliente viene inviata esclusivamente quando il bonifico
+    // viene verificato tramite la casella "Pagamento confermato" nel foglio Ordini.
+
     return json_({ok:true, orderId:orderId, trackingToken:trackingToken, paymentStatus:paymentStatus, subtotal:subtotal, shipping:shipping, total:total});
   } catch (err) {
     return json_({ok:false, error:String(err)});
@@ -386,10 +377,38 @@ function sendPaymentConfirmationEmail_(row) {
   const name = String(row[2] || '');
   const orderId = String(row[1] || '');
   const total = Number(row[10] || 0).toFixed(2);
-  const trackingToken = String(row[15] || '');
+  const trackingToken = String(row[15] || '').trim().toUpperCase();
   const trackingUrl = SITE_URL + '?ordine=' + encodeURIComponent(orderId) + '&token=' + encodeURIComponent(trackingToken);
-  const body = 'Gentile ' + name + ',\\n\\nconfermiamo che il pagamento dell\'ordine ' + orderId + ' è stato ricevuto e verificato.\\n\\nIl tuo ordine è confermato.\\n\\nTotale pagato: €' + total + '\\nID ordine: ' + orderId + '\\n\\nPuoi seguire lo stato del tuo ordine qui:\\n' + trackingUrl + '\\n\\nEdvinas Dragoni\\nLa Nostra Terra da Vicino\\n\\n© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.';
-  if (row[6]) MailApp.sendEmail({to:String(row[6]),subject:'Pagamento ricevuto e ordine confermato ' + orderId + ' — La Nostra Terra da Vicino',body});
+
+  const body = `Gentile ${name},
+
+confermiamo che il pagamento dell'ordine ${orderId} è stato ricevuto e verificato.
+
+IL TUO ORDINE È CONFERMATO
+
+Totale pagato: €${total}
+
+DATI PER LA TRACCIABILITÀ
+ID ORDINE: ${orderId}
+TOKEN: ${trackingToken}
+
+LINK UNIVERSALE PER SEGUIRE IL TUO ORDINE
+${trackingUrl}
+
+Conserva ID ordine e token: ti permettono di accedere alla pagina personale di tracciamento del tuo ordine.
+
+Edvinas Dragoni
+La Nostra Terra da Vicino
+
+© 2026 Edvinas Dragoni — La Nostra Terra Da Vicino. Tutti i diritti riservati.`;
+
+  if (row[6]) {
+    MailApp.sendEmail({
+      to: String(row[6]),
+      subject: 'Pagamento ricevuto e ordine confermato ' + orderId + ' — La Nostra Terra da Vicino',
+      body
+    });
+  }
   // L'invio alla copisteria è volutamente differito al batch del 15 ottobre 2026.
 }
 
