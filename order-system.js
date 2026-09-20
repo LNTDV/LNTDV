@@ -8,7 +8,6 @@
   const PRICES={
     'Stampa fotografica':40,
     'Forex':50,
-    'Pannello':null,
     'File digitale in alta risoluzione':25
   };
   const SHIPPING=35;
@@ -87,7 +86,7 @@
           '<div class="checkout-photo-num">'+String(i+1).padStart(2,'0')+'</div>'+
           '<div class="checkout-photo-thumb">'+(x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+'</div>'+
           '<div class="checkout-photo-info"><div class="checkout-photo-title">'+esc(x.code)+'</div>'+
-          '<div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div>'+(x.format==='Pannello'?'<div class="checkout-photo-material">Supporto rigido · prezzo da definire</div>':'')+'</div>'+
+          '<div class="checkout-photo-detail">'+esc(x.orientation?x.orientation+' · ':'')+esc(x.format||'Formato da selezionare')+'</div>'+'</div>'+
           '<div class="checkout-photo-price">'+money(x.price*x.quantity)+'</div></div>').join('')
         : '<div class="checkout-empty">Nessuna fotografia selezionata.</div>';
     }
@@ -105,7 +104,7 @@
       $('paymentStatus').textContent=!list.length
         ? 'Seleziona almeno una fotografia.'
         : !complete
-        ? (list.some(x=>x.format==='Pannello') ? 'Il supporto Pannello è selezionabile, ma il suo prezzo deve ancora essere configurato.' : 'Scegli il formato per ogni fotografia.')
+        ? 'Scegli il formato per ogni fotografia.'
         : !ready
         ? 'Inserisci nome e un indirizzo email valido.'
         : 'Ordine pronto per l’invio.';
@@ -233,9 +232,7 @@
       if(!select||!note)return;
       const v=select.value;
       note.textContent = v==='Forex'
-        ? 'Forex · PVC espanso rigido, leggero e resistente.'
-        : v==='Pannello'
-        ? 'Pannello · supporto rigido; prezzo da definire.'
+        ? 'Forex · pannello rigido in PVC espanso, leggero e resistente.'
         : v==='Stampa fotografica'
         ? 'Stampa fotografica · carta fotografica.'
         : v==='File digitale in alta risoluzione'
