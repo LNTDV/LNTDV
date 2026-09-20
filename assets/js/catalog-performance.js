@@ -11,14 +11,13 @@
   function setupImage(img,index){
     img.loading = index < 2 ? "eager" : "lazy";
     img.decoding = "async";
-    img.style.setProperty("transform","none","important");
-    img.style.setProperty("rotate","none","important");
+    // Do not force rotation: preserve the original image orientation/EXIF.
+    img.style.removeProperty("transform");
+    img.style.removeProperty("rotate");
     img.style.setProperty("image-orientation","from-image","important");
     img.fetchPriority = index === 0 ? "high" : "auto";
     if(!img.getAttribute("width") || !img.getAttribute("height")){
-      const vertical=img.dataset.orientation==="vertical";
-      img.setAttribute("width",vertical?"800":"1200");
-      img.setAttribute("height",vertical?"1200":"800");
+      // Do not invent width/height values; use the source image dimensions.
     }
     img.addEventListener("error",function(){ img.classList.add("image-load-error"); },{once:true});
   }
