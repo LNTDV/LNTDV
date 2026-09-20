@@ -1,14 +1,23 @@
-/* LNTDV — BROWN ACCENT THEME — 2026-09-20 */
+/* LNTDV — BROWN + RESPONSIVE PHOTO GRID — 2026-09-20 */
 :root{--lntdv-brown:#5a3b2b;--lntdv-brown-dark:#43291e;--lntdv-brown-light:#cdb8a5;--lntdv-cream:#fbf6ef}
 body{background:#fffaf4;color:#4b3022}
 .lntdv-home-title-bar{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-color:var(--lntdv-brown-dark)!important}
 header h1,header .brand,header a,header .intro{color:var(--lntdv-brown)!important}
 header .legend span{border-color:var(--lntdv-brown-light)!important;background:var(--lntdv-brown)!important;color:#fffaf3!important}
 .section-label,.info-kicker{color:var(--lntdv-brown)!important}
-.grid .card .format-select{border-color:var(--lntdv-brown)!important;color:var(--lntdv-brown-dark)!important;background:var(--lntdv-cream)!important}
-.grid .card .format-select:focus{outline:2px solid var(--lntdv-brown-light)!important;outline-offset:2px}
-.order-bar{background:var(--lntdv-brown)!important;border-top:2px solid var(--lntdv-brown-dark)!important;color:#fffaf3!important}
-.order-bar-label,.order-bar-info strong,.order-bar-total{color:#fffaf3!important}
+.grid{width:min(1400px,calc(100% - 40px))!important;margin:0 auto!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:42px 30px!important;justify-items:center!important}
+.grid .card{width:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important}
+.grid .card .lntdv-photo-stage{width:min(100%,300px)!important;max-width:300px!important;height:auto!important;aspect-ratio:auto!important;margin:0 auto!important;display:flex!important;justify-content:center!important;align-items:center!important}
+.grid .card .lntdv-photo-stage>img{display:block!important;width:100%!important;height:auto!important;max-width:100%!important;max-height:420px!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important}
+.grid .card .meta{width:100%!important;max-width:300px!important;margin:0 auto!important;align-items:center!important;text-align:center!important}
+.grid .card .print-choice,.grid .card .format-select{width:210px!important;max-width:210px!important}
+.grid .card .format-select{height:38px!important;min-height:38px!important;max-height:38px!important;border:1px solid var(--lntdv-brown)!important;border-radius:8px!important;background:var(--lntdv-cream)!important;color:var(--lntdv-brown-dark)!important;text-align:center!important;text-align-last:center!important}
+.grid .card .meta>strong{display:block!important;width:100%!important;text-align:center!important;color:var(--lntdv-brown-dark)!important;font:800 15px/1.2 Arial,sans-serif!important;letter-spacing:1.3px!important;margin:4px auto 0!important}
+.grid .card .meta>span,.grid .card .meta>small{display:block!important;width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+@media(min-width:901px) and (max-width:1200px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:38px 26px!important}.grid .card .lntdv-photo-stage,.grid .card .meta{max-width:280px!important}}
+@media(min-width:1201px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:700px){.grid{width:100%!important;max-width:none!important;grid-template-columns:1fr!important;gap:34px!important;padding:0 14px!important;box-sizing:border-box!important}.grid .card{width:100%!important;max-width:none!important}.grid .card .lntdv-photo-stage{width:min(88vw,360px)!important;max-width:360px!important;margin:0 auto!important}.grid .card .lntdv-photo-stage>img{width:100%!important;max-width:100%!important;max-height:520px!important;margin:0 auto!important}.grid .card .meta{width:100%!important;max-width:360px!important;margin:0 auto!important}.grid .card .print-choice,.grid .card .format-select{width:min(210px,70vw)!important;max-width:210px!important}.grid .card .meta>strong{font-size:14px!important;text-align:center!important}}
+.order-bar{background:var(--lntdv-brown)!important;border-top:2px solid var(--lntdv-brown-dark)!important;color:#fffaf3!important}.order-bar-label,.order-bar-info strong,.order-bar-total{color:#fffaf3!important}
 .order-button,#catalogOrderEndButton,#trackingButton,.checkout-submit{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-color:var(--lntdv-brown)!important}
 .order-button:hover,#catalogOrderEndButton:hover,#trackingButton:hover,.checkout-submit:hover{background:var(--lntdv-brown-dark)!important}
 #catalogOrderEnd .catalog-order-end-inner{border-color:var(--lntdv-brown)!important;color:var(--lntdv-brown)!important;background:var(--lntdv-cream)!important}
