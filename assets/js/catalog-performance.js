@@ -15,7 +15,7 @@
     img.style.removeProperty("transform");
     img.style.removeProperty("rotate");
     img.style.setProperty("image-orientation","from-image","important");
-    img.fetchPriority = index === 0 ? "high" : "auto";
+    img.fetchPriority = "high";
     if(!img.getAttribute("width") || !img.getAttribute("height")){
       // Do not invent width/height values; use the source image dimensions.
     }
