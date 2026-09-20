@@ -24,15 +24,16 @@
   }
 
   function enforceSingleCatalog(){
-    const seen=new Set();
+    // The published catalog is already authoritative and contains exactly 25 cards.
+    // Never remove cards at runtime: a transient parsing/DOM issue must not blank the gallery.
     const all=Array.from(document.querySelectorAll('.grid .card'));
+    if(all.length !== 25){
+      console.warn('LNTDV: catalog cards detected:', all.length, 'expected 25.');
+    }
     all.forEach(function(card){
-      const code=card.querySelector('.meta strong')?.textContent.trim() || card.querySelector('img')?.alt || '';
-      if(!/^LNTDV-\d{3}$/.test(code) || seen.has(code) || seen.size>=25){
-        card.remove();
-        return;
-      }
-      seen.add(code);
+      card.style.setProperty('display','block','important');
+      card.style.setProperty('visibility','visible','important');
+      card.style.setProperty('opacity','1','important');
     });
   }
 
