@@ -597,8 +597,76 @@ main .grid,.grid{display:grid!important;visibility:visible!important;opacity:1!i
 }
 
 
-/* LNTDV — MENU VISIBILE DEFINITIVO — 2026-09-20 */
-#infoMenuButton.info-menu-button{position:fixed!important;top:18px!important;right:18px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;color:#f4eadf!important;outline:none!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483000!important}
-#infoMenuButton.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#f4eadf!important;box-shadow:none!important;opacity:1!important;visibility:visible!important;transform:none!important}
-#infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}#infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}#infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
-@media(max-width:700px){#infoMenuButton.info-menu-button{top:12px!important;right:14px!important;left:auto!important;width:30px!important;height:28px!important}#infoMenuButton.info-menu-button span{width:23px!important;min-width:23px!important}}
+/* LNTDV — MENU SECONDARIO DEFINITIVO — 2026-09-20
+   Tre linee soltanto: nessun cerchio, nessuna cornice.
+   Unica regola finale per desktop e mobile.
+*/
+#infoMenuButton.info-menu-button{
+  position:fixed!important;
+  top:18px!important;
+  right:18px!important;
+  left:auto!important;
+  bottom:auto!important;
+  width:34px!important;
+  height:30px!important;
+  min-width:34px!important;
+  min-height:30px!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  color:#f4eadf!important;
+  outline:none!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:2147483000!important;
+}
+#infoMenuButton.info-menu-button span{
+  display:block!important;
+  width:24px!important;
+  height:2px!important;
+  min-width:24px!important;
+  min-height:2px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#f4eadf!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+}
+#infoMenuButton.info-menu-button.open span:nth-child(1){
+  transform:translateY(7px) rotate(45deg)!important;
+}
+#infoMenuButton.info-menu-button.open span:nth-child(2){
+  opacity:0!important;
+}
+#infoMenuButton.info-menu-button.open span:nth-child(3){
+  transform:translateY(-7px) rotate(-45deg)!important;
+}
+@media(max-width:700px){
+  #infoMenuButton.info-menu-button{
+    top:12px!important;
+    right:14px!important;
+    left:auto!important;
+    width:30px!important;
+    height:28px!important;
+    min-width:30px!important;
+  }
+  #infoMenuButton.info-menu-button span{
+    width:23px!important;
+    min-width:23px!important;
+  }
+}
