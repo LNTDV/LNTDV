@@ -50,7 +50,7 @@
     const normal=list.reduce((n,x)=>n+x.price*x.quantity,0);
     const promo=null;
     const subtotal=normal;
-    const shipping=deliveryFee();
+    const shipping=deliveryFee(list);
     return {count,normal,subtotal,promo,shipping,total:subtotal+shipping};
   }
 
@@ -206,8 +206,10 @@
       'Ritiro';
   }
 
-  function deliveryFee(){
-    return deliveryValue()==='Spedizione' ? SHIPPING : 0;
+  function deliveryFee(list){
+    if(deliveryValue()!=='Spedizione') return 0;
+    const subtotal=(list||[]).reduce((n,x)=>n+(Number(x.price)||0)*(Number(x.quantity)||1),0);
+    return subtotal>=150 ? 0 : SHIPPING;
   }
 
   function postPayload(payload){
