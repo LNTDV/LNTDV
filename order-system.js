@@ -439,12 +439,13 @@
     if(e.key==='Escape') closePanel();
   });
 
-  function showMailChooser(id,list,total,trackingToken){
+  function showMailChooser(id,list,total,trackingToken,customer={}){
     const to='info.lanostraterradavicino@gmail.com';
     const subject='Richiesta ordine '+id+' — La Nostra Terra da Vicino';
     const lines=list.map((x,i)=>(String(i+1).padStart(2,'0')+' - '+x.code+' | '+(x.orientation||'')+' | '+x.format+' | '+money(x.price*x.quantity))).join('\n');
     const tokenText=trackingToken ? '\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: '+id+'\nTOKEN: '+trackingToken+'\nLINK TRACCIAMENTO: '+('https://lntdv.it/?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken)) : '';
-    const body='BUONGIORNO,\n\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\n\nRIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE: '+money(total)+tokenText+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
+    const customerLines='DATI CLIENTE\nNOME: '+(customer.name||'')+'\nEMAIL: '+(customer.email||'')+'\nTELEFONO: '+(customer.phone||'')+'\nINDIRIZZO: '+(customer.street||'')+' — '+(customer.zip||'')+' '+(customer.city||'')+'\nNOTE: '+(customer.note||'')+'\n\n';
+    const body='BUONGIORNO,\n\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\n\n'+customerLines+'RIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE: '+money(total)+tokenText+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
     const gmail='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const mailto='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const isIOS=!!window.LNTDVPlatform?.ios || /iPhone|iPad|iPod/i.test(navigator.userAgent||'');
@@ -508,7 +509,7 @@
       if(!verified || !verified.received) throw new Error('Registrazione ordine non confermata.');
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
-      showMailChooser(id,list,t.total,trackingToken);
+      showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
       resetSelection(false);
       if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine confermato.</strong><br>ID ordine: <strong>'+esc(id)+'</strong><br><br>La richiesta è stata registrata. Scegli Gmail o Apple Mail.';
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
