@@ -556,22 +556,35 @@
     if($('completePayment')) $('completePayment').disabled=true;
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
     try{
-      // Invio il POST senza attendere la risposta dell'iframe: il popup email
-      // deve comparire immediatamente anche su Safari/iPhone e Android WebView.
-      // Il browser può ricevere il POST mentre il cliente sceglie Gmail o Mail.
-      postPayload(payload).catch(err=>console.warn('LNTDV: POST ordine',err));
-      // La verifica dell'ordine resta in background e non può più bloccare la UI.
-      confirmSubmittedOrder(id,trackingToken,email).then(()=>{
-        rememberTracking(id,trackingToken);
-      }).catch(err=>{
-        console.warn('LNTDV: verifica ordine differita non riuscita',err);
-        rememberTracking(id,trackingToken);
-      });
+      // Prima registriamo realmente l'ordine su Google Apps Script.
+      // Il popup Gmail/Apple Mail e il messaggio "Ordine ricevuto" vengono
+      // mostrati SOLO dopo la verifica JSONP dell'ID, token ed email nel foglio.
+      // Questo evita falsi positivi se il POST non arriva a Google Fogli.
+      try{
+        await postPayload(payload);
+      }catch(err){
+        throw new Error('Impossibile inviare la richiesta al sistema ordini.');
+      }
+
+      let confirmed;
+      try{
+        // Il POST tramite iframe può richiedere qualche istante prima che
+        // Apps Script renda disponibile la nuova riga alla richiesta JSONP.
+        await new Promise(resolve=>setTimeout(resolve,900));
+        confirmed=await confirmSubmittedOrder(id,trackingToken,email);
+      }catch(err){
+        throw new Error('Ordine non confermato da Google Fogli: '+(err?.message||'verifica non riuscita'));
+      }
+
+      if(!confirmed || !confirmed.received){
+        throw new Error('Google Fogli non ha confermato la registrazione dell’ordine.');
+      }
+
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
       showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
       resetSelection(false);
-      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto.</strong><br><br>La richiesta è stata registrata. Dopo la verifica del pagamento tramite bonifico bancario riceverai il tuo ID ordine e il token personale per la tracciabilità.';
+      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto e registrato.</strong><br><br>Google Fogli ha confermato la registrazione. Dopo la verifica del pagamento tramite bonifico bancario riceverai l’ID ordine e il token personale per la tracciabilità.';
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
       if($('orderBar')) $('orderBar').classList.remove('show','active');
       const mailButton=$('orderMailSummary');
