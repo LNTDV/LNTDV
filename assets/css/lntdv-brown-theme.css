@@ -126,3 +126,15 @@ header .legend span{
   header .legend{margin-top:10px!important}
   #infoMenuButton.info-menu-button{top:6px!important;right:10px!important}
 }
+
+/* LNTDV final responsive/accessibility cleanup 2026-09-21 */
+html{scroll-behavior:smooth}
+button,a,select,input{touch-action:manipulation}
+:focus-visible{outline:3px solid #8a674f!important;outline-offset:3px!important}
+@media(min-width:901px){
+ .grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:26px!important;padding:0 26px!important;box-sizing:border-box!important}
+ .grid .card{width:100%!important;padding-bottom:22px!important}
+ .grid .card .lntdv-photo-stage{width:100%!important;aspect-ratio:4/3!important;max-width:none!important}
+ .grid .card[data-orientation="vertical"] .lntdv-photo-stage{max-width:none!important;aspect-ratio:4/3!important}
+}
+@media(max-width:900px){.grid .card .lntdv-photo-stage{width:100%!important}.grid .card .meta{width:100%!important}}
