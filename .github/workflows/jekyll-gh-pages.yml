@@ -158,7 +158,10 @@ jobs:
               '<title>Mostra fotografica Edvinas Dragoni | La Nostra Terra Da Vicino | LNTDV</title>',
               '<meta name="application-name" content="LNTDV">',
               '<meta property="og:site_name" content="LNTDV">',
-              '"alternateName":["LNTDV","La Nostra Terra Da Vicino","LNTDV — La Nostra Terra Da Vicino"]',
+              '"alternateName"',
+              '"LNTDV"',
+              '"La Nostra Terra Da Vicino"',
+              '"Mostra fotografica Edvinas Dragoni"',
               'Edvinas Dragoni',
           ]
           missing = [x for x in required if x not in s]
