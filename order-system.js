@@ -514,11 +514,11 @@
     if($('completePayment')) $('completePayment').disabled=true;
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
     try{
-      await postPayload(payload);
-      // L'invio al sistema ordini è riuscito. Non blocchiamo il popup email
-      // sulla seconda verifica JSONP: Safari/iPhone può bloccare o ritardare
-      // quel controllo anche quando la registrazione POST è già avvenuta.
-      // La verifica resta utile ma viene eseguita in background.
+      // Invio il POST senza attendere la risposta dell'iframe: il popup email
+      // deve comparire immediatamente anche su Safari/iPhone e Android WebView.
+      // Il browser può ricevere il POST mentre il cliente sceglie Gmail o Mail.
+      postPayload(payload).catch(err=>console.warn('LNTDV: POST ordine',err));
+      // La verifica dell'ordine resta in background e non può più bloccare la UI.
       confirmSubmittedOrder(id,trackingToken,email).then(()=>{
         rememberTracking(id,trackingToken);
       }).catch(err=>{
