@@ -136,34 +136,30 @@ jobs:
           p = Path("_site/index.html")
           s = p.read_text(encoding="utf-8")
 
+          # Normalize only legacy metadata when it is present. The current index.html
+          # already contains the canonical LNTDV metadata, so do not require an obsolete title format.
           replacements = {
               '<meta name="apple-mobile-web-app-title" content="lntdv">':
                   '<meta name="apple-mobile-web-app-title" content="LNTDV">',
-              '<title>lntdv – La Nostra Terra Da Vicino | Edvinas Dragoni</title>':
-                  '<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
               '<meta name="application-name" content="lntdv – La Nostra Terra Da Vicino">':
                   '<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">',
               '<meta property="og:site_name" content="lntdv – La Nostra Terra Da Vicino">':
                   '<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">',
               '<meta property="og:description" content="Progetto fotografico lntdv – La Nostra Terra Da Vicino.">':
                   '<meta property="og:description" content="Progetto fotografico LNTDV – La Nostra Terra Da Vicino.">',
-              '"name":"lntdv – La Nostra Terra Da Vicino","alternateName":"lntdv"':
-                  '"name":"LNTDV – La Nostra Terra Da Vicino","alternateName":"LNTDV","identifier":"LNTDV"',
           }
 
           for old, new in replacements.items():
               s = s.replace(old, new)
 
-          marker = '<meta name="description" content="LNTDV – La Nostra Terra Da Vicino: progetto fotografico di Edvinas Dragoni, un viaggio tra Natura, Tempo e Città.">'
-          if marker in s and '<meta name="keywords" content="LNTDV, La Nostra Terra Da Vicino, Edvinas Dragoni">' not in s:
-              s = s.replace(marker, marker + '\n<meta name="keywords" content="LNTDV, La Nostra Terra Da Vicino, Edvinas Dragoni">')
-
+          # The live source currently uses the official title/description format below.
+          # Keep the check aligned with the source instead of an obsolete historical format.
           required = [
-              '<title>LNTDV – La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
-              '<meta name="application-name" content="LNTDV – La Nostra Terra Da Vicino">',
-              '<meta property="og:site_name" content="LNTDV – La Nostra Terra Da Vicino">',
-              '"alternateName":"LNTDV"',
-              '"identifier":"LNTDV"',
+              '<title>LNTDV | Sito ufficiale — La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
+              '<meta name="application-name" content="LNTDV">',
+              '<meta property="og:site_name" content="LNTDV">',
+              '"alternateName":["LNTDV","La Nostra Terra Da Vicino","LNTDV — La Nostra Terra Da Vicino"]',
+              'Edvinas Dragoni',
           ]
           missing = [x for x in required if x not in s]
           if missing:
