@@ -457,6 +457,7 @@
     const customerLines='DATI CLIENTE\nNOME: '+(customer.name||'')+'\nEMAIL: '+(customer.email||'')+'\nTELEFONO: '+(customer.phone||'')+'\nINDIRIZZO: '+(customer.street||'')+' — '+(customer.zip||'')+' '+(customer.city||'')+'\nNOTE: '+(customer.note||'')+'\n\n';
     const body='BUONGIORNO,\n\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\n\n'+customerLines+'RIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE: '+money(total)+tokenText+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
     const gmailApp='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const gmailAndroidIntent='intent://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)+'#Intent;scheme=googlegmail;package=com.google.android.gm;end';
     const mailto='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const isIOS=!!window.LNTDVPlatform?.ios || /iPhone|iPad|iPod/i.test(navigator.userAgent||'');
     const isAndroid=!!window.LNTDVPlatform?.android || /Android/i.test(navigator.userAgent||'');
@@ -483,16 +484,24 @@
     const mailBtn=el.querySelector('#lntdvAppleMailBtn');
     if(gmailBtn){
       gmailBtn.addEventListener('click',function(){
-        // Apre esclusivamente l'app Gmail. Nessun fallback verso siti web.
-        window.location.href=gmailApp;
-        setTimeout(()=>el.remove(),900);
+        // Mobile: apre esclusivamente l'app Gmail. Nessun sito e nessun fallback web.
+        // Android usa Intent esplicito per Gmail; iOS usa lo scheme ufficiale dell'app.
+        // Desktop usa il client email predefinito tramite mailto.
+        if(isAndroid){
+          window.location.href=gmailAndroidIntent;
+        }else if(isIOS){
+          window.location.href=gmailApp;
+        }else{
+          window.location.href=mailto;
+        }
+        setTimeout(()=>el.remove(),1200);
       });
     }
     if(mailBtn){
       mailBtn.addEventListener('click',function(){
-        // mailto apre l'app/client email predefinito del dispositivo.
+        // Apre esclusivamente il client/app email predefinito tramite mailto.
         window.location.href=mailto;
-        setTimeout(()=>el.remove(),900);
+        setTimeout(()=>el.remove(),1200);
       });
     }
   }
