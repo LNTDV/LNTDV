@@ -1,0 +1,61 @@
+name: LNTDV automatic SEO indexing support
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  seo-health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate robots and sitemap
+        run: |
+          test -s robots.txt
+          grep -Fq "Sitemap: https://lntdv.it/sitemap.xml" robots.txt
+          test -s sitemap.xml
+          grep -Fq "https://lntdv.it/" sitemap.xml
+          grep -Fq "https://lntdv.it/lntdv.html" sitemap.xml
+          grep -Fq "https://lntdv.it/la-nostra-terra-da-vicino.html" sitemap.xml
+          grep -Fq "https://lntdv.it/mostra-fotografica-edvinas-dragoni.html" sitemap.xml
+
+      - name: Validate sitemap XML
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          ET.parse("sitemap.xml")
+          print("SITEMAP XML OK")
+          PY
+
+      - name: Check public URLs for Googlebot accessibility
+        run: |
+          set -e
+          for url in             "https://lntdv.it/"             "https://lntdv.it/robots.txt"             "https://lntdv.it/sitemap.xml"             "https://lntdv.it/lntdv.html"             "https://lntdv.it/la-nostra-terra-da-vicino.html"             "https://lntdv.it/mostra-fotografica-edvinas-dragoni.html"; do
+            echo "Checking $url"
+            curl --fail --location --silent --show-error --max-time 30               -A "Googlebot" -o /dev/null -w "%{http_code} %{url_effective}\n" "$url"
+          done
+
+      - name: Verify the three search identities
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          for identity in [
+              "Mostra fotografica Edvinas Dragoni",
+              "La Nostra Terra Da Vicino",
+              "LNTDV",
+          ]:
+              assert identity in html, f"Missing SEO identity: {identity}"
+          print("SEO IDENTITIES OK")
+          PY
+
+      - name: Report
+        run: echo "LNTDV automatic SEO/indexing support check completed successfully."
