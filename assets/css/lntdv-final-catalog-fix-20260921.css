@@ -226,3 +226,96 @@ main{
   .grid .card,.grid .card .meta{max-width:calc(100vw - 24px)!important}
   .grid .card .lntdv-photo-stage{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important}
 }
+
+
+/* LNTDV FINAL CORRECTION — 2026-09-21 08:08 */
+.lntdv-home-title-bar .title-bar-full{
+  color:#ead6c2!important;
+  font-weight:800!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+.lntdv-home-title-bar{
+  height:32px!important;
+  min-height:32px!important;
+  background:#5a3b2b!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button{
+  width:30px!important;height:32px!important;min-height:32px!important;right:4px!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button span{
+  background:#ead6c2!important;width:20px!important;height:2px!important;
+}
+
+/* Same visual photo stage for vertical and horizontal images.
+   The original image is never cropped or stretched. */
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:360px!important;
+  aspect-ratio:4/3!important;
+  height:auto!important;
+  overflow:hidden!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#eee2d5!important;
+  border-radius:8px!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  width:100%!important;height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  rotate:0deg!important;
+}
+.grid .card .meta{
+  position:static!important;
+  width:100%!important;
+  max-width:360px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  gap:4px!important;
+  padding:10px 8px 0!important;
+}
+.grid .card .meta strong,
+.grid .card .meta .photo-name,
+.grid .card .meta small,
+.grid .card .meta .photo-format-label{
+  position:static!important;
+  width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+}
+.grid .card .meta .print-choice{
+  width:260px!important;max-width:260px!important;margin:9px auto 0!important;
+  align-self:center!important;
+}
+.grid .card .meta .format-select,
+.grid .card .meta .print-choice select{
+  width:260px!important;max-width:260px!important;
+  text-align:center!important;text-align-last:center!important;
+}
+@media(max-width:700px){
+  .lntdv-home-title-bar .title-bar-full{font-size:9px!important;line-height:32px!important}
+  .grid .card,.grid .card .meta{max-width:calc(100vw - 24px)!important}
+  .grid .card .lntdv-photo-stage{
+    width:100%!important;
+    max-width:calc(100vw - 24px)!important;
+    aspect-ratio:4/3!important;
+  }
+  .grid .card .meta{max-width:calc(100vw - 24px)!important}
+  .grid .card .meta .print-choice,
+  .grid .card .meta .format-select,
+  .grid .card .meta .print-choice select{
+    width:min(260px,100%)!important;max-width:260px!important;
+  }
+}
+
+/* Keep the title and project identity readable on small screens. */
+@media(max-width:380px){
+  .lntdv-home-title-bar .title-bar-full{font-size:8px!important}
+  header .lntdv-project-heading{font-size:23px!important}
+}
