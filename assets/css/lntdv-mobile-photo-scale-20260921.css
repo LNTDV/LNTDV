@@ -1,0 +1,139 @@
+/* LNTDV — MOBILE PHOTO SCALE FINAL — 2026-09-21
+   Smartphone: every photograph uses the available screen width.
+   Horizontal and vertical images keep their native proportions.
+   Metadata stays centered directly below each photograph.
+*/
+@media (max-width:700px){
+  main{
+    width:100%!important;
+    max-width:none!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+
+  .grid{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:30px!important;
+    justify-items:center!important;
+  }
+
+  .grid .card{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0 0 20px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    overflow:visible!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    aspect-ratio:auto!important;
+    margin:0!important;
+    padding:0!important;
+    display:block!important;
+    overflow:hidden!important;
+    background:#eee2d5!important;
+    border-radius:10px!important;
+  }
+
+  .grid .card[data-orientation="horizontal"] .lntdv-photo-stage{
+    width:100%!important;
+    max-width:none!important;
+    aspect-ratio:3/2!important;
+  }
+
+  .grid .card[data-orientation="vertical"] .lntdv-photo-stage{
+    width:100%!important;
+    max-width:none!important;
+    aspect-ratio:2/3!important;
+  }
+
+  .grid .card .lntdv-photo-stage>img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+    border:0!important;
+    border-radius:10px!important;
+  }
+
+  .grid .card .meta{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:12px 4px 0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    text-align:center!important;
+    gap:4px!important;
+  }
+
+  .grid .card .meta>strong,
+  .grid .card .meta>.photo-name,
+  .grid .card .meta>small,
+  .grid .card .meta .photo-format-label{
+    width:100%!important;
+    max-width:100%!important;
+    text-align:center!important;
+    margin:0!important;
+  }
+
+  .grid .card .meta>strong{
+    font-size:16px!important;
+    line-height:1.25!important;
+  }
+
+  .grid .card .meta>.photo-name{
+    font-size:12px!important;
+    line-height:1.35!important;
+  }
+
+  .grid .card .meta .photo-format-label,
+  .grid .card .meta:not(:has(.photo-format-label))>small{
+    font-size:11px!important;
+    line-height:1.35!important;
+  }
+
+  .grid .card .meta .print-choice{
+    width:min(320px,100%)!important;
+    max-width:320px!important;
+    margin:10px auto 0!important;
+    align-self:center!important;
+  }
+
+  .grid .card .meta .format-select,
+  .grid .card .meta .print-choice select{
+    width:100%!important;
+    max-width:320px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    text-align:center!important;
+    text-align-last:center!important;
+    font-size:13px!important;
+  }
+}
+
+@media(max-width:380px){
+  main{padding-left:8px!important;padding-right:8px!important}
+  .grid .card .meta{padding-left:2px!important;padding-right:2px!important}
+}
