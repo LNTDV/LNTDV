@@ -1,31 +1,151 @@
-/* LNTDV — DEFINITIVE CATALOG FIX — 2026-09-21
-   Unica regola finale per il catalogo:
-   - foto centrata in un formato quadrato uniforme
-   - nessuna deformazione
-   - smartphone: una foto per riga
-   - desktop: 4 foto per riga, tablet: 3
-   - numero/nome/orientamento/formato centrati sotto la foto
-   - selezione iniziale sempre a 0
+/* LNTDV — AUTHORITATIVE CATALOG STRUCTURE — 2026-09-21
+   One layout system for the 25-photo catalog.
+   Presentation only: selection, cart, checkout, tracking and order logic stay in JS.
 */
+
+/* ===== GLOBAL ===== */
 html,body{
   width:100%!important;
   max-width:100%!important;
   margin:0!important;
   padding:0!important;
   overflow-x:hidden!important;
+  background:#fbf6ef!important;
 }
+*,*::before,*::after{box-sizing:border-box!important}
 main{
   width:100%!important;
   max-width:1500px!important;
   margin:0 auto!important;
-  padding:22px 14px 70px!important;
-  box-sizing:border-box!important;
+  padding:20px 18px 70px!important;
+  background:#fbf6ef!important;
 }
-#selectionSummary{
+
+/* ===== COMPACT PROJECT BAR ===== */
+.lntdv-home-title-bar{
+  position:relative!important;
   width:100%!important;
-  margin:0 auto 24px!important;
+  height:34px!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:0 44px 0 10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#5a3b2b!important;
+  color:#fffaf3!important;
+  border:0!important;
+}
+.lntdv-home-title-bar .title-bar-full{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  color:#fffaf3!important;
+  font:700 10px/34px Arial,sans-serif!important;
+  letter-spacing:.65px!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button{
+  position:absolute!important;
+  top:0!important;
+  right:5px!important;
+  left:auto!important;
+  width:32px!important;
+  height:34px!important;
+  min-width:32px!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  z-index:99999!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button span{
+  display:block!important;
+  width:21px!important;
+  height:2px!important;
+  min-width:21px!important;
+  min-height:2px!important;
+  margin:0!important;
+  padding:0!important;
+  background:#fffaf3!important;
+  border:0!important;
+  border-radius:0!important;
+}
+
+/* ===== INTRO ===== */
+header{
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:14px 12px 13px!important;
+  background:#fbf6ef!important;
+  color:#5a3b2b!important;
   text-align:center!important;
 }
+header .brand,header h1,header .lntdv-project-heading,
+header .lntdv-author-heading,header .lntdv-heading-subtitle{
+  display:none!important;
+}
+header .intro{
+  margin:0 auto 8px!important;
+  color:#6b4938!important;
+  font:600 10px/1.35 Arial,sans-serif!important;
+  text-align:center!important;
+}
+header .legend{
+  width:100%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-wrap:wrap!important;
+  gap:5px!important;
+}
+header .legend span{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:4px 8px!important;
+  border:1px solid #cdb8a5!important;
+  border-radius:999px!important;
+  background:#fffaf4!important;
+  color:#5a3b2b!important;
+  font:600 9px/1.2 Arial,sans-serif!important;
+}
+
+/* ===== SELECTION INSTRUCTION ===== */
+#selectionSummary{
+  width:100%!important;
+  margin:0 auto 18px!important;
+  padding:0!important;
+  text-align:center!important;
+}
+#selectionSummary>span{
+  display:inline-block!important;
+  max-width:100%!important;
+  padding:8px 15px!important;
+  border:1px solid #cdb8a5!important;
+  border-radius:999px!important;
+  background:#fffaf4!important;
+  color:#5a3b2b!important;
+  font:600 10px/1.2 Arial,sans-serif!important;
+}
+
+/* ===== CATALOG GRID ===== */
 .grid{
   width:100%!important;
   max-width:1400px!important;
@@ -33,50 +153,64 @@ main{
   padding:0!important;
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:42px 28px!important;
+  gap:38px 26px!important;
   align-items:start!important;
   justify-items:center!important;
   background:transparent!important;
-  box-sizing:border-box!important;
 }
+
+/* ===== ONE PHOTO CARD ===== */
 .grid .card{
+  position:relative!important;
   width:100%!important;
   max-width:320px!important;
   min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
   margin:0 auto!important;
-  padding:0 0 22px!important;
+  padding:0 0 10px!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
-  text-align:center!important;
+  justify-content:flex-start!important;
   background:transparent!important;
   border:0!important;
   border-radius:0!important;
   box-shadow:none!important;
   overflow:visible!important;
+  transform:none!important;
 }
+
+/* Never place metadata over the photograph. */
 .grid .card .lntdv-photo-stage{
+  position:relative!important;
+  order:1!important;
+  flex:0 0 auto!important;
   width:100%!important;
   max-width:320px!important;
   height:320px!important;
   min-height:320px!important;
   max-height:320px!important;
-  aspect-ratio:1/1!important;
-  margin:0 auto!important;
+  margin:0!important;
   padding:0!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   overflow:hidden!important;
-  box-sizing:border-box!important;
-  background:#fff!important;
-  border:2px solid #5a3b2b!important;
-  border-radius:0!important;
+  aspect-ratio:1/1!important;
+  background:#efe4d8!important;
+  border:0!important;
+  border-radius:10px!important;
   box-shadow:none!important;
-  line-height:0!important;
+  transform:none!important;
 }
+.grid .card .lntdv-photo-stage::before,
+.grid .card .lntdv-photo-stage::after{display:none!important;content:none!important}
 .grid .card .lntdv-photo-stage>img{
+  position:static!important;
+  inset:auto!important;
   display:block!important;
+  flex:0 0 auto!important;
   width:100%!important;
   height:100%!important;
   min-width:0!important;
@@ -87,87 +221,106 @@ main{
   padding:0!important;
   object-fit:contain!important;
   object-position:center center!important;
-  background:#fff!important;
+  background:transparent!important;
   border:0!important;
-  border-radius:0!important;
+  border-radius:10px!important;
   box-shadow:none!important;
   transform:none!important;
   rotate:0deg!important;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
 }
+
+/* ===== PHOTO INFORMATION: ALWAYS BELOW PHOTO ===== */
 .grid .card .meta{
+  position:static!important;
+  order:2!important;
+  flex:0 0 auto!important;
   width:100%!important;
   max-width:320px!important;
-  margin:0 auto!important;
-  padding:10px 0 0!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:10px 4px 0!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
   justify-content:flex-start!important;
+  gap:3px!important;
   text-align:center!important;
-  box-sizing:border-box!important;
   background:transparent!important;
   border:0!important;
+  border-radius:0!important;
   box-shadow:none!important;
+  overflow:visible!important;
+}
+.grid .card .meta>strong,
+.grid .card .meta>.photo-name,
+.grid .card .meta>small{
+  position:static!important;
+  float:none!important;
+  clear:both!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  text-align:center!important;
 }
 .grid .card .meta>strong{
   order:1!important;
-  display:block!important;
-  width:100%!important;
-  margin:0!important;
-  padding:0!important;
   color:#5a3b2b!important;
-  background:transparent!important;
   font:800 15px/1.25 Arial,sans-serif!important;
-  letter-spacing:1.4px!important;
-  text-align:center!important;
+  letter-spacing:1.1px!important;
 }
-.grid .card .meta>.photo-name,
-.grid .card .meta>span{
+.grid .card .meta>.photo-name{
   order:2!important;
-  display:block!important;
-  width:100%!important;
-  margin:3px 0 0!important;
-  padding:0!important;
   color:#6b4938!important;
-  background:transparent!important;
-  font:600 12px/1.35 Arial,sans-serif!important;
-  text-align:center!important;
+  font:600 12px/1.3 Arial,sans-serif!important;
 }
 .grid .card .meta>small{
   order:3!important;
-  display:block!important;
-  width:100%!important;
-  margin:2px 0 0!important;
-  padding:0!important;
   color:#705748!important;
-  background:transparent!important;
   font:500 11px/1.35 Arial,sans-serif!important;
-  text-align:center!important;
 }
-.grid .card .meta .photo-format-label{
-  order:3!important;
-  display:block!important;
-  width:100%!important;
-  margin:2px 0 0!important;
-  padding:0!important;
-  color:#705748!important;
-  background:transparent!important;
-  font:500 11px/1.35 Arial,sans-serif!important;
-  text-align:center!important;
-}
-.grid .card .meta .print-choice{
+
+/* If JS adds a format/ration line, it also remains in the metadata flow. */
+.grid .card .meta .photo-format-label,
+.grid .card .meta .photo-specs,
+.grid .card .meta .photo-path{
+  position:static!important;
   order:4!important;
-  width:240px!important;
-  max-width:240px!important;
-  margin:10px auto 0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  color:#705748!important;
+  background:transparent!important;
+  text-align:center!important;
+}
+
+/* ===== FORMAT SELECTOR: LAST ELEMENT, CENTERED ===== */
+.grid .card .meta .print-choice{
+  position:static!important;
+  order:5!important;
+  width:100%!important;
+  max-width:280px!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:9px auto 0!important;
   padding:0!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
-  text-align:center!important;
+  justify-content:flex-start!important;
   background:transparent!important;
   border:0!important;
+  border-radius:0!important;
   box-shadow:none!important;
+  overflow:visible!important;
 }
 .grid .card .meta .print-choice label{
   position:absolute!important;
@@ -182,18 +335,18 @@ main{
 }
 .grid .card .meta .format-select,
 .grid .card .meta .print-choice select{
+  position:static!important;
   display:block!important;
-  width:240px!important;
-  max-width:240px!important;
+  width:100%!important;
+  max-width:280px!important;
   height:42px!important;
   min-height:42px!important;
   max-height:42px!important;
   margin:0 auto!important;
-  padding:0 30px 0 10px!important;
-  box-sizing:border-box!important;
+  padding:0 32px 0 10px!important;
   border:1px solid #b99a7d!important;
-  border-radius:9px!important;
-  background:#fbf6ef!important;
+  border-radius:10px!important;
+  background:#fffaf4!important;
   color:#5a3b2b!important;
   font:600 12px/42px Arial,sans-serif!important;
   text-align:center!important;
@@ -201,80 +354,132 @@ main{
   appearance:auto!important;
   -webkit-appearance:auto!important;
   outline:none!important;
+  box-shadow:none!important;
 }
+
+/* Selection changes only state; never card geometry. */
 .grid .card.selected,
 .grid .card:hover,
-.grid .card:focus{
+.grid .card:focus,
+.grid .card:focus-within{
   border:0!important;
   outline:none!important;
   box-shadow:none!important;
   transform:none!important;
 }
-.grid .card.selected .lntdv-photo-stage{
-  border-color:#5a3b2b!important;
+.grid .card.selected .lntdv-photo-stage,
+.grid .card:hover .lntdv-photo-stage,
+.grid .card:focus .lntdv-photo-stage{
+  border:0!important;
+  box-shadow:none!important;
+  transform:none!important;
 }
-@media(min-width:901px) and (max-width:1200px){
+
+/* ===== TABLET ===== */
+@media (min-width:701px) and (max-width:1100px){
+  main{padding-left:22px!important;padding-right:22px!important}
   .grid{
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:36px 24px!important;
+    gap:34px 22px!important;
   }
   .grid .card,
-  .grid .card .meta{
-    max-width:300px!important;
-  }
+  .grid .card .lntdv-photo-stage,
+  .grid .card .meta{max-width:300px!important}
   .grid .card .lntdv-photo-stage{
-    width:300px!important;
-    max-width:300px!important;
-    height:300px!important;
-    min-height:300px!important;
-    max-height:300px!important;
+    width:300px!important;height:300px!important;
+    min-height:300px!important;max-height:300px!important;
   }
 }
-@media(max-width:900px){
-  main{
-    padding:18px 12px 60px!important;
+
+/* ===== SMARTPHONE ===== */
+@media (max-width:700px){
+  main{padding:16px 12px 58px!important}
+  .lntdv-home-title-bar{
+    height:32px!important;min-height:32px!important;
+    padding:0 38px 0 7px!important;
   }
+  .lntdv-home-title-bar .title-bar-full{
+    font-size:8px!important;line-height:32px!important;letter-spacing:.45px!important;
+  }
+  .lntdv-home-title-bar #infoMenuButton.info-menu-button{
+    right:3px!important;width:30px!important;height:32px!important;min-height:32px!important;
+  }
+  header{padding:11px 8px 10px!important}
+  header .intro{font-size:9px!important;margin-bottom:7px!important}
+  header .legend{gap:4px!important}
+  header .legend span{font-size:8px!important;padding:4px 7px!important}
+  #selectionSummary{margin-bottom:15px!important}
+  #selectionSummary>span{font-size:9px!important;padding:7px 12px!important}
+
   .grid{
     width:100%!important;
     max-width:100%!important;
     grid-template-columns:1fr!important;
-    gap:34px!important;
+    gap:28px!important;
   }
   .grid .card{
     width:100%!important;
     max-width:360px!important;
-    margin:0 auto!important;
+    padding-bottom:0!important;
   }
   .grid .card .lntdv-photo-stage{
-    width:360px!important;
-    max-width:calc(100vw - 24px)!important;
+    width:100%!important;
+    max-width:360px!important;
     height:360px!important;
     min-height:360px!important;
     max-height:360px!important;
+    aspect-ratio:1/1!important;
+    border-radius:9px!important;
   }
+  .grid .card .lntdv-photo-stage>img{border-radius:9px!important}
   .grid .card .meta{
-    width:360px!important;
-    max-width:calc(100vw - 24px)!important;
+    width:100%!important;
+    max-width:360px!important;
+    padding:9px 3px 0!important;
+    gap:3px!important;
+  }
+  .grid .card .meta>strong{font-size:14px!important}
+  .grid .card .meta>.photo-name{font-size:11px!important}
+  .grid .card .meta>small,
+  .grid .card .meta .photo-format-label,
+  .grid .card .meta .photo-specs,
+  .grid .card .meta .photo-path{font-size:10px!important}
+  .grid .card .meta .print-choice{
+    width:min(280px,100%)!important;
+    max-width:280px!important;
+    margin-top:8px!important;
+  }
+  .grid .card .meta .format-select,
+  .grid .card .meta .print-choice select{
+    width:100%!important;
+    max-width:280px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:12px!important;
   }
 }
-@media(max-width:380px){
-  .grid .card{
-    max-width:340px!important;
-  }
+
+/* Small phones: keep one centered square without overflow. */
+@media (max-width:380px){
+  .grid .card,
+  .grid .card .meta{max-width:calc(100vw - 24px)!important}
   .grid .card .lntdv-photo-stage{
     width:calc(100vw - 24px)!important;
     height:calc(100vw - 24px)!important;
     min-height:calc(100vw - 24px)!important;
     max-height:calc(100vw - 24px)!important;
   }
-  .grid .card .meta{
-    width:calc(100vw - 24px)!important;
-    max-width:calc(100vw - 24px)!important;
-  }
-  .grid .card .meta .print-choice,
-  .grid .card .meta .format-select,
-  .grid .card .meta .print-choice select{
-    width:min(240px,calc(100vw - 70px))!important;
-    max-width:min(240px,calc(100vw - 70px))!important;
-  }
+}
+
+/* ===== ACCESSIBILITY / TOUCH ===== */
+.grid .card .format-select,
+.grid .card .print-choice select,
+#infoMenuButton{
+  -webkit-tap-highlight-color:transparent;
+}
+.grid .card .format-select:focus,
+.grid .card .print-choice select:focus{
+  outline:2px solid rgba(90,59,43,.24)!important;
+  outline-offset:2px!important;
 }
