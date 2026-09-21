@@ -240,12 +240,17 @@
       const finish=(ok,error)=>{
         if(done)return;
         done=true;
-        setTimeout(()=>{try{frame.remove();form.remove();}catch(e){}},1000);
+        setTimeout(()=>{try{frame.remove();form.remove();}catch(e){}},1500);
         ok?resolve():reject(error||new Error('timeout'));
       };
-      frame.addEventListener('load',()=>finish(true),{once:true});
+
+      // Il caricamento dell'iframe di Google Apps Script non è affidabile
+      // su Safari, Android WebView, Windows e alcuni browser desktop:
+      // il POST può essere ricevuto correttamente ma l'evento "load" può
+      // non arrivare. Non usiamo quindi il load dell'iframe per bloccare
+      // l'apertura della scelta email.
       form.submit();
-      setTimeout(()=>finish(false,new Error('Timeout nella registrazione dell’ordine')),9000);
+      setTimeout(()=>finish(true),900);
     });
   }
 
