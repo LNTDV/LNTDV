@@ -456,7 +456,8 @@
     const tokenText=trackingToken ? '\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: '+id+'\nTOKEN: '+trackingToken+'\nLINK TRACCIAMENTO: '+('https://lntdv.it/?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken)) : '';
     const customerLines='DATI CLIENTE\nNOME: '+(customer.name||'')+'\nEMAIL: '+(customer.email||'')+'\nTELEFONO: '+(customer.phone||'')+'\nINDIRIZZO: '+(customer.street||'')+' — '+(customer.zip||'')+' '+(customer.city||'')+'\nNOTE: '+(customer.note||'')+'\n\n';
     const body='BUONGIORNO,\n\nRICHIESTA ORDINE '+id+' INVIATA DAL SITO LNTDV.\n\n'+customerLines+'RIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE: '+money(total)+tokenText+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
-    const gmailApp='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);\n    const gmailWeb='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const gmailApp='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    const gmailWeb='https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const mailto='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const isIOS=!!window.LNTDVPlatform?.ios || /iPhone|iPad|iPod/i.test(navigator.userAgent||'');
     const isAndroid=!!window.LNTDVPlatform?.android || /Android/i.test(navigator.userAgent||'');
