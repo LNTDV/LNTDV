@@ -48,9 +48,7 @@
   function totals(list){
     const count=list.reduce((n,x)=>n+x.quantity,0);
     const normal=list.reduce((n,x)=>n+x.price*x.quantity,0);
-    const promoThreshold=2;
-    const promoActive=count>=promoThreshold;
-    const promo=promoActive ? Math.min(25,normal*0.10) : 0;
+    const promo=0;
     const subtotal=Math.max(0,normal-promo);
     const shipping=deliveryFee(list);
     return {count,normal,subtotal,promo,shipping,total:subtotal+shipping};
@@ -487,7 +485,7 @@
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
     if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){ render(); return; }
     const t=totals(list), id=orderId(), trackingToken=token();
-    const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:t.promo>0?'Promozione catalogo: -€'+t.promo.toFixed(2):'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
+    const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
     busy=true;
     if($('completePayment')) $('completePayment').disabled=true;
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
