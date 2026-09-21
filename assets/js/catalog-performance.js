@@ -4,9 +4,9 @@
 
   const FORMAT_HTML =
     '<option value="">Seleziona formato</option>'+
-    '<option value="Stampa fotografica">Stampa fotografica — €40</option>'+
-    '<option value="Forex">Pannello – Forex — €50</option>'+
-    '<option value="File digitale in alta risoluzione">Stampa digitale ad alta definizione — €25</option>';
+    '<option value="Stampa fotografica">50 × 70 cm — Stampa fotografica — €40</option>'+
+    '<option value="Forex">50 × 70 cm — Pannello Forex — €50</option>'+
+    '<option value="File digitale in alta risoluzione">50 × 70 cm — File digitale alta risoluzione — €25</option>';
 
   function setupImage(img,index){
     img.loading = index < 2 ? "eager" : "lazy";
@@ -64,7 +64,7 @@
         box.appendChild(select);
       }
 
-      if(select.options.length<4) select.innerHTML=FORMAT_HTML;
+      select.innerHTML=FORMAT_HTML;
       select.id=select.id || ("format-"+(index+1));
     });
   }
