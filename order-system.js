@@ -482,9 +482,25 @@
     // Windows e macOS.
     const gmailBtn=el.querySelector('#lntdvGmailBtn');
     const mailBtn=el.querySelector('#lntdvAppleMailBtn');
-    [gmailBtn,mailBtn].forEach(btn=>{
-      if(btn) btn.addEventListener('click',()=>setTimeout(()=>el.remove(),500));
-    });
+    if(gmailBtn){
+      gmailBtn.addEventListener('click',function(){
+        const started=Date.now();
+        const fallbackTimer=setTimeout(function(){
+          if(document.visibilityState==='visible' && Date.now()-started<2500){
+            window.location.href=gmailWeb;
+          }
+        },900);
+        window.location.href=gmailApp;
+        setTimeout(()=>clearTimeout(fallbackTimer),3000);
+        setTimeout(()=>el.remove(),700);
+      });
+    }
+    if(mailBtn){
+      mailBtn.addEventListener('click',function(){
+        window.location.href=mailto;
+        setTimeout(()=>el.remove(),700);
+      });
+    }
   }
 
   // Il riepilogo dell'ordine deve essere sempre mostrato PRIMA della scelta
