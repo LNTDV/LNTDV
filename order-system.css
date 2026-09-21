@@ -1482,3 +1482,83 @@ body>#orderPanel:not(.active)[aria-hidden="true"]{display:none!important;}
     padding:10px 10px 8px!important;
   }
 }
+
+
+/* LNTDV — RIEPILOGO ORDINE: compatto, marrone, singolo controllo — 2026-09-21 */
+#orderBar.order-bar,
+#orderBar.orderbar{
+  position:fixed!important;
+  left:auto!important;
+  right:max(12px,env(safe-area-inset-right))!important;
+  bottom:max(12px,env(safe-area-inset-bottom))!important;
+  width:max-content!important;
+  max-width:calc(100vw - 24px)!important;
+  min-width:0!important;
+  padding:7px 9px 7px 11px!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(255,250,243,.20)!important;
+  border-radius:999px!important;
+  background:#5a3b2b!important;
+  color:#fffaf3!important;
+  box-shadow:0 5px 16px rgba(45,27,18,.20)!important;
+  opacity:.96!important;
+}
+#orderBar .order-bar-info{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  max-width:none!important;
+  color:#fffaf3!important;
+}
+#orderBar .order-bar-label,
+#orderBar .order-bar-info strong,
+#orderBar .order-bar-total{
+  color:#fffaf3!important;
+  white-space:nowrap!important;
+}
+#orderBar .order-bar-label{
+  font-size:8px!important;
+  letter-spacing:.7px!important;
+  text-transform:uppercase!important;
+}
+#orderBar .order-bar-info strong{font-size:9px!important}
+#orderBar .order-bar-total{font-size:11px!important}
+#orderBar .order-bar-actions{display:flex!important;align-items:center!important}
+#orderBar .order-button{
+  min-height:32px!important;
+  padding:8px 10px!important;
+  border:1px solid rgba(255,250,243,.24)!important;
+  border-radius:999px!important;
+  background:#fffaf3!important;
+  color:#5a3b2b!important;
+  font-size:8px!important;
+  font-weight:800!important;
+  letter-spacing:.6px!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+}
+#orderBar #orderMailSummary{display:none!important}
+@media(max-width:560px){
+  #orderBar.order-bar,
+  #orderBar.orderbar{
+    right:max(8px,env(safe-area-inset-right))!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+    max-width:calc(100vw - 16px)!important;
+    padding:6px 7px 6px 9px!important;
+    gap:6px!important;
+    box-shadow:0 4px 13px rgba(45,27,18,.18)!important;
+  }
+  #orderBar .order-bar-label{font-size:7px!important}
+  #orderBar .order-bar-info strong{font-size:8px!important}
+  #orderBar .order-bar-total{font-size:10px!important}
+  #orderBar .order-button{min-height:29px!important;padding:7px 9px!important;font-size:7px!important}
+}
+@media(max-width:360px){
+  #orderBar .order-bar-label{display:none!important}
+}
