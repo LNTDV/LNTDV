@@ -496,34 +496,45 @@
         if(button) setTimeout(function(){button.click();},180);
       },350);
     }
-    function launchEmail(){
+    function launchMailto(){
       prepareTrackingReturn();
       let opened=false;
-      try{ opened=!!window.open(mailto,'_blank','noopener,noreferrer'); }catch(err){}
+      try{ window.location.href=mailto; opened=true; }catch(err){}
       if(!opened){
         try{
           const a=document.createElement('a');
-          a.href=mailto; a.target='_blank'; a.rel='noopener noreferrer';
-          a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
-        }catch(err){
-          try{ window.location.href=mailto; }catch(e){}
-        }
+          a.href=mailto; a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+        }catch(err){}
       }
-      el.remove();
+      setTimeout(()=>el.remove(),250);
+    }
+    function launchGmail(){
+      prepareTrackingReturn();
+      const gmailApp='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+      const gmailWeb='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+      let opened=false;
+      try{ opened=!!window.open(gmailApp,'_blank'); }catch(err){}
+      // Se l'app Gmail non è installata, apri direttamente la composizione Gmail
+      // nel browser, sempre con destinatario, oggetto e corpo già compilati.
+      setTimeout(()=>{
+        if(!opened){
+          try{ window.open(gmailWeb,'_blank','noopener,noreferrer'); }catch(err){
+            try{ window.location.href=gmailWeb; }catch(e){}
+          }
+        }
+        el.remove();
+      },450);
     }
     if(gmailBtn){
       gmailBtn.addEventListener('click',function(e){
         e.preventDefault();
-        // Gmail viene richiesto tramite mailto:; il sistema operativo/browser
-        // apre il client email configurato senza indirizzare a Store o siti web.
-        launchEmail();
+        launchGmail();
       });
     }
     if(mailBtn){
       mailBtn.addEventListener('click',function(e){
         e.preventDefault();
-        // Apple Mail / client predefinito con oggetto e corpo già compilati.
-        launchEmail();
+        launchMailto();
       });
     }
   }
