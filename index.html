@@ -46,6 +46,7 @@
 <link rel="stylesheet" href="./assets/css/photo-center-final.css?v=20260920-photo-center2">
 <link rel="stylesheet" href="./assets/css/photo-layout-final-20260920.css?v=20260920-standard1">
 <link rel="stylesheet" href="./assets/css/lntdv-brown-theme.css?v=20260920-brown1">
+<link rel="stylesheet" href="./assets/css/platform-responsive-final.css?v=20260921-platform1">
 
 <!-- LNTDV performance: only the first visible photo is preloaded; remaining gallery images load lazily. -->
 <link rel="preload" as="image" href="./images/natura-01.jpg" fetchpriority="high">
@@ -1351,5 +1352,6 @@ document.addEventListener('click',function(e){
   },450);
 });
 </script>
-<script id="lntdv-photo-format-orientation">(function(){function update(card){const img=card.querySelector('.lntdv-photo-stage img'),meta=card.querySelector('.meta');if(!img||!meta)return;const apply=()=>{const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)return;const horizontal=w>=h;card.dataset.orientation=horizontal?'horizontal':'vertical';const stage=card.querySelector('.lntdv-photo-stage');if(stage)stage.dataset.photoOrientation=horizontal?'horizontal':'vertical';img.dataset.orientation=horizontal?'orizzontale':'verticale';let label=meta.querySelector('.photo-format-label');if(!label){label=document.createElement('small');label.className='photo-format-label';meta.appendChild(label)}const ratio=(w/h).toFixed(2);label.textContent='Orientamento: '+(horizontal?'Orizzontale':'Verticale')+' · Formato: '+ratio+':1'};if(img.complete)apply();else img.addEventListener('load',apply,{once:true})}function init(){document.querySelectorAll('.grid .card').forEach(update)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script><script src="./assets/js/info-menu.js?v=20260921-final" defer></script>
+<script id="lntdv-photo-format-orientation">(function(){function update(card){const img=card.querySelector('.lntdv-photo-stage img'),meta=card.querySelector('.meta');if(!img||!meta)return;const apply=()=>{const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)return;const horizontal=w>=h;card.dataset.orientation=horizontal?'horizontal':'vertical';const stage=card.querySelector('.lntdv-photo-stage');if(stage)stage.dataset.photoOrientation=horizontal?'horizontal':'vertical';img.dataset.orientation=horizontal?'orizzontale':'verticale';let label=meta.querySelector('.photo-format-label');if(!label){label=document.createElement('small');label.className='photo-format-label';meta.appendChild(label)}const ratio=(w/h).toFixed(2);label.textContent='Orientamento: '+(horizontal?'Orizzontale':'Verticale')+' · Formato: '+ratio+':1'};if(img.complete)apply();else img.addEventListener('load',apply,{once:true})}function init(){document.querySelectorAll('.grid .card').forEach(update)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script><script src="./assets/js/platform-router.js?v=20260921-platform1" defer></script>
+<script src="./assets/js/info-menu.js?v=20260921-final" defer></script>
 </body></html>
