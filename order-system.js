@@ -460,6 +460,14 @@
     document.body.appendChild(el);
     el.querySelector('#lntdvMailClose').onclick=()=>el.remove();
     el.onclick=e=>{if(e.target===el)el.remove();};
+    // Su iPhone/iPad apre automaticamente Apple Mail con destinatario,
+    // oggetto e riepilogo già compilati. Il pannello resta visibile come
+    // alternativa per scegliere Gmail.
+    if(isIOS){
+      setTimeout(()=>{
+        try{ window.location.href=mailto; }catch(_e){}
+      },350);
+    }
   }
 
   // Il riepilogo dell'ordine deve essere sempre mostrato PRIMA della scelta
