@@ -10,6 +10,11 @@
     'Forex':50,
     'File digitale in alta risoluzione':25
   };
+  const FORMAT_LABELS={
+    'Stampa fotografica':'50 × 70 cm — Stampa fotografica',
+    'Forex':'50 × 70 cm — Pannello Forex',
+    'File digitale in alta risoluzione':'50 × 70 cm — File digitale alta risoluzione'
+  };
   const SHIPPING=10;
   const BANK_TRANSFER={accountHolder:"Giulia Principi",iban:"LU538100SATI55551718",reasonPrefix:"LNTDV"};
   let busy=false;
@@ -97,7 +102,7 @@
     if(orderList){
       orderList.innerHTML=list.length
         ? list.map((x,i)=>{
-          const formatOptions=Object.keys(PRICES).map(f=>'<option value="'+esc(f)+'" '+(x.format===f?'selected':'')+'>'+esc(f)+' — '+money(PRICES[f])+'</option>').join('');
+          const formatOptions=Object.keys(PRICES).map(f=>'<option value="'+esc(f)+'" '+(x.format===f?'selected':'')+'>'+esc(FORMAT_LABELS[f]||f)+' — '+money(PRICES[f])+'</option>').join('');
           return '<article class="checkout-photo-card" data-code="'+esc(x.code)+'">'+
             '<div class="checkout-photo-visual">'+
               (x.image?'<img src="'+esc(x.image)+'" alt="'+esc(x.code)+'" draggable="false">':'')+
@@ -106,8 +111,8 @@
             '</div>'+
             '<div class="checkout-photo-copy">'+
               '<div class="checkout-photo-title">'+esc(x.code)+'</div>'+
-              '<div class="checkout-photo-detail">'+esc(x.orientation||'')+'</div>'+
-              '<label class="checkout-format-label">FORMATO<select class="checkout-format-select" data-code="'+esc(x.code)+'" aria-label="Formato '+esc(x.code)+'">'+formatOptions+'</select></label>'+
+              '<div class="checkout-photo-detail">'+esc(x.orientation||'')+' · 50 × 70 cm</div>'+
+              '<label class="checkout-format-label">FORMATO 50 × 70 cm<select class="checkout-format-select" data-code="'+esc(x.code)+'" aria-label="Formato '+esc(x.code)+'">'+formatOptions+'</select></label>'+
               '<div class="checkout-photo-footer"><strong>'+money(x.price*x.quantity)+'</strong><span>1 fotografia</span></div>'+
             '</div>'+
           '</article>';
@@ -461,14 +466,15 @@
     document.body.appendChild(el);
     el.querySelector('#lntdvMailClose').onclick=()=>el.remove();
     el.onclick=e=>{if(e.target===el)el.remove();};
-    // Su iPhone/iPad apre automaticamente Apple Mail con destinatario,
-    // oggetto e riepilogo già compilati. Il pannello resta visibile come
-    // alternativa per scegliere Gmail.
-    if(isIOS){
-      setTimeout(()=>{
-        try{ window.location.href=mailto; }catch(_e){}
-      },350);
-    }
+    // Nessuna apertura automatica: il cliente sceglie esplicitamente
+    // Gmail oppure Apple Mail/App Mail dal popup. Questo evita blocchi
+    // di Safari e rende il comportamento coerente su iPhone, Android,
+    // Windows e macOS.
+    const gmailBtn=el.querySelector('#lntdvGmailBtn');
+    const mailBtn=el.querySelector('#lntdvAppleMailBtn');
+    [gmailBtn,mailBtn].forEach(btn=>{
+      if(btn) btn.addEventListener('click',()=>setTimeout(()=>el.remove(),500));
+    });
   }
 
   // Il riepilogo dell'ordine deve essere sempre mostrato PRIMA della scelta
