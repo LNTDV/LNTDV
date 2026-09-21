@@ -520,13 +520,13 @@
     openPanel();
   });
 
-  async function submitOrder(e){
+  function submitOrder(e){
     if(e){ e.preventDefault(); e.stopPropagation(); }
     if(busy)return;
     const list=items();
     const name=$('customerName')?.value.trim()||'';
     const email=$('customerEmail')?.value.trim()||'';
-    const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const validEmail=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
     const delivery=deliveryValue();
     const addressReady=delivery!=='Spedizione' || (!!$('customerStreet')?.value.trim() && !!$('customerZip')?.value.trim() && !!$('customerCity')?.value.trim());
     if(!list.length || list.some(x=>!x.format) || !name || !validEmail || !addressReady){ render(); return; }
@@ -534,24 +534,26 @@
     const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
     busy=true;
     if($('completePayment')) $('completePayment').disabled=true;
-    // Apriamo il chooser email immediatamente, nello stesso gesto dell'utente.
-    // Questo elimina qualsiasi dipendenza da iframe, POST, JSONP o attese di rete
-    // prima della comparsa del popup su iPhone, Android, Windows e macOS.
+
+    // Il popup viene creato nello stesso gesto del clic: nessuna rete o verifica
+    // può impedirne la comparsa su iPhone, Android, Windows o macOS.
     rememberTracking(id,trackingToken);
     write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
     showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
+
+    // La registrazione su Google Apps Script avviene in background.
+    postPayload(payload).then(function(){
+      return confirmSubmittedOrder(id,trackingToken,email);
+    }).then(function(confirmed){
+      if(confirmed && confirmed.received){
+        console.log('LNTDV: ordine confermato da Google Fogli',id);
+      }
+    }).catch(function(err){
+      console.warn('LNTDV: registrazione/verifica ordine non riuscita',err);
+    });
+
     resetSelection(false);
-
-    // Registrazione ordine in background: non può più impedire il popup.
-    try{
-      postPayload(payload).then(function(){
-        confirmSubmittedOrder(id,trackingToken,email).then(function(confirmed){
-          if(confirmed && confirmed.received) console.log('LNTDV: ordine confermato da Google Fogli',id);
-        }).catch(function(err){ console.warn('LNTDV: verifica ordine non riuscita',err); });
-      }).catch(function(err){ console.warn('LNTDV: registrazione ordine non riuscita',err); });
-    }catch(err){ console.warn('LNTDV: invio ordine non riuscito',err); }
-
-    if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Richiesta inviata.</strong><br><br>Si è aperta la scelta del sistema email per predisporre il messaggio dell’ordine.';
+    if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Richiesta ordine registrata.</strong><br><br>Usa il popup per scegliere Gmail oppure Apple Mail / Client email.';
     if($('orderPanel')){
       const panel=$('orderPanel');
       panel.classList.add('active');
@@ -562,26 +564,6 @@
       const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine registrato';
     }
     busy=false;
-    return;
-
-    try{      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto e registrato.</strong><br><br>Google Fogli ha confermato la registrazione. Dopo la verifica del pagamento tramite bonifico bancario riceverai l’ID ordine e il token personale per la tracciabilità.';
-      document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
-      if($('orderBar')) $('orderBar').classList.remove('show','active');
-      const mailButton=$('orderMailSummary');
-      if(mailButton){ mailButton.hidden=true; mailButton.disabled=true; }
-      if($('orderPanel')){
-        const panel=$('orderPanel'); panel.classList.add('active'); panel.setAttribute('aria-hidden','false'); panel.dataset.state='confirmed';
-        const submit=$('completePayment'); if(submit) submit.style.display='none';
-        const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine confermato';
-      }
-    }catch(err){
-      console.warn('LNTDV: invio ordine fallito',err);
-      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Non è stato possibile registrare l’ordine.</strong><br>Controlla la connessione e riprova.';
-      if($('completePayment')) $('completePayment').disabled=false;
-    }finally{
-      busy=false;
-      render();
-    }
   }
 
   $('completePayment')?.addEventListener('click',submitOrder);
