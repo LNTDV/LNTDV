@@ -1,0 +1,280 @@
+/* LNTDV — DEFINITIVE CATALOG FIX — 2026-09-21
+   Unica regola finale per il catalogo:
+   - foto centrata in un formato quadrato uniforme
+   - nessuna deformazione
+   - smartphone: una foto per riga
+   - desktop: 4 foto per riga, tablet: 3
+   - numero/nome/orientamento/formato centrati sotto la foto
+   - selezione iniziale sempre a 0
+*/
+html,body{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow-x:hidden!important;
+}
+main{
+  width:100%!important;
+  max-width:1500px!important;
+  margin:0 auto!important;
+  padding:22px 14px 70px!important;
+  box-sizing:border-box!important;
+}
+#selectionSummary{
+  width:100%!important;
+  margin:0 auto 24px!important;
+  text-align:center!important;
+}
+.grid{
+  width:100%!important;
+  max-width:1400px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:42px 28px!important;
+  align-items:start!important;
+  justify-items:center!important;
+  background:transparent!important;
+  box-sizing:border-box!important;
+}
+.grid .card{
+  width:100%!important;
+  max-width:320px!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding:0 0 22px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:320px!important;
+  height:320px!important;
+  min-height:320px!important;
+  max-height:320px!important;
+  aspect-ratio:1/1!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  border:2px solid #5a3b2b!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  line-height:0!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+  rotate:0deg!important;
+}
+.grid .card .meta{
+  width:100%!important;
+  max-width:320px!important;
+  margin:0 auto!important;
+  padding:10px 0 0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.grid .card .meta>strong{
+  order:1!important;
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  color:#5a3b2b!important;
+  background:transparent!important;
+  font:800 15px/1.25 Arial,sans-serif!important;
+  letter-spacing:1.4px!important;
+  text-align:center!important;
+}
+.grid .card .meta>.photo-name,
+.grid .card .meta>span{
+  order:2!important;
+  display:block!important;
+  width:100%!important;
+  margin:3px 0 0!important;
+  padding:0!important;
+  color:#6b4938!important;
+  background:transparent!important;
+  font:600 12px/1.35 Arial,sans-serif!important;
+  text-align:center!important;
+}
+.grid .card .meta>small{
+  order:3!important;
+  display:block!important;
+  width:100%!important;
+  margin:2px 0 0!important;
+  padding:0!important;
+  color:#705748!important;
+  background:transparent!important;
+  font:500 11px/1.35 Arial,sans-serif!important;
+  text-align:center!important;
+}
+.grid .card .meta .photo-format-label{
+  order:3!important;
+  display:block!important;
+  width:100%!important;
+  margin:2px 0 0!important;
+  padding:0!important;
+  color:#705748!important;
+  background:transparent!important;
+  font:500 11px/1.35 Arial,sans-serif!important;
+  text-align:center!important;
+}
+.grid .card .meta .print-choice{
+  order:4!important;
+  width:240px!important;
+  max-width:240px!important;
+  margin:10px auto 0!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.grid .card .meta .print-choice label{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  margin:-1px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.grid .card .meta .format-select,
+.grid .card .meta .print-choice select{
+  display:block!important;
+  width:240px!important;
+  max-width:240px!important;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  margin:0 auto!important;
+  padding:0 30px 0 10px!important;
+  box-sizing:border-box!important;
+  border:1px solid #b99a7d!important;
+  border-radius:9px!important;
+  background:#fbf6ef!important;
+  color:#5a3b2b!important;
+  font:600 12px/42px Arial,sans-serif!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+  outline:none!important;
+}
+.grid .card.selected,
+.grid .card:hover,
+.grid .card:focus{
+  border:0!important;
+  outline:none!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.grid .card.selected .lntdv-photo-stage{
+  border-color:#5a3b2b!important;
+}
+@media(min-width:901px) and (max-width:1200px){
+  .grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:36px 24px!important;
+  }
+  .grid .card,
+  .grid .card .meta{
+    max-width:300px!important;
+  }
+  .grid .card .lntdv-photo-stage{
+    width:300px!important;
+    max-width:300px!important;
+    height:300px!important;
+    min-height:300px!important;
+    max-height:300px!important;
+  }
+}
+@media(max-width:900px){
+  main{
+    padding:18px 12px 60px!important;
+  }
+  .grid{
+    width:100%!important;
+    max-width:100%!important;
+    grid-template-columns:1fr!important;
+    gap:34px!important;
+  }
+  .grid .card{
+    width:100%!important;
+    max-width:360px!important;
+    margin:0 auto!important;
+  }
+  .grid .card .lntdv-photo-stage{
+    width:360px!important;
+    max-width:calc(100vw - 24px)!important;
+    height:360px!important;
+    min-height:360px!important;
+    max-height:360px!important;
+  }
+  .grid .card .meta{
+    width:360px!important;
+    max-width:calc(100vw - 24px)!important;
+  }
+}
+@media(max-width:380px){
+  .grid .card{
+    max-width:340px!important;
+  }
+  .grid .card .lntdv-photo-stage{
+    width:calc(100vw - 24px)!important;
+    height:calc(100vw - 24px)!important;
+    min-height:calc(100vw - 24px)!important;
+    max-height:calc(100vw - 24px)!important;
+  }
+  .grid .card .meta{
+    width:calc(100vw - 24px)!important;
+    max-width:calc(100vw - 24px)!important;
+  }
+  .grid .card .meta .print-choice,
+  .grid .card .meta .format-select,
+  .grid .card .meta .print-choice select{
+    width:min(240px,calc(100vw - 70px))!important;
+    max-width:min(240px,calc(100vw - 70px))!important;
+  }
+}
