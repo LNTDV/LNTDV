@@ -26,3 +26,103 @@ header .legend span{border-color:var(--lntdv-brown-light)!important;background:v
 .info-drawer{border-left:4px solid var(--lntdv-brown)!important}
 .info-drawer h2,.info-content h3,.info-nav a,.social-links a{color:var(--lntdv-brown)!important}
 footer{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-top:3px solid var(--lntdv-brown-dark)!important}
+
+
+/* LNTDV — HEADER COMPATTO E TITOLO LEGGIBILE — 2026-09-21 */
+header{
+  background:#5a3b2b!important;
+  color:#fffaf3!important;
+  padding:28px 16px 24px!important;
+  min-height:0!important;
+  box-sizing:border-box!important;
+}
+header .brand{
+  color:#f7eee5!important;
+  font-size:10px!important;
+  letter-spacing:2px!important;
+  margin:0 auto 8px!important;
+}
+header h1{
+  color:#fffaf3!important;
+  font-size:clamp(22px,6vw,34px)!important;
+  line-height:1.05!important;
+  margin:0!important;
+  font-family:Arial,sans-serif!important;
+  letter-spacing:2px!important;
+}
+header .lntdv-project-heading{
+  color:#fffaf3!important;
+  font-family:Georgia,serif!important;
+  font-size:clamp(24px,5vw,34px)!important;
+  line-height:1.15!important;
+  font-weight:700!important;
+  margin:6px auto 0!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+header .lntdv-author-heading{
+  color:#eadbd0!important;
+  font-size:12px!important;
+  margin:6px auto 0!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+header .lntdv-heading-subtitle{
+  color:#d9c7b8!important;
+  font-size:10px!important;
+  margin:5px auto 0!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+header .intro{
+  color:#eadbd0!important;
+  margin:10px auto 0!important;
+  font-size:11px!important;
+}
+header .legend{
+  margin-top:12px!important;
+}
+header .legend span{
+  background:transparent!important;
+  border:1px solid #cdb8a5!important;
+  color:#fffaf3!important;
+  padding:5px 9px!important;
+}
+.lntdv-home-title-bar{
+  min-height:30px!important;
+  padding:7px 42px 7px 12px!important;
+}
+#infoMenuButton.info-menu-button{
+  position:absolute!important;
+  top:8px!important;
+  right:12px!important;
+  left:auto!important;
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  min-height:28px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  z-index:2147483000!important;
+}
+#infoMenuButton.info-menu-button span{
+  width:21px!important;
+  min-width:21px!important;
+  height:2px!important;
+  min-height:2px!important;
+  background:#fffaf3!important;
+}
+@media(max-width:600px){
+  header{
+    padding:24px 12px 20px!important;
+  }
+  header .brand{font-size:9px!important;letter-spacing:1.5px!important}
+  header h1{font-size:22px!important}
+  header .lntdv-project-heading{font-size:25px!important}
+  header .lntdv-author-heading{font-size:11px!important}
+  header .lntdv-heading-subtitle{font-size:9px!important}
+  header .intro{font-size:10px!important;margin-top:8px!important}
+  header .legend{margin-top:10px!important}
+  #infoMenuButton.info-menu-button{top:6px!important;right:10px!important}
+}
