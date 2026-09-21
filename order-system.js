@@ -80,10 +80,11 @@
     if($('summaryCount')) $('summaryCount').textContent=String(t.count);
     if($('orderBarCount')) $('orderBarCount').textContent=t.count+' foto';
     if($('orderBarTotal')) $('orderBarTotal').textContent=money(t.total);
+    // Un solo comando visibile per il riepilogo: evita il doppio pulsante su iPhone, Android, Windows e macOS.
     const mailButton=$('orderMailSummary');
     if(mailButton){
-      mailButton.hidden=false;
-      mailButton.disabled=list.length===0;
+      mailButton.hidden=true;
+      mailButton.disabled=true;
     }
     const openButton=$('openOrder');
     const completeSelection=list.length>0 && list.every(x=>!!x.format && PRICES[x.format]!=null);
