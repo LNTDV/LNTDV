@@ -1562,3 +1562,57 @@ body>#orderPanel:not(.active)[aria-hidden="true"]{display:none!important;}
 @media(max-width:360px){
   #orderBar .order-bar-label{display:none!important}
 }
+
+
+/* LNTDV FINAL ORDER SUMMARY CORRECTION — 2026-09-21 08:08 */
+#orderBar.order-bar,#orderBar.orderbar{
+  position:fixed!important;
+  right:12px!important;
+  bottom:max(12px,env(safe-area-inset-bottom))!important;
+  left:auto!important;
+  width:max-content!important;
+  max-width:calc(100vw - 24px)!important;
+  padding:7px 9px 7px 11px!important;
+  border-radius:12px!important;
+  gap:7px!important;
+  background:#5a3b2b!important;
+  box-shadow:0 5px 18px rgba(45,27,18,.18)!important;
+}
+#orderBar .order-bar-info{max-width:calc(100vw - 150px)!important}
+#orderBar .order-bar-label{font-size:8px!important}
+#orderBar .order-bar-info strong{font-size:10px!important}
+#orderBar .order-bar-total{font-size:13px!important}
+#orderBar .order-button{
+  min-height:36px!important;
+  padding:8px 10px!important;
+  border-radius:9px!important;
+  background:#cdb8a5!important;
+  color:#3d281d!important;
+  font-size:9px!important;
+}
+@media(max-width:560px){
+  #orderBar.order-bar,#orderBar.orderbar{
+    right:max(8px,env(safe-area-inset-right))!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+    max-width:calc(100vw - 16px)!important;
+    padding:6px 7px 6px 9px!important;
+    border-radius:11px!important;
+  }
+  #orderBar .order-bar-info{max-width:calc(100vw - 135px)!important}
+  #orderBar .order-button{min-height:34px!important;padding:7px 8px!important;font-size:8px!important}
+}
+@media(max-width:360px){
+  #orderBar .order-bar-info{max-width:calc(100vw - 120px)!important}
+}
+
+/* Checkout: centered, compact, scroll-safe on iPhone and Android. */
+#orderPanel .modal-content.order-checkout{
+  background:#fbf6ef!important;
+  color:#5a3b2b!important;
+}
+#orderPanel .checkout-bottom{
+  background:#fbf6ef!important;
+}
+.platform-ios #orderPanel .checkout-bottom{
+  padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
+}
