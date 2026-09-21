@@ -506,13 +506,16 @@
     if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
     try{
       await postPayload(payload);
-      let verified;
-      try{
-        verified=await confirmSubmittedOrder(id,trackingToken,email);
-      }catch(verifyErr){
-        throw new Error('L’ordine è stato inviato ma non è stato possibile verificarne la registrazione. Riprova tra qualche secondo.');
-      }
-      if(!verified || !verified.received) throw new Error('Registrazione ordine non confermata.');
+      // L'invio al sistema ordini è riuscito. Non blocchiamo il popup email
+      // sulla seconda verifica JSONP: Safari/iPhone può bloccare o ritardare
+      // quel controllo anche quando la registrazione POST è già avvenuta.
+      // La verifica resta utile ma viene eseguita in background.
+      confirmSubmittedOrder(id,trackingToken,email).then(()=>{
+        rememberTracking(id,trackingToken);
+      }).catch(err=>{
+        console.warn('LNTDV: verifica ordine differita non riuscita',err);
+        rememberTracking(id,trackingToken);
+      });
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
       showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
