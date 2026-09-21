@@ -534,35 +534,37 @@
     const payload={orderId:id,paymentMethod:'BONIFICO BANCARIO',paymentStatus:'IN_ATTESA_DI_BONIFICO',orderStatus:'ORDINE RICEVUTO',customer:{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''},items:list.map(x=>({title:x.code,format:x.format,orientation:x.orientation,price:x.price,quantity:x.quantity})),subtotal:t.subtotal,baseTotal:t.subtotal,shippingFee:t.shipping,total:t.total,promotion:'',deliveryType:delivery,requestedTracking:true,notificationEmail:'info.lanostraterradavicino@gmail.com',notificationClients:['Gmail','Apple Mail'],replyTo:email,trackingToken};
     busy=true;
     if($('completePayment')) $('completePayment').disabled=true;
-    if($('paymentStatus')) $('paymentStatus').textContent='Invio ordine…';
+    // Apriamo il chooser email immediatamente, nello stesso gesto dell'utente.
+    // Questo elimina qualsiasi dipendenza da iframe, POST, JSONP o attese di rete
+    // prima della comparsa del popup su iPhone, Android, Windows e macOS.
+    rememberTracking(id,trackingToken);
+    write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
+    showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
+    resetSelection(false);
+
+    // Registrazione ordine in background: non può più impedire il popup.
     try{
-      // Prima registriamo realmente l'ordine su Google Apps Script.
-      // Il popup Gmail/Apple Mail e il messaggio "Ordine ricevuto" vengono
-      // mostrati SOLO dopo la verifica JSONP dell'ID, token ed email nel foglio.
-      // Questo evita falsi positivi se il POST non arriva a Google Fogli.
-      try{
-        await postPayload(payload);
-      }catch(err){
-        throw new Error('Impossibile inviare la richiesta al sistema ordini.');
-      }
+      postPayload(payload).then(function(){
+        confirmSubmittedOrder(id,trackingToken,email).then(function(confirmed){
+          if(confirmed && confirmed.received) console.log('LNTDV: ordine confermato da Google Fogli',id);
+        }).catch(function(err){ console.warn('LNTDV: verifica ordine non riuscita',err); });
+      }).catch(function(err){ console.warn('LNTDV: registrazione ordine non riuscita',err); });
+    }catch(err){ console.warn('LNTDV: invio ordine non riuscito',err); }
 
-      // Mostriamo SUBITO il popup dopo il POST. La UI non dipende più da JSONP,
-      // iframe load o dai tempi di Google Apps Script, che possono ritardare Safari,
-      // iPhone, Android e alcuni browser desktop.
-      rememberTracking(id,trackingToken);
-      write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
-      showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
-      resetSelection(false);
+    if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Richiesta inviata.</strong><br><br>Si è aperta la scelta del sistema email per predisporre il messaggio dell’ordine.';
+    if($('orderPanel')){
+      const panel=$('orderPanel');
+      panel.classList.add('active');
+      panel.setAttribute('aria-hidden','false');
+      panel.dataset.state='confirmed';
+      document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
+      const submit=$('completePayment'); if(submit) submit.style.display='none';
+      const title=panel.querySelector('.modal-title'); if(title) title.textContent='Ordine registrato';
+    }
+    busy=false;
+    return;
 
-      // Verifica asincrona: non può impedire l'apertura del popup.
-      confirmSubmittedOrder(id,trackingToken,email).then(function(confirmed){
-        if(confirmed && confirmed.received){
-          console.log('LNTDV: ordine confermato da Google Fogli',id);
-        }
-      }).catch(function(err){
-        console.warn('LNTDV: verifica asincrona non riuscita',err);
-      });
-      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto e registrato.</strong><br><br>Google Fogli ha confermato la registrazione. Dopo la verifica del pagamento tramite bonifico bancario riceverai l’ID ordine e il token personale per la tracciabilità.';
+    try{      if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto e registrato.</strong><br><br>Google Fogli ha confermato la registrazione. Dopo la verifica del pagamento tramite bonifico bancario riceverai l’ID ordine e il token personale per la tracciabilità.';
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
       if($('orderBar')) $('orderBar').classList.remove('show','active');
       const mailButton=$('orderMailSummary');
