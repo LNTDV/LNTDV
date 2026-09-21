@@ -483,9 +483,23 @@
     const gmailBtn=el.querySelector('#lntdvGmailBtn');
     const mailBtn=el.querySelector('#lntdvAppleMailBtn');
     if(gmailBtn){
-      gmailBtn.addEventListener('click',function(){
-        // Gmail: usa il client email configurato dal dispositivo, senza schemi che aprono gli Store.
+      gmailBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        // Android: apre direttamente Gmail tramite Intent con package com.google.android.gm.
+        // Nessun fallback verso Play Store.
+        // iPhone/iPad: prova lo schema Gmail; se non disponibile usa mailto senza aprire Store.
+        const ua=navigator.userAgent||'';
+        const isAndroid=/Android/i.test(ua);
+        const isIOS=/iPhone|iPad|iPod/i.test(ua);
         el.remove();
+        if(isAndroid){
+          const intent='intent://compose?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)+'#Intent;scheme=mailto;package=com.google.android.gm;end';
+          try{ window.location.href=intent; return; }catch(err){}
+        }
+        if(isIOS){
+          const gmail='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+          try{ window.location.href=gmail; return; }catch(err){}
+        }
         window.location.href=mailto;
       });
     }
