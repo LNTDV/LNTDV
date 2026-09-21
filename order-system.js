@@ -482,32 +482,48 @@
     // Windows e macOS.
     const gmailBtn=el.querySelector('#lntdvGmailBtn');
     const mailBtn=el.querySelector('#lntdvAppleMailBtn');
+
+    // Mantiene il browser sulla pagina dell'ordine quando si apre il client email.
+    // L'URL viene aggiornato con ID e token corretti e il sistema di tracciabilità
+    // viene riattivato automaticamente al ritorno sul sito.
+    const trackingUrl=location.origin+location.pathname+'?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken||'');
+    function prepareTrackingReturn(){
+      try{ history.replaceState({lntdvOrder:id,lntdvToken:trackingToken},'',trackingUrl); }catch(err){}
+      setTimeout(function(){
+        const section=document.getElementById('trackingSection');
+        const button=document.getElementById('trackingButton');
+        if(section) section.scrollIntoView({behavior:'smooth',block:'start'});
+        if(button) setTimeout(function(){button.click();},180);
+      },350);
+    }
+    function launchEmail(){
+      prepareTrackingReturn();
+      let opened=false;
+      try{ opened=!!window.open(mailto,'_blank','noopener,noreferrer'); }catch(err){}
+      if(!opened){
+        try{
+          const a=document.createElement('a');
+          a.href=mailto; a.target='_blank'; a.rel='noopener noreferrer';
+          a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+        }catch(err){
+          try{ window.location.href=mailto; }catch(e){}
+        }
+      }
+      el.remove();
+    }
     if(gmailBtn){
       gmailBtn.addEventListener('click',function(e){
         e.preventDefault();
-        // Android: apre direttamente Gmail tramite Intent con package com.google.android.gm.
-        // Nessun fallback verso Play Store.
-        // iPhone/iPad: prova lo schema Gmail; se non disponibile usa mailto senza aprire Store.
-        const ua=navigator.userAgent||'';
-        const isAndroid=/Android/i.test(ua);
-        const isIOS=/iPhone|iPad|iPod/i.test(ua);
-        el.remove();
-        if(isAndroid){
-          const intent='intent://compose?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)+'#Intent;scheme=mailto;package=com.google.android.gm;end';
-          try{ window.location.href=intent; return; }catch(err){}
-        }
-        if(isIOS){
-          const gmail='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-          try{ window.location.href=gmail; return; }catch(err){}
-        }
-        window.location.href=mailto;
+        // Gmail viene richiesto tramite mailto:; il sistema operativo/browser
+        // apre il client email configurato senza indirizzare a Store o siti web.
+        launchEmail();
       });
     }
     if(mailBtn){
-      mailBtn.addEventListener('click',function(){
-        // Apple Mail / client predefinito: mailto con oggetto e corpo già compilati.
-        el.remove();
-        window.location.href=mailto;
+      mailBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        // Apple Mail / client predefinito con oggetto e corpo già compilati.
+        launchEmail();
       });
     }
   }
