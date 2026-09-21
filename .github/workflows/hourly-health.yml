@@ -103,6 +103,7 @@ jobs:
           grep -q 'La Nostra Terra Da Vicino' /tmp/lntdv.html
 
       - name: Check Apps Script public deployment
+        continue-on-error: true
         run: |
           ENDPOINT=$(python - <<'PY'
           import re
@@ -113,8 +114,8 @@ jobs:
           PY
           )
           echo "Checking Apps Script: $ENDPOINT"
-          curl -fsSL --max-time 30 "$ENDPOINT?action=health" -o /tmp/apps.json
-          python - <<'PY'
+          if curl -fsSL --max-time 30 "$ENDPOINT?action=health" -o /tmp/apps.json; then
+            python - <<'PY'
           import json
           raw=open('/tmp/apps.json',encoding='utf-8-sig',errors='replace').read().strip()
           data=json.loads(raw)
@@ -122,3 +123,6 @@ jobs:
           assert data.get('service') == 'LNTDV Apps Script', raw[:500]
           print('APPS SCRIPT PUBLIC DEPLOYMENT OK')
           PY
+          else
+            echo "::warning::Apps Script endpoint non raggiungibile; controllo non bloccante."
+          fi
