@@ -546,24 +546,22 @@
         throw new Error('Impossibile inviare la richiesta al sistema ordini.');
       }
 
-      let confirmed;
-      try{
-        // Il POST tramite iframe può richiedere qualche istante prima che
-        // Apps Script renda disponibile la nuova riga alla richiesta JSONP.
-        await new Promise(resolve=>setTimeout(resolve,900));
-        confirmed=await confirmSubmittedOrder(id,trackingToken,email);
-      }catch(err){
-        throw new Error('Ordine non confermato da Google Fogli: '+(err?.message||'verifica non riuscita'));
-      }
-
-      if(!confirmed || !confirmed.received){
-        throw new Error('Google Fogli non ha confermato la registrazione dell’ordine.');
-      }
-
+      // Mostriamo SUBITO il popup dopo il POST. La UI non dipende più da JSONP,
+      // iframe load o dai tempi di Google Apps Script, che possono ritardare Safari,
+      // iPhone, Android e alcuni browser desktop.
       rememberTracking(id,trackingToken);
       write('lntdv_last_order_v5',{orderId:id,token:trackingToken,email,total:t.total,createdAt:new Date().toISOString()});
       showMailChooser(id,list,t.total,trackingToken,{name,email,phone:$('customerPhone')?.value.trim()||'',street:$('customerStreet')?.value.trim()||'',zip:$('customerZip')?.value.trim()||'',city:$('customerCity')?.value.trim()||'',note:$('customerNote')?.value.trim()||''});
       resetSelection(false);
+
+      // Verifica asincrona: non può impedire l'apertura del popup.
+      confirmSubmittedOrder(id,trackingToken,email).then(function(confirmed){
+        if(confirmed && confirmed.received){
+          console.log('LNTDV: ordine confermato da Google Fogli',id);
+        }
+      }).catch(function(err){
+        console.warn('LNTDV: verifica asincrona non riuscita',err);
+      });
       if($('paymentStatus')) $('paymentStatus').innerHTML='<strong>Ordine ricevuto e registrato.</strong><br><br>Google Fogli ha confermato la registrazione. Dopo la verifica del pagamento tramite bonifico bancario riceverai l’ID ordine e il token personale per la tracciabilità.';
       document.querySelectorAll('#orderPanel .checkout-head,#orderPanel .checkout-selected,#orderPanel .checkout-grid,#orderPanel .checkout-bottom').forEach(el=>el.hidden=true);
       if($('orderBar')) $('orderBar').classList.remove('show','active');
