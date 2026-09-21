@@ -1402,3 +1402,83 @@ body>#orderPanel:not(.active)[aria-hidden="true"]{display:none!important;}
     font-size:16px!important;
   }
 }
+
+
+/* LNTDV FINAL OVERRIDE — 2026-09-21
+   Loaded after legacy order CSS: this is the authoritative photo/catalog geometry.
+   It prevents the old 74% rule from shrinking the actual photographs.
+*/
+.grid .card .photo-wrap img,
+.grid .card .lntdv-photo-stage img,
+.catalog .card .photo-wrap img,
+.catalog .card .lntdv-photo-stage img{
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+  margin:0 auto!important;
+}
+.grid .card .photo-wrap,
+.grid .card .lntdv-photo-stage,
+.catalog .card .photo-wrap,
+.catalog .card .lntdv-photo-stage{
+  width:100%!important;
+  margin:0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+}
+.grid .card .meta,
+.catalog .card .meta{
+  width:min(100%,420px)!important;
+  margin:0 auto!important;
+  padding:12px 12px 8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  gap:5px!important;
+}
+.grid .card .meta strong,
+.grid .card .meta span,
+.grid .card .meta small,
+.catalog .card .meta strong,
+.catalog .card .meta span,
+.catalog .card .meta small{
+  width:100%!important;
+  text-align:center!important;
+}
+.grid .card .meta .print-choice,
+.catalog .card .meta .print-choice{
+  order:4!important;
+  width:min(100%,360px)!important;
+  margin:8px auto 0!important;
+  padding:0!important;
+}
+.grid .card .meta .format-select,
+.catalog .card .meta .format-select{
+  width:100%!important;
+  min-height:44px!important;
+  height:auto!important;
+  max-height:none!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+@media(max-width:700px){
+  .grid .card .photo-wrap img,
+  .grid .card .lntdv-photo-stage img,
+  .catalog .card .photo-wrap img,
+  .catalog .card .lntdv-photo-stage img{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .grid .card .meta,
+  .catalog .card .meta{
+    padding:10px 10px 8px!important;
+  }
+}
