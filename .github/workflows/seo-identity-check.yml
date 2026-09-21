@@ -1,0 +1,63 @@
+name: LNTDV SEO identity check
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  seo-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check search identity
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          sitemap = Path("sitemap.xml").read_text(encoding="utf-8")
+          robots = Path("robots.txt").read_text(encoding="utf-8")
+
+          required_html = [
+              "Mostra fotografica Edvinas Dragoni",
+              "La Nostra Terra Da Vicino",
+              "LNTDV",
+              'rel="canonical"',
+              'application/ld+json',
+              'https://lntdv.it/'
+          ]
+
+          for item in required_html:
+              assert item in html, f"SEO identity missing from index.html: {item}"
+
+          title = re.search(r"<title>(.*?)</title>", html, re.I | re.S)
+          assert title, "Missing <title>"
+          assert "Mostra fotografica Edvinas Dragoni" in title.group(1)
+          assert "La Nostra Terra Da Vicino" in title.group(1)
+          assert "LNTDV" in title.group(1)
+
+          for url in [
+              "https://lntdv.it/",
+              "https://lntdv.it/la-nostra-terra-da-vicino.html",
+              "https://lntdv.it/mostra-fotografica-edvinas-dragoni.html",
+              "https://lntdv.it/lntdv.html",
+          ]:
+              assert url in sitemap, f"URL missing from sitemap: {url}"
+
+          assert "Sitemap: https://lntdv.it/sitemap.xml" in robots
+          assert 'content="index,follow' in html
+
+          for page in [
+              "la-nostra-terra-da-vicino.html",
+              "mostra-fotografica-edvinas-dragoni.html",
+              "lntdv.html",
+          ]:
+              text = Path(page).read_text(encoding="utf-8")
+              assert "Edvinas Dragoni" in text, f"Author identity missing: {page}"
+              assert "La Nostra Terra Da Vicino" in text, f"Project identity missing: {page}"
+              assert "LNTDV" in text, f"Project acronym missing: {page}"
+
+          print("LNTDV SEO identity check: PASS")
+          print("Queries covered: Mostra fotografica Edvinas Dragoni / La Nostra Terra Da Vicino / LNTDV")
