@@ -1,0 +1,234 @@
+/* LNTDV PLATFORM RESPONSIVE FINAL — 2026-09-21
+   One shared catalog/order system, with platform-specific presentation only.
+*/
+html,body{max-width:100%;overflow-x:hidden}
+*,*:before,*:after{box-sizing:border-box}
+
+/* Shared photo geometry: the image fills the same stage on every platform.
+   object-fit:contain prevents distortion; the stage controls the visual size. */
+.grid .card .lntdv-photo-stage,
+.catalog .card .lntdv-photo-stage{
+  width:min(100%,1400px)!important;
+  max-width:1400px!important;
+  margin:0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#1f1712!important;
+}
+.grid .card .lntdv-photo-stage img,
+.catalog .card .lntdv-photo-stage img{
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0!important;
+  transform:none!important;
+}
+.grid .card .meta,
+.catalog .card .meta{
+  width:min(100%,420px)!important;
+  margin:0 auto!important;
+  padding:12px 12px 10px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  gap:5px!important;
+}
+.grid .card .meta strong,
+.catalog .card .meta strong,
+.grid .card .meta span,
+.catalog .card .meta span,
+.grid .card .meta small,
+.catalog .card .meta small{width:100%!important;text-align:center!important}
+.grid .card .print-choice,
+.catalog .card .print-choice{
+  width:min(100%,360px)!important;
+  margin:8px auto 0!important;
+  align-self:center!important;
+}
+.grid .card .format-select,
+.catalog .card .format-select{
+  width:100%!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+
+/* Desktop: macOS + Windows */
+.platform-macos .grid .card .lntdv-photo-stage,
+.platform-windows .grid .card .lntdv-photo-stage{
+  width:100%!important;
+}
+.platform-macos .grid,
+.platform-windows .grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:22px!important;
+  max-width:1500px!important;
+  margin:0 auto!important;
+  padding:0 18px!important;
+}
+.platform-macos .grid .card,
+.platform-windows .grid .card{
+  width:100%!important;
+  padding:0 0 24px!important;
+}
+.platform-macos .grid .card .lntdv-photo-stage,
+.platform-windows .grid .card .lntdv-photo-stage{
+  aspect-ratio:3/2!important;
+}
+@media(min-width:1500px){
+  .platform-macos .grid,
+  .platform-windows .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+
+/* Android + iPhone: one-column catalog, identical geometry */
+.platform-android .grid,
+.platform-ios .grid{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  max-width:none!important;
+  gap:0!important;
+  padding:0!important;
+}
+.platform-android .grid .card,
+.platform-ios .grid .card{
+  width:100%!important;
+  max-width:none!important;
+  padding:0 0 24px!important;
+}
+.platform-android .grid .card .lntdv-photo-stage,
+.platform-ios .grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:none!important;
+}
+.platform-android .grid .card[data-orientation="horizontal"] .lntdv-photo-stage,
+.platform-ios .grid .card[data-orientation="horizontal"] .lntdv-photo-stage{aspect-ratio:3/2!important}
+.platform-android .grid .card[data-orientation="vertical"] .lntdv-photo-stage,
+.platform-ios .grid .card[data-orientation="vertical"] .lntdv-photo-stage{
+  aspect-ratio:2/3!important;
+}
+.platform-android .grid .card .meta,
+.platform-ios .grid .card .meta{
+  width:100%!important;
+  max-width:420px!important;
+  padding:10px 12px 8px!important;
+}
+.platform-android .grid .card .meta strong,
+.platform-ios .grid .card .meta strong{font-size:16px!important}
+.platform-android .grid .card .meta span,
+.platform-ios .grid .card .meta span,
+.platform-android .grid .card .meta small,
+.platform-ios .grid .card .meta small{font-size:12px!important}
+.platform-android .grid .card .format-select,
+.platform-ios .grid .card .format-select{
+  height:42px!important;
+  min-height:42px!important;
+  font-size:14px!important;
+}
+
+/* iPhone/Safari: account for dynamic viewport and safe areas */
+.platform-ios #orderPanel{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.platform-ios #orderPanel>.modal-content{
+  width:100%!important;
+  max-width:820px!important;
+  max-height:calc(100dvh - max(20px,env(safe-area-inset-top) + env(safe-area-inset-bottom)))!important;
+  margin:0!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+}
+.platform-ios #orderPanel .checkout-fields input,
+.platform-ios #orderPanel .checkout-fields textarea,
+.platform-ios #orderPanel .checkout-fields select{
+  font-size:16px!important; /* prevents Safari auto-zoom */
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+.platform-ios #orderPanel .checkout-bottom{
+  position:sticky!important;
+  bottom:0!important;
+  padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
+  background:#f7eee3!important;
+}
+.platform-ios #lntdvMailChooser{
+  padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))!important;
+}
+
+/* Android: same mobile geometry, no iOS-only viewport behavior */
+.platform-android #orderPanel{
+  height:100dvh!important;
+  min-height:100dvh!important;
+}
+.platform-android #orderPanel>.modal-content{
+  max-height:calc(100dvh - 20px)!important;
+}
+
+/* Mail chooser: same visual language on every platform */
+#lntdvMailChooser{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+#lntdvMailChooser a,
+#lntdvMailChooser button{
+  min-height:48px;
+  touch-action:manipulation;
+}
+.platform-ios #lntdvMailChooser>div,
+.platform-android #lntdvMailChooser>div{
+  width:min(440px,100%)!important;
+  max-height:calc(100dvh - 28px)!important;
+  overflow:auto!important;
+}
+
+/* Desktop order summary */
+.platform-macos #orderPanel>.modal-content,
+.platform-windows #orderPanel>.modal-content{
+  max-height:calc(100dvh - 24px)!important;
+}
+
+/* Windows high-DPI/Safari/Chromium consistency */
+.platform-windows img,
+.platform-macos img,
+.platform-android img,
+.platform-ios img{
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+
+/* Never allow late-loaded legacy rules to shrink photos to 74%. */
+.platform-macos .grid .card .photo-wrap img,
+.platform-windows .grid .card .photo-wrap img,
+.platform-android .grid .card .photo-wrap img,
+.platform-ios .grid .card .photo-wrap img{
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+
+/* Small phones */
+@media(max-width:390px){
+  .platform-ios .grid .card .meta,
+  .platform-android .grid .card .meta{padding-left:8px!important;padding-right:8px!important}
+  .platform-ios .grid .card .format-select,
+  .platform-android .grid .card .format-select{font-size:13px!important}
+}
+
+/* Landscape phones/tablets */
+@media(max-width:900px) and (orientation:landscape){
+  .platform-ios .grid .card .lntdv-photo-stage,
+  .platform-android .grid .card .lntdv-photo-stage{
+    max-height:78vh!important;
+  }
+}
