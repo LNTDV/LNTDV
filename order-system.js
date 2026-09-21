@@ -456,19 +456,19 @@
     const tokenText=trackingToken ? '\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: '+id+'\nTOKEN: '+trackingToken+'\nLINK TRACCIAMENTO: '+('https://lntdv.it/?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken)) : '';
     const customerLines='DATI CLIENTE\nNOME: '+(customer.name||'')+'\nEMAIL: '+(customer.email||'')+'\nTELEFONO: '+(customer.phone||'')+'\nINDIRIZZO: '+(customer.street||'')+' — '+(customer.zip||'')+' '+(customer.city||'')+'\nNOTE: '+(customer.note||'')+'\n\n';
     const body='BUONGIORNO,\n\nRICHIESTA ORDINE LNTDV\nID ORDINE: '+id+'\n\nDATI CLIENTE\nNOME: '+(customer.name||'')+'\nEMAIL: '+(customer.email||'')+'\nTELEFONO: '+(customer.phone||'')+'\nINDIRIZZO: '+(customer.street||'')+' — '+(customer.zip||'')+' '+(customer.city||'')+'\nNOTE: '+(customer.note||'')+'\n\nRIEPILOGO DELL’ORDINE\n'+lines+'\n\nTOTALE ORDINE: '+money(total)+'\n\nDATI PER LA TRACCIABILITÀ\nID ORDINE: '+id+'\nTOKEN: '+(trackingToken||'')+'\nLINK TRACCIAMENTO: '+('https://lntdv.it/?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken||''))+'\n\nPAGAMENTO TRAMITE BONIFICO BANCARIO\nINTESTATARIO: '+BANK_TRANSFER.accountHolder+'\nIBAN: '+BANK_TRANSFER.iban+'\nCAUSALE: '+BANK_TRANSFER.reasonPrefix+' '+id+'\n\nCORDIALI SALUTI.';
-    const gmailApp='googlegmail://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-    const gmailAndroidIntent='intent://co?to='+encodeURIComponent(to)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)+'#Intent;scheme=googlegmail;package=com.google.android.gm;end';
+    // Apertura universale tramite mailto: nessun App Store, Play Store o sito web.
+    // Il sistema operativo sceglie il client email configurato e mantiene oggetto/corpo precompilati.
     const mailto='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     const isIOS=!!window.LNTDVPlatform?.ios || /iPhone|iPad|iPod/i.test(navigator.userAgent||'');
     const isAndroid=!!window.LNTDVPlatform?.android || /Android/i.test(navigator.userAgent||'');
     const primaryText=isAndroid?'Gmail':isIOS?'Gmail':'Gmail';
-    const secondaryText=isIOS?'Apple Mail':(isAndroid?'App email':'App Mail');
+    const secondaryText=isIOS?'Apple Mail':'Client email';
     document.getElementById('lntdvMailChooser')?.remove();
     const el=document.createElement('div');
     el.id='lntdvMailChooser';
     el.setAttribute('data-lntdv-mail-popup','true'); el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
     el.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;';
-    el.innerHTML='<div id="lntdvMailChooserCard" style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28);transform:none!important;animation:none!important"><button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">La richiesta è stata registrata. Scegli l’app email da usare per aprire la richiesta già compilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button type="button" id="lntdvGmailBtn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;border:0;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700;cursor:pointer">'+primaryText+'</button><button type="button" id="lntdvAppleMailBtn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;border:0;background:#cdb8a5;color:#3d281d;font-weight:700;cursor:pointer">'+secondaryText+'</button></div></div>';
+    el.innerHTML='<div id="lntdvMailChooserCard" style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28);transform:none!important;animation:none!important"><button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">La richiesta è stata registrata. Scegli il client email: la richiesta verrà aperta già compilata, senza passare da siti web o Store.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button type="button" id="lntdvGmailBtn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;border:0;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700;cursor:pointer">'+primaryText+'</button><button type="button" id="lntdvAppleMailBtn" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;border:0;background:#cdb8a5;color:#3d281d;font-weight:700;cursor:pointer">'+secondaryText+'</button></div></div>';
     if(trackingToken){ const info=el.querySelector('p'); if(info) info.insertAdjacentHTML('afterend','<div style="margin:0 0 18px;padding:12px 14px;border-radius:14px;background:#efe2d4;text-align:left;font-size:13px;line-height:1.55"><strong>ID ordine:</strong> '+esc(id)+'<br><strong>Token:</strong> '+esc(trackingToken)+'</div>'); }
     document.body.appendChild(el);
     // Forza il popup nel document root e rende immediatamente visibile il chooser.
@@ -484,22 +484,14 @@
     const mailBtn=el.querySelector('#lntdvAppleMailBtn');
     if(gmailBtn){
       gmailBtn.addEventListener('click',function(){
-        // Mobile: apre esclusivamente l'app Gmail. Nessun sito e nessun fallback web.
-        // Android usa Intent esplicito per Gmail; iOS usa lo scheme ufficiale dell'app.
-        // Desktop usa il client email predefinito tramite mailto.
+        // Gmail: usa il client email configurato dal dispositivo, senza schemi che aprono gli Store.
         el.remove();
-        if(isAndroid){
-          window.location.href=gmailAndroidIntent;
-        }else if(isIOS){
-          window.location.href=gmailApp;
-        }else{
-          window.location.href=mailto;
-        }
+        window.location.href=mailto;
       });
     }
     if(mailBtn){
       mailBtn.addEventListener('click',function(){
-        // Apre esclusivamente il client/app email predefinito tramite mailto.
+        // Apple Mail / client predefinito: mailto con oggetto e corpo già compilati.
         el.remove();
         window.location.href=mailto;
       });
