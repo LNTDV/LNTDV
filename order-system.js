@@ -250,7 +250,7 @@
       // non arrivare. Non usiamo quindi il load dell'iframe per bloccare
       // l'apertura della scelta email.
       form.submit();
-      setTimeout(()=>finish(true),900);
+      setTimeout(()=>finish(true),300);
     });
   }
 
@@ -464,11 +464,15 @@
     const secondaryText=isIOS?'Apple Mail':(isAndroid?'App email':'App Mail');
     document.getElementById('lntdvMailChooser')?.remove();
     const el=document.createElement('div');
-    el.id='lntdvMailChooser'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+    el.id='lntdvMailChooser';
+    el.setAttribute('data-lntdv-mail-popup','true'); el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
     el.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;';
     el.innerHTML='<div class="lntdv-mail-chooser-card" style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)"><button type="button" id="lntdvMailClose" class="lntdv-mail-close" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button><div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div><h3 style="margin:8px 0 10px;font-size:25px">Ordine registrato</h3><p style="line-height:1.55;margin:0 0 22px">La richiesta è stata registrata. Scegli il servizio email da usare per aprire la richiesta già compilata.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a id="lntdvGmailBtn" href="'+esc(gmail)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#5a3b2b;color:#fff;text-decoration:none;font-weight:700">'+primaryText+'</a><a id="lntdvAppleMailBtn" href="'+esc(mailto)+'" style="display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:14px 20px;border-radius:999px;background:#cdb8a5;color:#3d281d;text-decoration:none;font-weight:700">'+secondaryText+'</a></div></div>';
     if(trackingToken){ const info=el.querySelector('p'); if(info) info.insertAdjacentHTML('afterend','<div style="margin:0 0 18px;padding:12px 14px;border-radius:14px;background:#efe2d4;text-align:left;font-size:13px;line-height:1.55"><strong>ID ordine:</strong> '+esc(id)+'<br><strong>Token:</strong> '+esc(trackingToken)+'</div>'); }
     document.body.appendChild(el);
+    // Forza il popup nel document root e rende immediatamente visibile il chooser.
+    // Questo evita che Safari/iOS/Android ritardino la UI dopo il POST dell'ordine.
+    requestAnimationFrame(()=>{ el.style.display='flex'; el.style.visibility='visible'; el.style.opacity='1'; });
     el.querySelector('#lntdvMailClose').onclick=()=>el.remove();
     el.onclick=e=>{if(e.target===el)el.remove();};
     // Nessuna apertura automatica: il cliente sceglie esplicitamente
