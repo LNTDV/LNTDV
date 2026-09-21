@@ -155,7 +155,7 @@ jobs:
           # The live source currently uses the official title/description format below.
           # Keep the check aligned with the source instead of an obsolete historical format.
           required = [
-              '<title>LNTDV | Sito ufficiale — La Nostra Terra Da Vicino | Edvinas Dragoni</title>',
+              '<title>Mostra fotografica Edvinas Dragoni | La Nostra Terra Da Vicino | LNTDV</title>',
               '<meta name="application-name" content="LNTDV">',
               '<meta property="og:site_name" content="LNTDV">',
               '"alternateName":["LNTDV","La Nostra Terra Da Vicino","LNTDV — La Nostra Terra Da Vicino"]',
