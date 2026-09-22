@@ -103,4 +103,45 @@
   else centerPhotos();
 
   window.addEventListener('load',centerPhotos,{once:true});
+  function injectProjectDescriptions(){
+    if(document.getElementById('lntdv-project-description-block')) return;
+    var summary=document.getElementById('selectionSummary');
+    if(!summary || !summary.parentNode) return;
+
+    var box=document.createElement('section');
+    box.id='lntdv-project-description-block';
+    box.setAttribute('aria-labelledby','lntdv-project-description-title');
+    box.innerHTML=
+      '<div class="lntdv-project-description-inner">'+
+        '<div class="lntdv-project-description-kicker">IL PROGETTO</div>'+
+        '<h2 id="lntdv-project-description-title">La Nostra Terra Da Vicino</h2>'+
+        '<p>Il progetto nasce dall\'osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati.</p>'+
+        '<p>Il lavoro nasce dal desiderio di fermare lo sguardo sul territorio e costruire, attraverso la fotografia, una memoria visiva del rapporto tra ambiente e presenza umana.</p>'+
+        '<div class="lntdv-project-description-grid">'+
+          '<article><span>01 · LA MOSTRA</span><h3>Uno sguardo sul territorio</h3><p>La mostra fotografica racconta il rapporto tra territorio, natura, tempo e trasformazione del paesaggio attraverso uno sguardo ravvicinato sui luoghi e sui dettagli che li caratterizzano.</p></article>'+
+          '<article><span>02 · IL PERCORSO</span><h3>Natura · Tempo · Natura vs Città</h3><p>La ricerca ha portato alla realizzazione e alla selezione di 25 fotografie, organizzate attorno a tre direzioni: <strong>Natura</strong>, <strong>Tempo</strong> e <strong>Natura vs Città</strong>. Ogni immagine è parte di un racconto più ampio sul modo in cui osserviamo e viviamo il territorio.</p></article>'+
+        '</div>'+
+      '</div>';
+
+    var style=document.createElement('style');
+    style.id='lntdv-project-description-style';
+    style.textContent=
+      '#lntdv-project-description-block{width:100%;box-sizing:border-box;margin:0 auto 26px;padding:0 14px;background:#fbf6ef;color:#5a3b2b}'+
+      '.lntdv-project-description-inner{width:min(920px,100%);margin:0 auto;padding:24px 20px 22px;box-sizing:border-box;border:1px solid #cdb8a5;border-radius:16px;background:#fffaf4;box-shadow:0 6px 22px rgba(90,59,43,.07)}'+
+      '.lntdv-project-description-kicker{font:800 10px/1.2 Arial,sans-serif;letter-spacing:2px;color:#7b5a45;text-align:center}'+
+      '#lntdv-project-description-block h2{margin:6px 0 10px;text-align:center;font:700 27px/1.15 Georgia,serif;color:#5a3b2b}'+
+      '#lntdv-project-description-block p{margin:8px auto;max-width:800px;font:14px/1.65 Arial,sans-serif;color:#6f5544;text-align:center}'+
+      '.lntdv-project-description-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}'+
+      '.lntdv-project-description-grid article{padding:15px 16px;border:1px solid #d8c6b4;border-radius:12px;background:#fbf6ef}'+
+      '.lntdv-project-description-grid article>span{display:block;margin-bottom:5px;font:800 9px/1.2 Arial,sans-serif;letter-spacing:1.5px;color:#7b5a45}'+
+      '.lntdv-project-description-grid h3{margin:0 0 5px;font:700 18px/1.25 Georgia,serif;color:#5a3b2b;text-align:center}'+
+      '.lntdv-project-description-grid p{font-size:12px;line-height:1.55;margin:0;text-align:center}'+
+      '@media(max-width:600px){#lntdv-project-description-block{padding:0 10px;margin-bottom:20px}.lntdv-project-description-inner{padding:19px 14px 17px;border-radius:13px}#lntdv-project-description-block h2{font-size:23px}.lntdv-project-description-block p{font-size:12px}.lntdv-project-description-grid{grid-template-columns:1fr;gap:10px;margin-top:14px}.lntdv-project-description-grid article{padding:13px 12px}.lntdv-project-description-grid h3{font-size:16px}.lntdv-project-description-grid p{font-size:11px}}';
+    document.head.appendChild(style);
+    summary.parentNode.insertBefore(box,summary);
+  }
+
+  injectProjectDescriptions();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',injectProjectDescriptions);
+
 })();
