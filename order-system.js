@@ -165,7 +165,7 @@
     el.setAttribute('role','dialog');
     el.setAttribute('aria-modal','true');
     el.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(38,24,16,.58);font-family:Arial,sans-serif;';
-    el.innerHTML='<div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)">'+
+    el.innerHTML='<div style="position:relative;width:min(440px,100%);box-sizing:border-box;padding:28px;max-height:calc(100vh - 40px);overflow:auto;border-radius:24px;background:#fbf6ef;color:#5a3b2b;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.28)">'+
       '<button type="button" id="lntdvMailClose" style="position:absolute;right:14px;top:8px;border:0;background:none;font-size:30px;color:#5a3b2b">×</button>'+
       '<div style="font-size:10px;letter-spacing:2px;font-weight:700">ORDINE '+esc(id)+'</div>'+
       '<h3 style="margin:8px 0 10px;font-size:25px">Scegli come inviare l’ordine</h3>'+
@@ -184,11 +184,31 @@
     // Questo evita che Safari/iOS o Android perdano il gesto dell'utente.
     // L'ID/token restano comunque salvati localmente per il rientro sul sito.
     const gmailBtn=el.querySelector('#lntdvGmailBtn'),mailBtn=el.querySelector('#lntdvAppleMailBtn');
-    const rememberReturn=()=>{
-      try{history.replaceState({lntdvOrder:id,lntdvToken:trackingToken},'',location.pathname+'?ordine='+encodeURIComponent(id)+'&token='+encodeURIComponent(trackingToken||''));}catch(err){}
+
+    // Apertura affidata direttamente al gesto dell'utente:
+    // Gmail viene aperto in una nuova scheda/finestra; mailto viene passato al
+    // client di posta predefinito (Apple Mail su macOS/iPhone/iPad, oppure il
+    // client configurato su Windows/Android). Non modifichiamo l'URL prima
+    // dell'apertura: Safari e iOS possono bloccare/alterare il mailto se la
+    // navigazione viene cambiata nello stesso istante.
+    const openGmail=()=>{
+      const w=window.open(gmailWeb,'_blank','noopener,noreferrer');
+      if(!w){
+        // Fallback quando il browser blocca le nuove finestre.
+        window.location.href=gmailWeb;
+      }
     };
-    if(gmailBtn)gmailBtn.addEventListener('click',()=>{rememberReturn();});
-    if(mailBtn)mailBtn.addEventListener('click',()=>{rememberReturn();});
+    const openMail=()=>{
+      window.location.href=mailto;
+    };
+    if(gmailBtn)gmailBtn.addEventListener('click',e=>{
+      e.preventDefault(); e.stopPropagation();
+      openGmail();
+    });
+    if(mailBtn)mailBtn.addEventListener('click',e=>{
+      e.preventDefault(); e.stopPropagation();
+      openMail();
+    });
   }
 
   $('orderMailSummary')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const list=items();if(!list.length)return;openPanel();});
