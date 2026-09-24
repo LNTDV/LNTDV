@@ -21,24 +21,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate catalog, assets, menu and order system
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install --quiet pillow
           python - <<'PY'
           from pathlib import Path
           import re
           from PIL import Image, ImageOps
 
-          s=Path('index.html').read_text(encoding='utf-8')
-          css=Path('assets/css/site-generated.css').read_text(encoding='utf-8')
-          js=Path('order-system.js').read_text(encoding='utf-8')
-          code=Path('Code.gs').read_text(encoding='utf-8')
+          s = Path('index.html').read_text(encoding='utf-8')
+          css = Path('assets/css/site-generated.css').read_text(encoding='utf-8')
+          js = Path('order-system.js').read_text(encoding='utf-8')
+          code = Path('Code.gs').read_text(encoding='utf-8')
 
-          ids=set(re.findall(r'LNTDV-(\d{3})',s))
-          expected={f'{n:03d}' for n in range(1,26)}
-          assert ids==expected, f'Codici foto errati: {sorted(ids)}'
+          ids = set(re.findall(r'LNTDV-(\d{3})', s))
+          expected = {f'{n:03d}' for n in range(1, 26)}
+          assert ids == expected, f'Codici foto errati: {sorted(ids)}'
 
-          for element_id in ['orderPanel','completePayment','trackingSection','infoMenuButton','infoDrawer']:
-              assert s.count(f'id="{element_id}"')==1, f'Elemento duplicato/mancante: {element_id}'
+          for element_id in ['orderPanel', 'completePayment', 'trackingSection', 'infoMenuButton', 'infoDrawer']:
+              assert s.count(f'id="{element_id}"') == 1, f'Elemento duplicato/mancante: {element_id}'
+
           assert 'order-system.js' in s and 'order-system.css' in s
           assert 'Pannello – Forex' in s
           assert 'Gmail' in js and 'Apple Mail' in js
@@ -47,48 +50,54 @@ jobs:
           assert 'MailApp.sendEmail' in code
           assert 'trackingToken' in code and 'trackingToken' in js
           assert 'https://script.google.com/macros/s/' in js
-          assert 'action === 'health'' in code or "action === 'health'" in code
+          assert "p.action === 'health'" in code
 
-          assert not re.search(r'transform\s*:\s*rotate\s*\(',s,re.I)
-          assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate',css,re.I|re.S)
+          assert not re.search(r'transform\s*:\s*rotate\s*\(', s, re.I)
+          assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate', css, re.I | re.S)
 
           for href in re.findall(r"<link[^>]+href=['\"]([^'\"]+\.css)(?:\?[^'\"]*)?['\"]", s, re.I):
-              if href.startswith('http'): continue
-              assert Path(href.split('?',1)[0].lstrip('./')).exists(), f'CSS mancante: {href}'
+              if href.startswith('http'):
+                  continue
+              assert Path(href.split('?', 1)[0].lstrip('./')).exists(), f'CSS mancante: {href}'
+
           for src in re.findall(r"<script[^>]+src=['\"]([^'\"]+\.js)(?:\?[^'\"]*)?['\"]", s, re.I):
-              if src.startswith('http'): continue
-              assert Path(src.split('?',1)[0].lstrip('./')).exists(), f'JS mancante: {src}'
+              if src.startswith('http'):
+                  continue
+              assert Path(src.split('?', 1)[0].lstrip('./')).exists(), f'JS mancante: {src}'
 
-          horizontal={1,2,4,5,10,12,17,19,20,21,22,23,24,25}
-          vertical={3,6,7,8,9,11,13,14,15,16,18}
-          assert horizontal | vertical == set(range(1,26))
+          horizontal = {1, 2, 4, 5, 10, 12, 17, 19, 20, 21, 22, 23, 24, 25}
+          vertical = {3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 18}
+          assert horizontal | vertical == set(range(1, 26))
+          assert horizontal & vertical == set()
 
-          for n in range(1,26):
-              p=Path(f'images/natura-{n:02d}.jpg')
-              assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
+          for n in range(1, 26):
+              p = Path(f'images/natura-{n:02d}.jpg')
+              assert p.exists() and p.stat().st_size > 1000, f'Foto mancante: {n:02d}'
               assert f'./images/natura-{n:02d}.jpg' in s
               with Image.open(p) as src:
-                  im=src.copy()
-                  if im.getexif().get(274,1) != 1:
-                      im=ImageOps.exif_transpose(im)
-                  want_vertical=n in vertical
-                  if (want_vertical and im.height<=im.width) or ((not want_vertical) and im.width<=im.height):
-                      im=im.transpose(Image.Transpose.ROTATE_90)
-                  assert (im.height>im.width)==want_vertical, f'{p}: normalized orientation mismatch'
-                  assert im.getexif().get(274,1)==1, f'{p}: EXIF orientation non-normalizzato'
+                  im = src.copy()
+                  if im.getexif().get(274, 1) != 1:
+                      im = ImageOps.exif_transpose(im)
+                  want_vertical = n in vertical
+                  if (want_vertical and im.height <= im.width) or ((not want_vertical) and im.width <= im.height):
+                      im = im.transpose(Image.Transpose.ROTATE_90)
+                  assert (im.height > im.width) == want_vertical, f'{p}: normalized orientation mismatch'
+                  assert im.getexif().get(274, 1) == 1, f'{p}: EXIF orientation non-normalizzato'
 
-          for n in range(1,26):
+          for n in range(1, 26):
               assert Path(f'assets/photo{n:02d}.js').exists(), f'Photo script mancante: {n:02d}'
 
-          assert 'Sitemap: https://lntdv.it/sitemap.xml' in Path('robots.txt').read_text()
-          assert 'https://lntdv.it/' in Path('sitemap.xml').read_text()
+          assert 'Sitemap: https://lntdv.it/sitemap.xml' in Path('robots.txt').read_text(encoding='utf-8')
+          assert 'https://lntdv.it/' in Path('sitemap.xml').read_text(encoding='utf-8')
+          print('REPOSITORY HEALTH VALIDATION OK')
           PY
           node --check order-system.js
 
       - name: Check public website
+        shell: bash
         run: |
-          set -e
-          for i in 1 2 3 4 5 6 7 8 9 10; do
+          set -euo pipefail
+          for i in {1..10}; do
             if curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/ &&
                grep -q 'LNTDV-001' /tmp/lntdv.html &&
                grep -q 'LNTDV-025' /tmp/lntdv.html &&
@@ -104,24 +113,26 @@ jobs:
           exit 1
 
       - name: Check Apps Script public deployment
+        shell: bash
         run: |
+          set -euo pipefail
           ENDPOINT=$(python - <<'PY'
           import re
-          s=open('order-system.js',encoding='utf-8').read()
-          m=re.search(r"const ENDPOINT='([^']+)'",s)
+          s = open('order-system.js', encoding='utf-8').read()
+          m = re.search(r"const ENDPOINT='([^']+)'", s)
           assert m, 'Apps Script ENDPOINT non trovato'
           print(m.group(1))
           PY
           )
           echo "Checking Apps Script: $ENDPOINT"
-          set -e
-          for i in 1 2 3 4 5; do
+          for i in {1..5}; do
             if curl -fsSL --max-time 30 "$ENDPOINT?action=health" -o /tmp/apps.json; then
               python - <<'PY'
           import json
-          raw=open('/tmp/apps.json',encoding='utf-8-sig',errors='replace').read().strip()
-          data=json.loads(raw)
-          assert isinstance(data,dict) and data.get('ok') is True, raw[:500]
+          raw = open('/tmp/apps.json', encoding='utf-8-sig', errors='replace').read().strip()
+          data = json.loads(raw)
+          assert isinstance(data, dict), raw[:500]
+          assert data.get('ok') is True, raw[:500]
           assert data.get('service') == 'LNTDV Apps Script', raw[:500]
           print('APPS SCRIPT PUBLIC DEPLOYMENT OK')
           PY
