@@ -34,6 +34,7 @@ jobs:
           css = Path('assets/css/site-generated.css').read_text(encoding='utf-8')
           js = Path('order-system.js').read_text(encoding='utf-8')
           code = Path('Code.gs').read_text(encoding='utf-8')
+          token = Path('PaymentTokenConfirmation.gs').read_text(encoding='utf-8')
 
           ids = set(re.findall(r'LNTDV-(\d{3})', s))
           expected = {f'{n:03d}' for n in range(1, 26)}
@@ -51,6 +52,18 @@ jobs:
           assert 'trackingToken' in code and 'trackingToken' in js
           assert 'https://script.google.com/macros/s/' in js
           assert "p.action === 'health'" in code
+
+          # Flusso pagamento -> token: il token viene condiviso dal trigger
+          # installabile solo dopo la spunta della colonna 20.
+          assert "LNTDV_PAYMENT_CONFIRMATION_COLUMN = 20" in token
+          assert "LNTDV_TOKEN_SENT_AT_COLUMN = 25" in token
+          assert "LNTDV_TOKEN_SEND_STATUS_COLUMN = 26" in token
+          assert 'installPaymentTokenConfirmation' in token
+          assert 'lntdvPaymentConfirmationOnEdit_' in token
+          assert 'MailApp.sendEmail' in token
+          assert 'trackingUrl' in token
+          assert 'alreadySentAt' in token
+          assert "'Pagamento confermato'" not in token or 'Pagamento confermato' in token
 
           assert not re.search(r'transform\s*:\s*rotate\s*\(', s, re.I)
           assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate', css, re.I | re.S)
