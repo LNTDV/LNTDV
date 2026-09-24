@@ -114,60 +114,71 @@
 }
 
 @media(max-width:700px){
-  .grid .card .print-choice{
-    margin:5px 0 4px!important;
-  }
+  .grid .card .print-choice{margin:5px 0 4px!important}
   .grid .card .format-select{
-    height:44px!important;
-    min-height:44px!important;
-    max-height:44px!important;
-    padding:0 34px 0 11px!important;
-    font-size:15px!important;
-    line-height:44px!important;
+    height:44px!important;min-height:44px!important;max-height:44px!important;
+    padding:0 34px 0 11px!important;font-size:15px!important;line-height:44px!important;
   }
-  .grid .card .meta>strong{
-    font-size:15px!important;
-    line-height:1.25!important;
-    padding:7px 10px 2px!important;
-  }
-  .grid .card .meta>span{
-    font-size:13px!important;
-    line-height:1.3!important;
-    padding:3px 10px!important;
-  }
-  .grid .card .meta>small{
-    font-size:12px!important;
-    line-height:1.35!important;
-    padding:3px 10px 8px!important;
-  }
+  .grid .card .meta>strong{font-size:15px!important;line-height:1.25!important;padding:7px 10px 2px!important}
+  .grid .card .meta>span{font-size:13px!important;line-height:1.3!important;padding:3px 10px!important}
+  .grid .card .meta>small{font-size:12px!important;line-height:1.35!important;padding:3px 10px 8px!important}
 }
 
-/* LNTDV — exhibition story QR, readable on desktop and mobile */
-header .lntdv-project-heading::after{
-  content:"Segui la storia nella mostra";
+/* LNTDV — QR code: force a real, readable block directly under the project title.
+   The previous version relied on a text+background pseudo-element. This version
+   separates the label from the QR itself and also provides an h1 fallback. */
+header .lntdv-project-heading,
+header h1.lntdv-project-heading{
+  overflow:visible!important;
+}
+
+header .lntdv-project-heading::before,
+header h1.lntdv-project-heading::before{
+  content:"Segui la storia nella mostra"!important;
   display:block!important;
-  width:min(170px,48vw)!important;
-  height:auto!important;
-  margin:14px auto 0!important;
-  padding-top:min(150px,42vw)!important;
-  box-sizing:border-box!important;
-  background-image:url("../qr/lntdv-story-qr.svg")!important;
-  background-repeat:no-repeat!important;
-  background-position:center top!important;
-  background-size:min(130px,36vw) min(130px,36vw)!important;
+  width:100%!important;
+  margin:12px 0 7px!important;
   color:#fffaf3!important;
-  font:600 10px/1.25 Arial,sans-serif!important;
+  font:600 11px/1.3 Arial,sans-serif!important;
   letter-spacing:.7px!important;
   text-align:center!important;
   text-transform:none!important;
 }
 
+header .lntdv-project-heading::after,
+header h1.lntdv-project-heading::after,
+header h1::after{
+  content:""!important;
+  display:block!important;
+  width:132px!important;
+  height:132px!important;
+  min-width:132px!important;
+  min-height:132px!important;
+  margin:0 auto 10px!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  background:#fff url("../qr/lntdv-story-qr.svg") center center/128px 128px no-repeat!important;
+  border:4px solid #fff!important;
+  border-radius:4px!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.18)!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
 @media(max-width:700px){
-  header .lntdv-project-heading::after{
-    width:150px!important;
-    margin-top:12px!important;
-    padding-top:132px!important;
-    background-size:115px 115px!important;
+  header .lntdv-project-heading::before,
+  header h1.lntdv-project-heading::before{
+    margin:10px 0 6px!important;
     font-size:10px!important;
+  }
+  header .lntdv-project-heading::after,
+  header h1.lntdv-project-heading::after,
+  header h1::after{
+    width:124px!important;
+    height:124px!important;
+    min-width:124px!important;
+    min-height:124px!important;
+    background-size:120px 120px!important;
+    margin-bottom:8px!important;
   }
 }
