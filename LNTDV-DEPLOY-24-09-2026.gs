@@ -1,19 +1,18 @@
 /**
- * LNTDV — DEPLOY DEFINITIVO 24/09/2026
+ * LNTDV — DEPLOY CANONICO GOOGLE APPS SCRIPT
+ * Versione: 24/09/2026
  *
- * File canonico da copiare nel progetto Apps Script:
- * "LNTDV - Inoltro Ordini"
- *
- * Nessuna libreria esterna e nessun servizio avanzato richiesto.
- *
- * Flusso unico:
- * Ordini!T (Pagamento confermato) = TRUE
+ * UNICO gestore del pagamento:
+ * Ordini!T = TRUE
  *   -> una sola email al cliente
- *   -> ID ordine + token + link tracking
- *   -> Ordini!Y = data/ora condivisione
+ *   -> Ordini!Y = data/ora invio
  *   -> Ordini!Z = INVIATO
  *
- * Il token NON viene inviato al cliente alla semplice creazione dell'ordine.
+ * Prima di usare questo file: eseguire UNA VOLTA
+ * lntdvInstallFinal24092026()
+ *
+ * Il sistema elimina automaticamente tutti i trigger legacy relativi
+ * alla conferma pagamento/token e installa un solo trigger.
  */
 
 const LNTDV_FINAL_2026_OWNER = 'info.lanostraterradavicino@gmail.com';
@@ -27,7 +26,7 @@ const LNTDV_FINAL_2026_HANDLER = 'lntdvPaymentFinal24092026_';
 
 function lntdvInstallFinal24092026() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss) throw new Error('Apri questo script dal progetto collegato al foglio Ordini.');
+  if (!ss) throw new Error('Apri il progetto Apps Script collegato al foglio Ordini.');
 
   const sheet = ss.getSheetByName(LNTDV_FINAL_2026_SHEET);
   if (!sheet) throw new Error('Foglio Ordini non trovato.');
@@ -36,6 +35,7 @@ function lntdvInstallFinal24092026() {
     sheet.insertColumnsAfter(sheet.getMaxColumns(), LNTDV_FINAL_2026_STATUS_COL - sheet.getMaxColumns());
   }
 
+  sheet.getRange(1, LNTDV_FINAL_2026_PAYMENT_COL).setValue('Pagamento confermato');
   sheet.getRange(1, LNTDV_FINAL_2026_SHARED_AT_COL).setValue('Token condiviso il');
   sheet.getRange(1, LNTDV_FINAL_2026_STATUS_COL).setValue('Stato invio token');
   sheet.getRange(1, LNTDV_FINAL_2026_SHARED_AT_COL, Math.max(sheet.getLastRow(), 1), 1)
@@ -65,25 +65,26 @@ function lntdvInstallFinal24092026() {
 }
 
 function lntdvPaymentFinal24092026_(e) {
+  const lock = LockService.getScriptLock();
   try {
     if (!e || !e.range) return;
-
     const range = e.range;
     const sheet = range.getSheet();
 
     if (sheet.getName() !== LNTDV_FINAL_2026_SHEET) return;
     if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
-    if (range.getRow() < 2) return;
-    if (range.getColumn() !== LNTDV_FINAL_2026_PAYMENT_COL) return;
+    if (range.getRow() < 2 || range.getColumn() !== LNTDV_FINAL_2026_PAYMENT_COL) return;
 
     const checked = range.getValue() === true || String(e.value || '').toUpperCase() === 'TRUE';
     if (!checked) return;
 
-    const rowNumber = range.getRow();
-    const statusCell = sheet.getRange(rowNumber, LNTDV_FINAL_2026_STATUS_COL);
-    const sentAtCell = sheet.getRange(rowNumber, LNTDV_FINAL_2026_SHARED_AT_COL);
+    lock.waitLock(15000);
 
-    // Idempotenza: nessun doppio invio.
+    const rowNumber = range.getRow();
+    const sentAtCell = sheet.getRange(rowNumber, LNTDV_FINAL_2026_SHARED_AT_COL);
+    const statusCell = sheet.getRange(rowNumber, LNTDV_FINAL_2026_STATUS_COL);
+
+    // Idempotenza forte: se una conferma è già stata inviata, non inviare altro.
     if (sentAtCell.getValue() || String(statusCell.getValue() || '').toUpperCase() === 'INVIATO') return;
 
     const orderId = String(sheet.getRange(rowNumber, 2).getValue() || '').trim();
@@ -112,7 +113,7 @@ function lntdvPaymentFinal24092026_(e) {
       'LINK TRACCIAMENTO:',
       trackingUrl,
       '',
-      'Conserva ID ordine e token: ti serviranno per consultare lo stato della richiesta.',
+      'Conserva il TOKEN e l’ID ORDINE: ti serviranno per consultare lo stato della richiesta.',
       '',
       'La Nostra Terra da Vicino',
       'Edvinas Dragoni'
@@ -125,6 +126,7 @@ function lntdvPaymentFinal24092026_(e) {
       name: 'La Nostra Terra da Vicino'
     });
 
+    // Scrive lo stato SOLO dopo l'invio riuscito.
     sheet.getRange(rowNumber, 15).setValue('PAGATO');
     sentAtCell.setValue(new Date());
     statusCell.setValue('INVIATO');
@@ -138,6 +140,8 @@ function lntdvPaymentFinal24092026_(e) {
       }
     } catch (_) {}
     console.error('LNTDV payment/token error: ' + err);
+  } finally {
+    try { lock.releaseLock(); } catch (_) {}
   }
 }
 
@@ -157,8 +161,12 @@ function lntdvHealthFinal24092026() {
     'lntdv24PaymentOnEdit_'
   ];
 
+  const active = handlers.filter(function(h) {
+    return h === LNTDV_FINAL_2026_HANDLER;
+  });
+
   const result = {
-    ok: handlers.indexOf(LNTDV_FINAL_2026_HANDLER) !== -1 && obsolete.every(h => handlers.indexOf(h) === -1),
+    ok: active.length === 1 && obsolete.every(function(h) { return handlers.indexOf(h) === -1; }),
     service: 'LNTDV Apps Script',
     version: '2026-09-24',
     email: LNTDV_FINAL_2026_OWNER,
@@ -167,8 +175,9 @@ function lntdvHealthFinal24092026() {
     tokenColumn: LNTDV_FINAL_2026_TOKEN_COL,
     sharedAtColumn: LNTDV_FINAL_2026_SHARED_AT_COL,
     statusColumn: LNTDV_FINAL_2026_STATUS_COL,
-    activeTrigger: handlers.indexOf(LNTDV_FINAL_2026_HANDLER) !== -1,
-    obsoleteTriggers: obsolete.filter(h => handlers.indexOf(h) !== -1)
+    activeTrigger: active.length === 1,
+    obsoleteTriggers: obsolete.filter(function(h) { return handlers.indexOf(h) !== -1; }),
+    duplicateCanonicalTriggers: Math.max(0, active.length - 1)
   };
 
   console.log(JSON.stringify(result, null, 2));
