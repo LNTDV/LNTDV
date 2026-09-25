@@ -151,7 +151,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .platform-ios #orderPanel .checkout-fields input,
 .platform-ios #orderPanel .checkout-fields textarea,
 .platform-ios #orderPanel .checkout-fields select{
-  font-size:16px!important; /* prevents Safari auto-zoom */
+  font-size:16px!important;
   -webkit-appearance:none!important;
   appearance:none!important;
 }
@@ -230,5 +230,57 @@ html,body{max-width:100%;overflow-x:hidden}
   .platform-ios .grid .card .lntdv-photo-stage,
   .platform-android .grid .card .lntdv-photo-stage{
     max-height:78vh!important;
+  }
+}
+
+/* LNTDV FINAL UI FIX — 2026-09-25
+   The QR belongs to the project-description block, not to the header itself.
+   Using the description element as the anchor makes the placement deterministic. */
+.lntdv-title-description{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  width:min(820px,100%)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.lntdv-title-description::after{
+  content:"Segui la storia nella mostra"!important;
+  display:block!important;
+  width:150px!important;
+  height:178px!important;
+  margin:18px auto 0!important;
+  padding:132px 0 0!important;
+  box-sizing:border-box!important;
+  background:url("../qr/lntdv-story-qr.svg") center top/132px 132px no-repeat!important;
+  color:#fffaf3!important;
+  font:600 11px/1.3 Arial,sans-serif!important;
+  letter-spacing:.7px!important;
+  text-align:center!important;
+  white-space:normal!important;
+}
+/* Cancel the previous header-level QR so there is exactly one QR. */
+header::after{content:none!important;display:none!important}
+header h1::after,
+header .lntdv-project-heading::after,
+header .lntdv-project-heading::before,
+.lntdv-title-description::before{content:none!important;display:none!important}
+
+/* Hamburger: right on desktop and mobile. */
+.info-menu-button{
+  position:fixed!important;
+  top:18px!important;
+  right:18px!important;
+  left:auto!important;
+  bottom:auto!important;
+  z-index:2147483000!important;
+}
+@media(max-width:700px){
+  .info-menu-button{
+    top:12px!important;
+    right:14px!important;
+    left:auto!important;
+    bottom:auto!important;
   }
 }
