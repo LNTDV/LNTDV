@@ -1,17 +1,19 @@
-/* LNTDV — FINAL HERO + MENU — 2026-09-25 */
+/* LNTDV — FINAL HERO + MENU — 2026-09-25 — stable/no-flash */
 (function(){
   'use strict';
 
   var PROJECT = 'Un invito a fermarsi, osservare e tornare vicino a ciò che ci circonda: la terra, la luce, le tracce del tempo e quei piccoli dettagli che spesso attraversiamo senza guardarli davvero. La fotografia diventa un modo per ascoltare il paesaggio e riscoprire il legame silenzioso tra natura, luoghi e presenza umana.';
   var SHOW = 'La mostra nasce da uno sguardo lento sul territorio: un percorso tra natura, tempo e città, dove ogni immagine cerca ciò che rimane quando smettiamo di passare oltre. Un racconto fatto di luce, materia, stagioni e memoria, per lasciare che il paesaggio non sia soltanto visto, ma sentito.';
   var AUTHOR = 'Edvinas Dragoni racconta il territorio attraverso uno sguardo attento e personale. La sua fotografia cerca ciò che normalmente sfugge: una luce che cambia, una traccia, una materia, un dettaglio capace di fermare per un istante il ritmo quotidiano. In questo progetto l’autore invita chi guarda a rallentare e a riconoscere nella natura e nei luoghi attraversati una parte della propria esperienza.';
+  var building = false;
 
   function style(){
     if(document.getElementById('lntdv-final-hero-style')) return;
     var s=document.createElement('style'); s.id='lntdv-final-hero-style';
     s.textContent=''+
       'html,body{background:#fbf6ef!important;color:#5a3b2b!important}'+
-      'body>header#lntdv-main-header{display:block!important;position:relative!important;width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:38px 16px 34px!important;background:#fbf6ef!important;color:#5a3b2b!important;border:0!important;box-shadow:none!important;text-align:center!important;box-sizing:border-box!important}'+
+      'body>header#lntdv-main-header{display:block!important;position:relative!important;width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:38px 16px 34px!important;background:#fbf6ef!important;color:#5a3b2b!important;border:0!important;box-shadow:none!important;text-align:center!important;box-sizing:border-box!important;visibility:hidden!important;opacity:0!important;transition:opacity .12s ease!important}'+
+      'body>header#lntdv-main-header.lntdv-ready{visibility:visible!important;opacity:1!important}'+
       '#lntdv-main-header .lntdv-project-heading{display:block!important;margin:0 auto 18px!important;color:#5a3b2b!important;background:transparent!important;font:700 clamp(34px,7vw,56px)/1.06 Georgia,serif!important;max-width:900px!important}'+
       '#lntdv-main-header .lntdv-project-copy,#lntdv-main-header .lntdv-exhibition-copy,#lntdv-main-header .lntdv-author-copy{display:block!important;width:min(820px,calc(100% - 24px))!important;margin:18px auto 0!important;color:#5a3b2b!important;background:transparent!important;text-align:center!important}'+
       '#lntdv-main-header .lntdv-project-copy p,#lntdv-main-header .lntdv-exhibition-copy p,#lntdv-main-header .lntdv-author-copy p{margin:0!important;color:#5a3b2b!important;background:transparent!important;font:400 17px/1.55 Georgia,serif!important}'+
@@ -35,15 +37,22 @@
   function hero(){
     var h=document.querySelector('body>header');
     if(!h){h=document.createElement('header');document.body.insertBefore(h,document.body.firstChild);}
+    if(building) return h;
+    var complete=h.id==='lntdv-main-header' && h.getAttribute('data-lntdv-final')==='1' && h.querySelector('.lntdv-project-copy') && h.querySelector('.lntdv-qr') && h.querySelector('.lntdv-exhibition-copy') && h.querySelector('.lntdv-author-copy');
+    if(complete){h.classList.add('lntdv-ready');return h;}
+    building=true;
     h.id='lntdv-main-header';
-    if(h.getAttribute('data-lntdv-final')==='1') return;
     h.setAttribute('data-lntdv-final','1');
+    h.classList.remove('lntdv-ready');
     h.innerHTML='';
     var title=document.createElement('div'); title.className='lntdv-project-heading'; title.textContent='La Nostra Terra Da Vicino'; h.appendChild(title);
     var project=document.createElement('section'); project.className='lntdv-project-copy'; project.innerHTML='<p>'+PROJECT+'</p>'; h.appendChild(project);
-    var qr=document.createElement('div'); qr.className='lntdv-qr'; qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-final2" alt="QR code — Scopri la storia della mostra"><div class="lntdv-qr-label">Scopri la storia della mostra</div>'; h.appendChild(qr);
+    var qr=document.createElement('div'); qr.className='lntdv-qr'; qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-final3" alt="QR code — Scopri la storia della mostra"><div class="lntdv-qr-label">Scopri la storia della mostra</div>'; h.appendChild(qr);
     var show=document.createElement('section'); show.className='lntdv-exhibition-copy'; show.innerHTML='<strong>MOSTRA FOTOGRAFICA DI EDVINAS DRAGONI</strong><p>'+SHOW+'</p>'; h.appendChild(show);
     var author=document.createElement('section'); author.className='lntdv-author-copy'; author.innerHTML='<strong>EDVINAS DRAGONI</strong><p>'+AUTHOR+'</p>'; h.appendChild(author);
+    h.classList.add('lntdv-ready');
+    building=false;
+    return h;
   }
 
   function menu(){
@@ -62,7 +71,20 @@
   }
 
   function run(){style();hero();menu();}
-  function finalRun(){run();setTimeout(run,100);setTimeout(run,500);setTimeout(run,1200);}
+  function finalRun(){run();setTimeout(run,100);setTimeout(run,500);setTimeout(run,1200);setTimeout(run,2500);setTimeout(run,5000);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',finalRun,{once:true}); else finalRun();
   window.addEventListener('load',function(){setTimeout(run,50);setTimeout(run,500);});
+
+  var observerTarget=document.body;
+  function observe(){
+    if(!observerTarget||window.__lntdvHeroObserver) return;
+    window.__lntdvHeroObserver=new MutationObserver(function(){
+      if(building) return;
+      var h=document.querySelector('body>header');
+      var ok=h && h.id==='lntdv-main-header' && h.querySelector('.lntdv-project-copy') && h.querySelector('.lntdv-qr') && h.querySelector('.lntdv-exhibition-copy') && h.querySelector('.lntdv-author-copy');
+      if(!ok){setTimeout(function(){run();},0);}
+    });
+    window.__lntdvHeroObserver.observe(observerTarget,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',observe,{once:true}); else observe();
 })();
