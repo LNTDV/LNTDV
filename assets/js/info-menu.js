@@ -4,6 +4,7 @@
 
   const projectText="Un invito a fermarsi, osservare e tornare vicino a ciò che ci circonda: la terra, la luce, le tracce del tempo e quei piccoli dettagli che spesso attraversiamo senza guardarli davvero. La fotografia diventa un modo per ascoltare il paesaggio e riscoprire il legame silenzioso tra natura, luoghi e presenza umana.";
   const showText="La mostra nasce da uno sguardo lento sul territorio: un percorso tra natura, tempo e città, dove ogni immagine cerca ciò che rimane quando smettiamo di passare oltre. Un racconto fatto di luce, materia, stagioni e memoria, per lasciare che il paesaggio non sia soltanto visto, ma sentito.";
+  const authorText="Edvinas Dragoni racconta il territorio attraverso uno sguardo attento e personale. La sua fotografia cerca ciò che normalmente sfugge: una luce che cambia, una traccia, una materia, un dettaglio capace di fermare per un istante il ritmo quotidiano. In questo progetto l’autore invita chi guarda a rallentare e a riconoscere nella natura e nei luoghi attraversati una parte della propria esperienza.";
 
   function style(){
     if(document.getElementById('lntdv-final-layout-style')) return;
@@ -22,6 +23,9 @@
       #lntdv-final-exhibition{display:block!important;width:min(820px,calc(100% - 28px))!important;margin:18px auto 0!important;background:transparent!important;color:#5a3b2b!important;text-align:center!important}
       #lntdv-final-exhibition strong{display:block!important;color:#5a3b2b!important;font:800 12px/1.3 Arial,sans-serif!important;letter-spacing:1.2px!important}
       #lntdv-final-exhibition p{margin:8px 0 0!important;color:#5a3b2b!important;font:400 16px/1.55 Georgia,serif!important}
+      #lntdv-final-author{display:block!important;width:min(820px,calc(100% - 28px))!important;margin:18px auto 0!important;background:transparent!important;color:#5a3b2b!important;text-align:center!important}
+      #lntdv-final-author strong{display:block!important;color:#5a3b2b!important;font:800 12px/1.3 Arial,sans-serif!important;letter-spacing:1.2px!important}
+      #lntdv-final-author p{margin:8px 0 0!important;color:#5a3b2b!important;font:400 16px/1.55 Georgia,serif!important}
       #infoMenuButton.info-menu-button{position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;width:40px!important;height:36px!important;min-width:40px!important;padding:4px!important;margin:0!important;border:0!important;background:transparent!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;z-index:2147483000!important;cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important}
       #infoMenuButton.info-menu-button span{display:block!important;width:25px!important;height:3px!important;margin:0!important;background:#5a3b2b!important;border:0!important;border-radius:2px!important;opacity:1!important;pointer-events:none!important}
       #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(8px) rotate(45deg)!important}
@@ -31,8 +35,8 @@
       @media(max-width:600px){
         header{padding:52px 12px 25px!important}
         #infoMenuButton.info-menu-button{top:12px!important;right:14px!important}
-        #lntdv-home-project-description,#lntdv-final-exhibition{width:calc(100% - 28px)!important}
-        #lntdv-home-project-description p,#lntdv-final-exhibition p{font-size:16px!important;line-height:1.5!important}
+        #lntdv-home-project-description,#lntdv-final-exhibition,#lntdv-final-author{width:calc(100% - 28px)!important}
+        #lntdv-home-project-description p,#lntdv-final-exhibition p,#lntdv-final-author p{font-size:16px!important;line-height:1.5!important}
       }
     `;
     document.head.appendChild(s);
@@ -82,6 +86,11 @@
     exhibition.id='lntdv-final-exhibition';
     exhibition.innerHTML='<strong>MOSTRA FOTOGRAFICA DI EDVINAS DRAGONI</strong><p>'+showText+'</p>';
     header.appendChild(exhibition);
+
+    const author=document.createElement('section');
+    author.id='lntdv-final-author';
+    author.innerHTML='<strong>EDVINAS DRAGONI</strong><p>'+authorText+'</p>';
+    header.appendChild(author);
   }
 
   function wireMenu(){
