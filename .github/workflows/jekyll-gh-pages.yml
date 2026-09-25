@@ -38,9 +38,11 @@ jobs:
           <div class="lntdv-author-title">EDVINAS DRAGONI</div>
           <div class="lntdv-author-description"><p>Attraverso la fotografia, Edvinas Dragoni cerca una presenza silenziosa nelle cose: nella luce che cambia, nelle superfici della terra, nei dettagli del paesaggio. Il suo sguardo invita a fermarsi, osservare e riconoscere la bellezza di ciò che abbiamo vicino.</p></div>
         </header><main>'''
-          s=re.sub(r'<header\\b[\\s\\S]*?</header>\\s*<main>',header,s,count=1)
-          if '<style id="lntdv-canonical-build-style">' in s:
-              s=re.sub(r'<style id="lntdv-canonical-build-style">[\\s\\S]*?</style>','',s)
+          s2=re.sub(r'<header\b[\s\S]*?</header>\s*<main>',header,s,count=1)
+          if s2==s:
+              raise SystemExit('Header HTML non trovato: nessuna modifica eseguita.')
+          s=s2
+          s=re.sub(r'<style id="lntdv-canonical-build-style">[\s\S]*?</style>','',s)
           css='''<style id="lntdv-canonical-build-style">
           .lntdv-canonical-header{position:relative!important;background:#fbf6ef!important;color:#5a3b2b!important;text-align:center!important;padding:58px 16px 34px!important;box-sizing:border-box!important;border:0!important}
           .lntdv-project-heading{margin:0 auto 22px!important;color:#5a3b2b!important;font:700 clamp(38px,7vw,60px)/1.08 Georgia,serif!important;max-width:900px!important}
