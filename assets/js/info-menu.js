@@ -2,6 +2,9 @@
 (function(){
   "use strict";
 
+  const evocativeProject = "Un invito a fermarsi, osservare e tornare vicino a ciò che ci circonda: la terra, la luce, le tracce del tempo e quei piccoli dettagli che spesso attraversiamo senza guardarli davvero. La fotografia diventa un modo per ascoltare il paesaggio e riscoprire il legame silenzioso tra natura, luoghi e presenza umana.";
+  const evocativeShow = "La mostra nasce da uno sguardo lento sul territorio: un percorso tra natura, tempo e città, dove ogni immagine cerca ciò che rimane quando smettiamo di passare oltre. Un racconto fatto di luce, materia, stagioni e memoria, per lasciare che il paesaggio non sia soltanto visto, ma sentito.";
+
   function installFinalStyle(){
     if(document.getElementById("lntdv-final-header-fix")) return;
     const style=document.createElement("style");
@@ -61,15 +64,14 @@
     if(old) old.remove();
     const source=document.querySelector("#info-project");
     const heading=source && source.querySelector("h3");
-    const paragraph=source && source.querySelector("p");
-    if(!source || !heading || !paragraph) return null;
+    if(!source || !heading) return null;
     const block=document.createElement("section");
     block.id="lntdv-home-project-description";
-    block.setAttribute("aria-label","Descrizione del progetto La Nostra Terra Da Vicino");
+    block.setAttribute("aria-label","Descrizione evocativa del progetto La Nostra Terra Da Vicino");
     const h2=document.createElement("h2");
     h2.textContent="La Nostra Terra Da Vicino";
     const p=document.createElement("p");
-    p.textContent=paragraph.textContent.trim();
+    p.textContent=evocativeProject;
     block.appendChild(h2);
     block.appendChild(p);
     return block;
@@ -91,7 +93,10 @@
     if(project) project.insertAdjacentElement("afterend",qr);
     else heading.insertAdjacentElement("afterend",qr);
 
-    if(description) qr.insertAdjacentElement("afterend",description);
+    if(description){
+      description.textContent=evocativeShow;
+      qr.insertAdjacentElement("afterend",description);
+    }
   }
 
   function init(){
