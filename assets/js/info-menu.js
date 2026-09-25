@@ -20,35 +20,23 @@
         box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;
         justify-content:center!important;gap:5px!important;z-index:2147483000!important
       }
-      #infoMenuButton.info-menu-button span{
-        display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;
-        margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fffaf3!important;
-        box-shadow:none!important;opacity:1!important
-      }
+      #infoMenuButton.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fffaf3!important;box-shadow:none!important;opacity:1!important}
       #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
       #infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}
       #infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
 
-      /* Project title + its complete description must appear before the QR. */
-      header #lntdv-project-description-block{
-        width:min(920px,calc(100% - 24px))!important;
-        margin:18px auto 0!important;
-        box-sizing:border-box!important;
-      }
-      /* QR comes after the project description and before the exhibition description. */
-      #lntdv-final-story-qr{
-        display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
-        width:100%!important;margin:18px auto 14px!important;padding:0!important;text-align:center!important;box-sizing:border-box!important
-      }
-      #lntdv-final-story-qr img{
-        display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;
-        margin:0 auto 8px!important;padding:0!important;border:4px solid #fff!important;border-radius:4px!important;
-        background:#fff!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important;box-sizing:border-box!important
-      }
+      header #info-project{display:block!important;width:min(820px,calc(100% - 24px))!important;margin:18px auto 0!important;padding:0!important;box-sizing:border-box!important;background:transparent!important;border:0!important;box-shadow:none!important;text-align:center!important;color:#fffaf3!important}
+      header #info-project .info-kicker{display:none!important}
+      header #info-project h3{margin:0 0 10px!important;font:700 clamp(22px,6vw,30px)/1.15 Georgia,serif!important;color:#fffaf3!important}
+      header #info-project p{margin:0!important;font:400 17px/1.55 Georgia,serif!important;color:#fffaf3!important}
+      #lntdv-final-story-qr{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;margin:18px auto 14px!important;padding:0!important;text-align:center!important;box-sizing:border-box!important}
+      #lntdv-final-story-qr img{display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;margin:0 auto 8px!important;padding:0!important;border:4px solid #fff!important;border-radius:4px!important;background:#fff!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important;box-sizing:border-box!important}
       #lntdv-final-story-qr .qr-label{font:600 11px/1.3 Arial,sans-serif!important;letter-spacing:.7px!important;color:#fffaf3!important}
       @media(max-width:700px){
         #infoMenuButton.info-menu-button{top:12px!important;right:14px!important;left:auto!important}
-        header #lntdv-project-description-block{width:calc(100% - 20px)!important;margin-top:15px!important}
+        header #info-project{width:calc(100% - 28px)!important;margin-top:15px!important}
+        header #info-project h3{font-size:25px!important;margin-bottom:9px!important}
+        header #info-project p{font-size:16px!important;line-height:1.5!important}
         #lntdv-final-story-qr{margin-top:16px!important;margin-bottom:12px!important}
         #lntdv-final-story-qr img{width:136px!important;height:136px!important;max-width:136px!important}
       }
@@ -60,6 +48,7 @@
     Array.from(document.body.childNodes).forEach(function(node){
       if(node.nodeType===3 && (node.textContent.trim()==="\\n" || node.textContent.trim()==="\\\\n")) node.remove();
     });
+    document.querySelectorAll("body > br").forEach(function(br){br.remove()});
   }
 
   function removeEveryLegacyQr(){
@@ -75,12 +64,12 @@
     });
   }
 
-  function moveProjectDescriptionIntoHeader(heading){
-    const project=document.getElementById("lntdv-project-description-block");
-    if(!project || !heading) return null;
-    const header=heading.closest("header");
-    if(!header) return project;
-    /* Keep the existing project-description content intact, but place it directly under the main title. */
+  function moveProjectIntoHeader(heading){
+    const project=document.getElementById("info-project");
+    const header=heading && heading.closest("header");
+    if(!project || !header) return null;
+    const h3=project.querySelector("h3");
+    if(h3) h3.textContent="La Nostra Terra Da Vicino";
     heading.insertAdjacentElement("afterend",project);
     return project;
   }
@@ -88,23 +77,26 @@
   function moveQr(){
     removeEveryLegacyQr();
     const heading=document.querySelector("header .lntdv-project-heading, header h1.lntdv-project-heading, .lntdv-project-heading");
-    const description=document.querySelector(".lntdv-title-description");
-    if(!heading || !description) return;
+    const description=document.querySelector("header .lntdv-title-description, .lntdv-title-description");
+    if(!heading) return;
 
-    const project=moveProjectDescriptionIntoHeader(heading);
+    const project=moveProjectIntoHeader(heading);
     const qr=document.createElement("div");
     qr.id="lntdv-final-story-qr";
-    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-order2" alt="QR code — Segui la storia della mostra"><div class="qr-label">Segui la storia della mostra</div>';
+    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-finalorder" alt="QR code — Segui la storia della mostra"><div class="qr-label">Segui la storia della mostra</div>';
 
-    /* Exact requested order: main title → project + description → QR → exhibition description. */
     if(project) project.insertAdjacentElement("afterend",qr);
     else heading.insertAdjacentElement("afterend",qr);
+
+    if(description){
+      /* Keep the exhibition title/description immediately after the QR. */
+      qr.insertAdjacentElement("afterend",description);
+    }
   }
 
   function init(){
     installFinalStyle();
     removeStrayNewline();
-
     const btn=document.getElementById("infoMenuButton");
     const header=document.querySelector("header");
     if(btn && header){
@@ -115,7 +107,6 @@
       btn.style.left="auto";
       btn.style.bottom="auto";
     }
-
     moveQr();
 
     const drawer=document.getElementById("infoDrawer");
