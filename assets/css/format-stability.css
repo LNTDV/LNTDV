@@ -2,179 +2,22 @@
    2026-09-20: compact selector, no oversized beige container.
    LNTDV code and orientation are intentionally readable on mobile and desktop.
 */
-.grid .card .meta{
-  min-width:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:stretch!important;
-  overflow:visible!important;
-}
+.grid .card .meta{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;overflow:visible!important}
+.grid .card .print-choice{box-sizing:border-box!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:6px 0 5px!important;padding:0!important;display:block!important;overflow:visible!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.grid .card .print-choice label{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.grid .card .format-select{box-sizing:border-box!important;display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;height:46px!important;min-height:46px!important;max-height:46px!important;margin:0!important;padding:0 36px 0 12px!important;border:1px solid #b99a7d!important;border-radius:10px!important;background:#fffaf3!important;color:#4b3022!important;font:600 14px/46px Arial,sans-serif!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;appearance:auto!important;-webkit-appearance:auto!important;outline:none!important;box-shadow:none!important}
+.grid .card .format-select:focus{outline:2px solid rgba(90,59,43,.22)!important;outline-offset:1px!important}
+.grid .card .format-select option{font:14px Arial,sans-serif!important;line-height:1.2!important;white-space:normal!important;background:#fffaf3!important;color:#3d281d!important}
+.grid .card .meta>strong{order:2!important;display:block!important;margin:2px 0 0!important;padding:7px 10px 2px!important;background:#f4eadf!important;color:#4b2f22!important;font:800 14px/1.25 Arial,sans-serif!important;letter-spacing:1.3px!important;box-sizing:border-box!important;border-radius:8px 8px 0 0!important}
+.grid .card .meta>span{order:3!important;display:block!important;margin:0!important;padding:3px 10px!important;background:#f4eadf!important;color:#4b2f22!important;font:600 12px/1.3 Arial,sans-serif!important;box-sizing:border-box!important}
+.grid .card .meta>small{order:4!important;display:block!important;margin:0!important;padding:3px 10px 8px!important;background:#f4eadf!important;color:#5f4435!important;font:600 12px/1.35 Arial,sans-serif!important;box-sizing:border-box!important;border-radius:0 0 8px 8px!important}
+@media(max-width:700px){.grid .card .print-choice{margin:5px 0 4px!important}.grid .card .format-select{height:44px!important;min-height:44px!important;max-height:44px!important;padding:0 34px 0 11px!important;font-size:15px!important;line-height:44px!important}.grid .card .meta>strong{font-size:15px!important;line-height:1.25!important;padding:7px 10px 2px!important}.grid .card .meta>span{font-size:13px!important;line-height:1.3!important;padding:3px 10px!important}.grid .card .meta>small{font-size:12px!important;line-height:1.35!important;padding:3px 10px 8px!important}}
 
-.grid .card .print-choice{
-  box-sizing:border-box!important;
-  width:100%!important;
-  height:auto!important;
-  min-height:0!important;
-  max-height:none!important;
-  margin:6px 0 5px!important;
-  padding:0!important;
-  display:block!important;
-  overflow:visible!important;
-  background:transparent!important;
-  border:0!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-}
+/* QR: directly below the complete project description in the header. */
+header .lntdv-project-heading::before,header .lntdv-project-heading::after,header h1.lntdv-project-heading::before,header h1.lntdv-project-heading::after,header h1::after,.lntdv-title-description::before,.lntdv-title-description::after{content:none!important;display:none!important}
+header::after{content:"Segui la storia nella mostra"!important;display:block!important;width:144px!important;height:174px!important;margin:18px auto 0!important;padding:0!important;box-sizing:border-box!important;background-image:url("../qr/lntdv-story-qr.svg")!important;background-repeat:no-repeat!important;background-position:center top!important;background-size:132px 132px!important;color:#fffaf3!important;font:600 11px/1.3 Arial,sans-serif!important;letter-spacing:.7px!important;text-align:center!important;text-transform:none!important;white-space:normal!important;overflow:visible!important;border:0!important}
 
-.grid .card .print-choice label{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  padding:0!important;
-  margin:-1px!important;
-  overflow:hidden!important;
-  clip:rect(0,0,0,0)!important;
-  white-space:nowrap!important;
-  border:0!important;
-}
-
-.grid .card .format-select{
-  box-sizing:border-box!important;
-  display:block!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  height:46px!important;
-  min-height:46px!important;
-  max-height:46px!important;
-  margin:0!important;
-  padding:0 36px 0 12px!important;
-  border:1px solid #b99a7d!important;
-  border-radius:10px!important;
-  background:#fffaf3!important;
-  color:#4b3022!important;
-  font:600 14px/46px Arial,sans-serif!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  appearance:auto!important;
-  -webkit-appearance:auto!important;
-  outline:none!important;
-  box-shadow:none!important;
-}
-
-.grid .card .format-select:focus{
-  outline:2px solid rgba(90,59,43,.22)!important;
-  outline-offset:1px!important;
-}
-
-.grid .card .format-select option{
-  font:14px Arial,sans-serif!important;
-  line-height:1.2!important;
-  white-space:normal!important;
-  background:#fffaf3!important;
-  color:#3d281d!important;
-}
-
-/* Readable photo identification */
-.grid .card .meta>strong{
-  order:2!important;
-  display:block!important;
-  margin:2px 0 0!important;
-  padding:7px 10px 2px!important;
-  background:#f4eadf!important;
-  color:#4b2f22!important;
-  font:800 14px/1.25 Arial,sans-serif!important;
-  letter-spacing:1.3px!important;
-  box-sizing:border-box!important;
-  border-radius:8px 8px 0 0!important;
-}
-
-.grid .card .meta>span{
-  order:3!important;
-  display:block!important;
-  margin:0!important;
-  padding:3px 10px!important;
-  background:#f4eadf!important;
-  color:#4b2f22!important;
-  font:600 12px/1.3 Arial,sans-serif!important;
-  box-sizing:border-box!important;
-}
-
-.grid .card .meta>small{
-  order:4!important;
-  display:block!important;
-  margin:0!important;
-  padding:3px 10px 8px!important;
-  background:#f4eadf!important;
-  color:#5f4435!important;
-  font:600 12px/1.35 Arial,sans-serif!important;
-  box-sizing:border-box!important;
-  border-radius:0 0 8px 8px!important;
-}
-
-@media(max-width:700px){
-  .grid .card .print-choice{margin:5px 0 4px!important}
-  .grid .card .format-select{
-    height:44px!important;min-height:44px!important;max-height:44px!important;
-    padding:0 34px 0 11px!important;font-size:15px!important;line-height:44px!important;
-  }
-  .grid .card .meta>strong{font-size:15px!important;line-height:1.25!important;padding:7px 10px 2px!important}
-  .grid .card .meta>span{font-size:13px!important;line-height:1.3!important;padding:3px 10px!important}
-  .grid .card .meta>small{font-size:12px!important;line-height:1.35!important;padding:3px 10px 8px!important}
-}
-
-/* LNTDV — QR code: place it AFTER the project title description, not inside the title. */
-header .lntdv-project-heading::before,
-header .lntdv-project-heading::after,
-header h1.lntdv-project-heading::before,
-header h1.lntdv-project-heading::after,
-header h1::after{
-  content:none!important;
-  display:none!important;
-}
-
-.lntdv-title-description::after{
-  content:""!important;
-  display:block!important;
-  width:132px!important;
-  height:132px!important;
-  min-width:132px!important;
-  min-height:132px!important;
-  margin:14px auto 12px!important;
-  padding:0!important;
-  box-sizing:border-box!important;
-  background:#fff url("../qr/lntdv-story-qr.svg") center center/128px 128px no-repeat!important;
-  border:4px solid #fff!important;
-  border-radius:4px!important;
-  box-shadow:0 2px 8px rgba(0,0,0,.18)!important;
-  visibility:visible!important;
-  opacity:1!important;
-}
-
-.lntdv-title-description::before{
-  content:"Segui la storia nella mostra"!important;
-  display:block!important;
-  width:100%!important;
-  margin:0 0 7px!important;
-  color:#5a3b2b!important;
-  font:600 11px/1.3 Arial,sans-serif!important;
-  letter-spacing:.7px!important;
-  text-align:center!important;
-  text-transform:none!important;
-}
-
-@media(max-width:700px){
-  .lntdv-title-description::before{
-    margin:0 0 6px!important;
-    font-size:10px!important;
-  }
-  .lntdv-title-description::after{
-    width:124px!important;
-    height:124px!important;
-    min-width:124px!important;
-    min-height:124px!important;
-    background-size:120px 120px!important;
-    margin:10px auto 8px!important;
-  }
-}
+/* Hamburger menu: always on the RIGHT, including mobile. */
+.info-menu-button{position:fixed!important;top:18px!important;right:18px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;padding:0!important;margin:0!important;z-index:2147483000!important}
+.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;background:#4b2f22!important;opacity:1!important}
+@media(max-width:700px){.info-menu-button{top:12px!important;right:14px!important;left:auto!important;width:30px!important;height:28px!important;min-width:30px!important;min-height:28px!important}.info-menu-button span{width:23px!important;min-width:23px!important}header::after{width:136px!important;height:164px!important;margin-top:14px!important;background-size:124px 124px!important;font-size:10px!important}}
