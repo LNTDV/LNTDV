@@ -86,7 +86,7 @@
 
     const qr=document.createElement("div");
     qr.id="lntdv-final-story-qr";
-    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-finalorder2" alt="QR code — Segui la storia della mostra"><div class="qr-label">Segui la storia della mostra</div>';
+    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-finalorder2" alt="QR code — Scopri la storia della mostra"><div class="qr-label">Scopri la storia della mostra</div>';
 
     if(project) project.insertAdjacentElement("afterend",qr);
     else heading.insertAdjacentElement("afterend",qr);
