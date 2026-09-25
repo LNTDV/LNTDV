@@ -1,0 +1,29 @@
+name: LNTDV header cache bust
+
+on:
+  push:
+    paths:
+      - 'assets/js/info-menu.js'
+
+permissions:
+  contents: write
+
+jobs:
+  bust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update header script version
+        run: |
+          sed -i 's#info-menu.js?v=20260921-final#info-menu.js?v=20260925-stable2#' index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- index.html; then
+            echo 'No cache-busting change needed.'
+            exit 0
+          fi
+          git add index.html
+          git commit -m 'Bust info menu script cache'
+          git push
