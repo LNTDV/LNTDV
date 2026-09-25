@@ -7,14 +7,11 @@
     const style=document.createElement("style");
     style.id="lntdv-final-header-fix";
     style.textContent=`
-      /* Remove every legacy QR/header pseudo-element. */
       header h1::before,header h1::after,
       header .lntdv-project-heading::before,header .lntdv-project-heading::after,
       header .lntdv-title-description::before,header .lntdv-title-description::after,
       .lntdv-title-description::before,.lntdv-title-description::after,
       header::before,header::after{content:none!important;display:none!important;background:none!important}
-
-      /* Hamburger: always upper-right inside the brown header. */
       header{position:relative!important}
       #infoMenuButton.info-menu-button{
         position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;
@@ -31,11 +28,9 @@
       #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
       #infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}
       #infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
-
-      /* QR: after the complete title/description block, never above the title. */
       #lntdv-final-story-qr{
         display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
-        width:100%!important;margin:18px auto 0!important;padding:0!important;text-align:center!important;box-sizing:border-box!important
+        width:100%!important;margin:18px auto 16px!important;padding:0!important;text-align:center!important;box-sizing:border-box!important
       }
       #lntdv-final-story-qr img{
         display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;
@@ -45,7 +40,7 @@
       #lntdv-final-story-qr .qr-label{font:600 11px/1.3 Arial,sans-serif!important;letter-spacing:.7px!important;color:#fffaf3!important}
       @media(max-width:700px){
         #infoMenuButton.info-menu-button{top:12px!important;right:14px!important;left:auto!important}
-        #lntdv-final-story-qr{margin-top:18px!important}
+        #lntdv-final-story-qr{margin-top:18px!important;margin-bottom:14px!important}
         #lntdv-final-story-qr img{width:136px!important;height:136px!important;max-width:136px!important}
       }
     `;
@@ -58,19 +53,29 @@
     });
   }
 
-  function moveQr(){
-    document.querySelectorAll("#lntdv-show-qr,#lntdv-story-qr-block,#lntdv-final-story-qr").forEach(function(el){
-      if(el.id!=="lntdv-final-story-qr") el.remove();
+  function removeEveryLegacyQr(){
+    document.querySelectorAll("#lntdv-show-qr,#lntdv-story-qr-block,#lntdv-final-story-qr").forEach(function(el){el.remove()});
+    document.querySelectorAll('img[src*="lntdv-story-qr.svg"]').forEach(function(img){
+      const parent=img.parentElement;
+      if(parent && parent.tagName.toLowerCase()!=="header" && parent.children.length<=3) parent.remove();
+      else img.remove();
     });
+    document.querySelectorAll("*").forEach(function(el){
+      const bg=getComputedStyle(el).backgroundImage||"";
+      if(bg.includes("lntdv-story-qr.svg")) el.style.setProperty("background-image","none","important");
+    });
+  }
 
-    /* Prefer the complete project-description container. */
+  function moveQr(){
+    removeEveryLegacyQr();
+    const heading=document.querySelector("header .lntdv-project-heading, header h1.lntdv-project-heading, .lntdv-project-heading");
     const description=document.querySelector(".lntdv-title-description");
-    if(!description) return;
+    if(!heading || !description) return;
 
     const qr=document.createElement("div");
     qr.id="lntdv-final-story-qr";
-    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-final-qr" alt="QR code — Segui la storia nella mostra"><div class="qr-label">Segui la storia nella mostra</div>';
-    description.insertAdjacentElement("afterend",qr);
+    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-oneqr" alt="QR code — Segui la storia nella mostra"><div class="qr-label">Segui la storia nella mostra</div>';
+    heading.insertAdjacentElement("afterend",qr);
   }
 
   function init(){
