@@ -1,0 +1,115 @@
+name: LNTDV full health check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '15 * * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          from PIL import Image, ImageOps
+
+          root=Path('.')
+          html=(root/'index.html').read_text(encoding='utf-8')
+          js=(root/'order-system.js').read_text(encoding='utf-8')
+
+          assert 'La Nostra Terra Da Vicino' in html
+          assert 'infoMenuButton' in html
+          assert 'infoDrawer' in html
+          assert html.count('id="orderPanel"') == 1
+          assert html.count('id="completePayment"') == 1
+          assert html.count('id="trackingSection"') == 1
+          assert 'order-system.js' in html
+          assert 'order-system.css' in html
+
+          ids=set(re.findall(r'LNTDV-(\d{3})',html))
+          assert ids == {f'{n:03d}' for n in range(1,26)}, sorted(ids)
+
+          for n in range(1,26):
+              p=root/f'images/natura-{n:02d}.jpg'
+              assert p.exists() and p.stat().st_size>1000, f'Foto mancante: {n:02d}'
+              with Image.open(p) as im:
+                  im=ImageOps.exif_transpose(im)
+                  assert im.getexif().get(274,1)==1
+              assert (root/f'assets/photo{n:02d}.js').exists()
+
+          assert (root/'robots.txt').exists()
+          assert 'Sitemap: https://lntdv.it/sitemap.xml' in (root/'robots.txt').read_text()
+          assert 'https://lntdv.it/' in (root/'sitemap.xml').read_text()
+
+          # QR: deve essere presente nel progetto, ma il markup deve usarne uno solo.
+          qr_files=list(root.glob('**/*qr*'))
+          qr_refs=re.findall(r'[^\"\']*qr[^\"\']*',html,re.I)
+          assert len(qr_refs) <= 2, f'Troppi riferimenti QR nel markup: {qr_refs}'
+
+          # Sistema ordine / Apps Script
+          assert 'https://script.google.com/macros/s/' in js
+          assert 'trackingToken' in js
+          print('REPOSITORY HEALTH: OK')
+          PY
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pillow
+
+      - name: Validate JavaScript syntax
+        run: node --check order-system.js
+
+      - name: Check public website
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 30 https://lntdv.it/ -o /tmp/lntdv.html
+          grep -q 'La Nostra Terra Da Vicino' /tmp/lntdv.html
+          grep -q 'LNTDV-001' /tmp/lntdv.html
+          grep -q 'LNTDV-025' /tmp/lntdv.html
+          grep -q 'infoMenuButton' /tmp/lntdv.html
+          echo 'PUBLIC SITE: OK'
+
+      - name: Check sitemap and robots
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 30 https://lntdv.it/robots.txt | grep -q 'Sitemap: https://lntdv.it/sitemap.xml'
+          curl -fsSL --max-time 30 https://lntdv.it/sitemap.xml | grep -q 'https://lntdv.it/'
+          echo 'SEO FILES: OK'
+
+      - name: Check Apps Script health
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENDPOINT=$(python - <<'PY'
+          import re
+          s=open('order-system.js',encoding='utf-8').read()
+          m=re.search(r"const ENDPOINT='([^']+)'",s)
+          assert m, 'ENDPOINT non trovato'
+          print(m.group(1))
+          PY
+          )
+          curl -fsSL --max-time 30 "$ENDPOINT?action=health" -o /tmp/apps.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/apps.json',encoding='utf-8-sig'))
+          assert d.get('ok') is True, d
+          assert d.get('service') == 'LNTDV Apps Script', d
+          print('APPS SCRIPT: OK')
+          PY
+
+      - name: Final result
+        run: echo 'LNTDV FULL HEALTH CHECK: ALL CHECKS PASSED'
