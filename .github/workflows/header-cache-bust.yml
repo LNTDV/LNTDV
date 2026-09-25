@@ -1,0 +1,41 @@
+name: LNTDV header cache bust
+
+on:
+  push:
+    paths:
+      - 'assets/js/info-menu.js'
+
+permissions:
+  contents: write
+
+jobs:
+  bust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ensure stable menu script is loaded by index
+        run: |
+          VERSION="20260925-stable4"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="./assets/js/info-menu.js?v=20260925-stable4"></script>'
+          if 'assets/js/info-menu.js' in s:
+              import re
+              s=re.sub(r'<script[^>]+assets/js/info-menu\.js[^>]*></script>', tag, s, count=1)
+          else:
+              s=s.replace('</head>', tag+'\n</head>', 1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- index.html; then
+            echo 'Index already loads the stable menu script.'
+            exit 0
+          fi
+          git add index.html
+          git commit -m 'Load stable menu and QR cleanup in index'
+          git push

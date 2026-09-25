@@ -1,0 +1,41 @@
+/* LNTDV — FORMAT + PHOTO INFO VISIBILITY
+   2026-09-20: compact selector, no oversized beige container.
+   LNTDV code and orientation are intentionally readable on mobile and desktop.
+*/
+.grid .card .meta{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;overflow:visible!important}
+.grid .card .print-choice{box-sizing:border-box!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:6px 0 5px!important;padding:0!important;display:block!important;overflow:visible!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.grid .card .print-choice label{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.grid .card .format-select{box-sizing:border-box!important;display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;height:46px!important;min-height:46px!important;max-height:46px!important;margin:0!important;padding:0 36px 0 12px!important;border:1px solid #b99a7d!important;border-radius:10px!important;background:#fffaf3!important;color:#4b3022!important;font:600 14px/46px Arial,sans-serif!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;appearance:auto!important;-webkit-appearance:auto!important;outline:none!important;box-shadow:none!important}
+.grid .card .format-select:focus{outline:2px solid rgba(90,59,43,.22)!important;outline-offset:1px!important}
+.grid .card .format-select option{font:14px Arial,sans-serif!important;line-height:1.2!important;white-space:normal!important;background:#fffaf3!important;color:#3d281d!important}
+.grid .card .meta>strong{order:2!important;display:block!important;margin:2px 0 0!important;padding:7px 10px 2px!important;background:#f4eadf!important;color:#4b2f22!important;font:800 14px/1.25 Arial,sans-serif!important;letter-spacing:1.3px!important;box-sizing:border-box!important;border-radius:8px 8px 0 0!important}
+.grid .card .meta>span{order:3!important;display:block!important;margin:0!important;padding:3px 10px!important;background:#f4eadf!important;color:#4b2f22!important;font:600 12px/1.3 Arial,sans-serif!important;box-sizing:border-box!important}
+.grid .card .meta>small{order:4!important;display:block!important;margin:0!important;padding:3px 10px 8px!important;background:#f4eadf!important;color:#5f4435!important;font:600 12px/1.35 Arial,sans-serif!important;box-sizing:border-box!important;border-radius:0 0 8px 8px!important}
+@media(max-width:700px){.grid .card .print-choice{margin:5px 0 4px!important}.grid .card .format-select{height:44px!important;min-height:44px!important;max-height:44px!important;padding:0 34px 0 11px!important;font-size:15px!important;line-height:44px!important}.grid .card .meta>strong{font-size:15px!important;line-height:1.25!important;padding:7px 10px 2px!important}.grid .card .meta>span{font-size:13px!important;line-height:1.3!important;padding:3px 10px!important}.grid .card .meta>small{font-size:12px!important;line-height:1.35!important;padding:3px 10px 8px!important}}
+
+/* Legacy QR/menu rules are overridden below by the final DOM placement script. */
+header .lntdv-project-heading::before,header .lntdv-project-heading::after,header h1.lntdv-project-heading::before,header h1.lntdv-project-heading::after,header h1::after,.lntdv-title-description::before,.lntdv-title-description::after{content:none!important;display:none!important}
+header::after{content:none!important;display:none!important}
+
+/* Final hamburger position: inside the brown header, upper-right. */
+header{position:relative!important}
+#infoMenuButton.info-menu-button,.info-menu-button{position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;padding:0!important;margin:0!important;z-index:2147483000!important}
+#infoMenuButton.info-menu-button span,.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;background:#fffaf3!important;opacity:1!important}
+@media(max-width:700px){#infoMenuButton.info-menu-button,.info-menu-button{top:12px!important;right:14px!important;left:auto!important;width:32px!important;height:30px!important;min-width:32px!important;min-height:30px!important}.info-menu-button span{width:23px!important;min-width:23px!important}}
+
+/* FINAL HERO ORDER */
+#lntdv-final-hero-flow>div.lntdv-final-qr:first-of-type{display:none!important}
+#lntdv-final-hero-flow>h1{order:1!important}
+#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type{order:3!important;margin-top:18px!important}
+#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type::before{
+  content:"La Nostra Terra Da Vicino\A\AIl progetto nasce dall’osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati.\A\AIl lavoro nasce dal desiderio di fermare lo sguardo sul territorio e costruire, attraverso la fotografia, una memoria visiva del rapporto tra ambiente e presenza umana.";
+  white-space:pre-wrap!important;display:block!important;width:min(760px,100%)!important;margin:0 auto 18px!important;color:#fffaf3!important;text-align:center!important;font:16px/1.55 Georgia,serif!important;
+}
+#lntdv-final-hero-flow>p{order:5!important}
+#lntdv-final-hero-flow>div:not(.lntdv-final-qr){order:4!important}
+#lntdv-project-description-block{display:none!important}
+#lntdv-final-hero-flow .lntdv-final-qr img{display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;margin:0 auto 7px!important;border:4px solid #fff!important;border-radius:4px!important;background:#fff!important;box-sizing:border-box!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important}
+#lntdv-final-hero-flow .lntdv-final-qr div{font:700 12px/1.3 Arial,sans-serif!important;letter-spacing:.6px!important;color:#fffaf3!important}
+@media(max-width:600px){
+  #lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type::before{width:100%!important;font-size:15px!important;line-height:1.5!important;margin-bottom:16px!important}
+}

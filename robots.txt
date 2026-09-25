@@ -1,0 +1,16 @@
+# LNTDV — robots.txt
+# Public website: https://lntdv.it/
+
+User-agent: *
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+Sitemap: https://lntdv.it/sitemap.xml

@@ -1,0 +1,321 @@
+/* LNTDV — SINGLE AUTHORITATIVE CATALOG LAYER — 2026-09-21
+   Fixes:
+   - no competing grid/photo sizing
+   - one centered square photo stage per catalog item
+   - full image visible (contain), never cropped/rotated
+   - metadata + orientation + format selector below the image
+   - 1 column mobile, 3 desktop, 4 on wide screens
+   - compact but complete project header
+*/
+:root{
+  --lntdv-brown:#5a3b2b;
+  --lntdv-brown-2:#6b4938;
+  --lntdv-cream:#fbf6ef;
+  --lntdv-paper:#fffaf4;
+  --lntdv-line:#cdb8a5;
+  --lntdv-stage:#eee2d5;
+}
+html,body{
+  width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;
+  overflow-x:hidden!important;background:var(--lntdv-cream)!important;color:var(--lntdv-brown)!important;
+}
+*,*::before,*::after{box-sizing:border-box!important}
+body{min-width:0!important}
+img{max-width:100%!important}
+
+/* TOP BAR */
+.lntdv-home-title-bar{
+  position:relative!important;width:100%!important;height:34px!important;min-height:34px!important;
+  margin:0!important;padding:0 42px 0 8px!important;display:flex!important;align-items:center!important;
+  justify-content:center!important;overflow:hidden!important;background:var(--lntdv-brown)!important;
+  color:#fffaf3!important;border:0!important;
+}
+.lntdv-home-title-bar .title-bar-full{
+  display:block!important;width:100%!important;max-width:100%!important;overflow:hidden!important;
+  text-overflow:ellipsis!important;white-space:nowrap!important;text-align:center!important;
+  color:#fffaf3!important;font:700 10px/34px Arial,sans-serif!important;letter-spacing:.55px!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button{
+  position:absolute!important;top:0!important;right:4px!important;left:auto!important;
+  width:32px!important;height:34px!important;min-width:32px!important;min-height:34px!important;
+  padding:0!important;margin:0!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:5px!important;background:transparent!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;z-index:99999!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button span{
+  display:block!important;width:21px!important;height:2px!important;min-width:21px!important;
+  min-height:2px!important;margin:0!important;padding:0!important;background:#fffaf3!important;
+  border:0!important;border-radius:0!important;
+}
+
+/* COMPLETE COMPACT HEADER */
+header{
+  width:100%!important;min-height:0!important;height:auto!important;margin:0!important;
+  padding:18px 14px 17px!important;background:var(--lntdv-brown)!important;color:#fffaf3!important;
+  text-align:center!important;
+}
+header .brand{display:none!important}
+header h1{
+  display:block!important;margin:0!important;color:#fffaf3!important;
+  font:800 19px/1.05 Arial,sans-serif!important;letter-spacing:2px!important;
+}
+header .lntdv-project-heading{
+  display:block!important;margin:5px auto 0!important;color:#fffaf3!important;
+  font:700 clamp(25px,5vw,34px)/1.08 Georgia,serif!important;
+}
+header .lntdv-author-heading{
+  display:block!important;margin:5px auto 0!important;color:#f1e5dc!important;
+  font:600 11px/1.3 Arial,sans-serif!important;
+}
+header .lntdv-heading-subtitle{
+  display:block!important;max-width:700px!important;margin:5px auto 0!important;color:#eadbd0!important;
+  font:500 9px/1.35 Arial,sans-serif!important;
+}
+header .intro{
+  margin:11px auto 8px!important;color:#f0e3d9!important;font:500 11px/1.35 Georgia,serif!important;
+}
+header .legend{
+  width:100%!important;margin:0 auto!important;padding:0!important;display:flex!important;
+  align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;gap:5px!important;
+}
+header .legend span{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:4px 8px!important;
+  border:1px solid #cdb8a5!important;border-radius:999px!important;background:rgba(255,250,244,.08)!important;
+  color:#fffaf3!important;font:600 9px/1.2 Arial,sans-serif!important;
+}
+
+/* PAGE + SELECTION MESSAGE */
+main{
+  width:100%!important;max-width:1500px!important;margin:0 auto!important;
+  padding:18px 18px 64px!important;background:var(--lntdv-cream)!important;
+}
+#selectionSummary{width:100%!important;margin:0 auto 18px!important;padding:0!important;text-align:center!important}
+#selectionSummary>span{
+  display:inline-block!important;max-width:100%!important;padding:8px 15px!important;
+  border:1px solid var(--lntdv-line)!important;border-radius:999px!important;background:var(--lntdv-paper)!important;
+  color:var(--lntdv-brown)!important;font:600 10px/1.2 Arial,sans-serif!important;letter-spacing:.5px!important;
+}
+
+/* CATALOG: 3 DESKTOP / 4 WIDE */
+.grid{
+  width:100%!important;max-width:1380px!important;margin:0 auto!important;padding:0!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:34px 26px!important;align-items:start!important;justify-items:center!important;background:transparent!important;
+}
+.grid .card{
+  position:relative!important;width:100%!important;max-width:340px!important;min-width:0!important;height:auto!important;
+  min-height:0!important;margin:0 auto!important;padding:0!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;overflow:visible!important;transform:none!important;
+}
+.grid .card .lntdv-photo-stage{
+  position:relative!important;order:1!important;flex:0 0 auto!important;width:100%!important;max-width:340px!important;
+  aspect-ratio:1/1!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 auto!important;
+  padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;
+  background:var(--lntdv-stage)!important;border:1px solid rgba(90,59,43,.18)!important;border-radius:10px!important;
+  box-shadow:none!important;
+}
+.grid .card .lntdv-photo-stage::before,.grid .card .lntdv-photo-stage::after{display:none!important;content:none!important}
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+  max-width:100%!important;max-height:100%!important;margin:0!important;padding:0!important;object-fit:contain!important;
+  object-position:center center!important;background:transparent!important;border:0!important;border-radius:9px!important;
+  box-shadow:none!important;transform:none!important;rotate:0deg!important;filter:none!important;opacity:1!important;
+  visibility:visible!important;image-orientation:from-image!important;
+}
+.grid .card.selected .lntdv-photo-stage{border:2px solid var(--lntdv-brown)!important}
+.grid .card .selection-check{display:none!important}
+
+/* METADATA ALWAYS BELOW IMAGE */
+.grid .card .meta{
+  position:static!important;order:2!important;width:100%!important;max-width:340px!important;height:auto!important;
+  min-height:0!important;margin:0 auto!important;padding:9px 4px 0!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;gap:3px!important;text-align:center!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important;
+}
+.grid .card .meta>strong,.grid .card .meta>.photo-name,.grid .card .meta>small,.grid .card .meta .photo-format-label{
+  position:static!important;float:none!important;clear:both!important;width:100%!important;max-width:100%!important;
+  margin:0!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;text-align:center!important;
+}
+.grid .card .meta>strong{
+  order:1!important;color:var(--lntdv-brown)!important;font:800 14px/1.25 Arial,sans-serif!important;letter-spacing:1.1px!important;
+}
+.grid .card .meta>.photo-name{order:2!important;color:var(--lntdv-brown-2)!important;font:600 11px/1.3 Arial,sans-serif!important}
+.grid .card .meta>small{display:none!important}
+.grid .card .meta .photo-format-label{
+  order:3!important;display:block!important;color:#705748!important;font:600 10px/1.35 Arial,sans-serif!important;
+}
+/* JS creates the ratio label after the existing orientation <small>. Hide the old line once the new label exists. */
+.grid .card .meta:has(.photo-format-label)>small{display:none!important}
+.grid .card .meta:not(:has(.photo-format-label))>small{
+  display:block!important;order:3!important;color:#705748!important;font:600 10px/1.35 Arial,sans-serif!important;
+}
+
+/* FORMAT SELECTOR */
+.grid .card .meta .print-choice{
+  position:static!important;order:5!important;width:100%!important;max-width:260px!important;height:auto!important;
+  min-height:0!important;margin:9px auto 0!important;padding:0!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;overflow:visible!important;
+}
+.grid .card .meta .print-choice label{
+  position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+.grid .card .meta .format-select,.grid .card .meta .print-choice select{
+  display:block!important;width:100%!important;max-width:260px!important;height:42px!important;min-height:42px!important;
+  max-height:42px!important;margin:0 auto!important;padding:0 30px 0 10px!important;border:1px solid #b99a7d!important;
+  border-radius:10px!important;background:var(--lntdv-paper)!important;color:var(--lntdv-brown)!important;
+  font:600 12px/42px Arial,sans-serif!important;text-align:center!important;text-align-last:center!important;
+  appearance:auto!important;-webkit-appearance:auto!important;outline:none!important;box-shadow:none!important;
+}
+.grid .card .meta .format-select:focus{outline:2px solid rgba(90,59,43,.2)!important;outline-offset:2px!important}
+
+/* NO GEOMETRY CHANGES / NO SIDE PANELS */
+.grid .card:hover,.grid .card:focus,.grid .card:focus-within{
+  transform:none!important;box-shadow:none!important;outline:none!important;
+}
+.grid .card .lntdv-photo-stage,.grid .card .lntdv-photo-stage>img{
+  transform:none!important;transform-origin:center center!important;
+}
+
+/* TABLET */
+@media (min-width:701px) and (max-width:1100px){
+  main{padding-left:20px!important;padding-right:20px!important}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:30px 22px!important}
+  .grid .card,.grid .card .lntdv-photo-stage{max-width:320px!important}
+}
+/* WIDE DESKTOP */
+@media (min-width:1400px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;max-width:1420px!important;gap:34px 24px!important}
+}
+/* SMARTPHONE */
+@media (max-width:700px){
+  .lntdv-home-title-bar{height:32px!important;min-height:32px!important;padding:0 38px 0 7px!important}
+  .lntdv-home-title-bar .title-bar-full{font-size:8px!important;line-height:32px!important;letter-spacing:.4px!important}
+  .lntdv-home-title-bar #infoMenuButton.info-menu-button{width:30px!important;height:32px!important;min-height:32px!important;right:3px!important}
+  header{padding:16px 9px 15px!important}
+  header h1{font-size:18px!important}
+  header .lntdv-project-heading{font-size:25px!important}
+  header .lntdv-author-heading{font-size:10px!important}
+  header .lntdv-heading-subtitle{font-size:8.5px!important}
+  header .intro{font-size:10px!important;margin-top:10px!important}
+  header .legend{gap:4px!important}
+  header .legend span{font-size:8px!important;padding:4px 7px!important}
+  main{padding:15px 12px 55px!important}
+  #selectionSummary{margin-bottom:16px!important}
+  #selectionSummary>span{font-size:9px!important;padding:7px 12px!important}
+  .grid{width:100%!important;max-width:100%!important;grid-template-columns:1fr!important;gap:27px!important}
+  .grid .card{width:100%!important;max-width:360px!important}
+  .grid .card .lntdv-photo-stage{width:100%!important;max-width:360px!important;aspect-ratio:1/1!important}
+  .grid .card .meta{width:100%!important;max-width:360px!important;padding:9px 2px 0!important}
+  .grid .card .meta>strong{font-size:14px!important}
+  .grid .card .meta>.photo-name{font-size:11px!important}
+  .grid .card .meta>small,.grid .card .meta .photo-format-label{font-size:10px!important}
+  .grid .card .meta .print-choice{width:min(260px,100%)!important;max-width:260px!important;margin-top:8px!important}
+  .grid .card .meta .format-select,.grid .card .meta .print-choice select{
+    width:100%!important;max-width:260px!important;height:42px!important;min-height:42px!important;
+    max-height:42px!important;font-size:12px!important;
+  }
+}
+/* VERY SMALL PHONES */
+@media(max-width:380px){
+  header .lntdv-project-heading{font-size:23px!important}
+  header .lntdv-heading-subtitle{display:none!important}
+  .grid .card,.grid .card .meta{max-width:calc(100vw - 24px)!important}
+  .grid .card .lntdv-photo-stage{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important}
+}
+
+
+/* LNTDV FINAL CORRECTION — 2026-09-21 08:08 */
+.lntdv-home-title-bar .title-bar-full{
+  color:#ead6c2!important;
+  font-weight:800!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+.lntdv-home-title-bar{
+  height:32px!important;
+  min-height:32px!important;
+  background:#5a3b2b!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button{
+  width:30px!important;height:32px!important;min-height:32px!important;right:4px!important;
+}
+.lntdv-home-title-bar #infoMenuButton.info-menu-button span{
+  background:#ead6c2!important;width:20px!important;height:2px!important;
+}
+
+/* Same visual photo stage for vertical and horizontal images.
+   The original image is never cropped or stretched. */
+.grid .card .lntdv-photo-stage{
+  width:100%!important;
+  max-width:360px!important;
+  aspect-ratio:4/3!important;
+  height:auto!important;
+  overflow:hidden!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#eee2d5!important;
+  border-radius:8px!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  width:100%!important;height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  rotate:0deg!important;
+}
+.grid .card .meta{
+  position:static!important;
+  width:100%!important;
+  max-width:360px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  gap:4px!important;
+  padding:10px 8px 0!important;
+}
+.grid .card .meta strong,
+.grid .card .meta .photo-name,
+.grid .card .meta small,
+.grid .card .meta .photo-format-label{
+  position:static!important;
+  width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+}
+.grid .card .meta .print-choice{
+  width:260px!important;max-width:260px!important;margin:9px auto 0!important;
+  align-self:center!important;
+}
+.grid .card .meta .format-select,
+.grid .card .meta .print-choice select{
+  width:260px!important;max-width:260px!important;
+  text-align:center!important;text-align-last:center!important;
+}
+@media(max-width:700px){
+  .lntdv-home-title-bar .title-bar-full{font-size:9px!important;line-height:32px!important}
+  .grid .card,.grid .card .meta{max-width:calc(100vw - 24px)!important}
+  .grid .card .lntdv-photo-stage{
+    width:100%!important;
+    max-width:calc(100vw - 24px)!important;
+    aspect-ratio:4/3!important;
+  }
+  .grid .card .meta{max-width:calc(100vw - 24px)!important}
+  .grid .card .meta .print-choice,
+  .grid .card .meta .format-select,
+  .grid .card .meta .print-choice select{
+    width:min(260px,100%)!important;max-width:260px!important;
+  }
+}
+
+/* Keep the title and project identity readable on small screens. */
+@media(max-width:380px){
+  .lntdv-home-title-bar .title-bar-full{font-size:8px!important}
+  header .lntdv-project-heading{font-size:23px!important}
+}

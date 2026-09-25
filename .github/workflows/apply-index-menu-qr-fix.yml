@@ -1,0 +1,40 @@
+name: Apply LNTDV index menu and QR fix
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch index.html
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="./assets/js/info-menu.js?v=20260925-stable4"></script>'
+          s=re.sub(r'<script[^>]+assets/js/info-menu\\.js[^>]*></script>', '', s)
+          if tag not in s:
+              s=s.replace('</head>', tag+'\n</head>', 1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'index.html already fixed'
+            exit 0
+          fi
+          git commit -m 'Fix index menu loading and duplicate QR cleanup'
+          git push

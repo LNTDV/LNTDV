@@ -1,16 +1,21 @@
-## Hi there 👋
+# LNTDV — La Nostra Terra Da Vicino
 
-<!--
-**LNTDV/LNTDV** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Versione operativa del progetto fotografico di Edvinas Dragoni.
 
-Here are some ideas to get you started:
+## Sistema
+- 25 fotografie nel catalogo principale.
+- Selezione fotografia + formato, incluso **Pannello – Forex**.
+- Riepilogo ordine, tracking e conferma.
+- Google Apps Script + Google Fogli per la registrazione degli ordini.
+- Notifica amministrativa e conferma cliente tramite MailApp.
+- Apertura della mail precompilata tramite **Gmail** oppure **Apple Mail**.
+- Menù secondario a tre linee, senza cerchio/cornice.
+- Orientamento fotografico gestito fisicamente sugli asset JPEG, senza rotazioni CSS.
+- Data operativa finale per il flusso copyshop: 15 ottobre 2026.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Pubblicazione
+Dominio: https://lntdv.it/
+
+Repository: https://github.com/LNTDV/LNTDV
+
+Ogni modifica deve essere verificata contro il catalogo, gli asset locali, l'ordine, il tracking, Apps Script e il sistema email prima della pubblicazione.

@@ -1,0 +1,58 @@
+/* LNTDV — BROWN + RESPONSIVE PHOTO GRID — 2026-09-20 */
+:root{--lntdv-brown:#5a3b2b;--lntdv-brown-dark:#43291e;--lntdv-brown-light:#cdb8a5;--lntdv-cream:#fbf6ef}
+body{background:#fffaf4;color:#4b3022}
+.lntdv-home-title-bar{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-color:var(--lntdv-brown-dark)!important}
+header h1,header .brand,header a,header .intro{color:var(--lntdv-brown)!important}
+header .legend span{border-color:var(--lntdv-brown-light)!important;background:var(--lntdv-brown)!important;color:#fffaf3!important}
+.section-label,.info-kicker{color:var(--lntdv-brown)!important}
+.grid{width:min(1400px,calc(100% - 40px))!important;margin:0 auto!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:42px 30px!important;justify-items:center!important}
+.grid .card{width:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important}
+.grid .card .lntdv-photo-stage{width:min(100%,300px)!important;max-width:300px!important;height:auto!important;aspect-ratio:auto!important;margin:0 auto!important;display:flex!important;justify-content:center!important;align-items:center!important}
+.grid .card .lntdv-photo-stage>img{display:block!important;width:100%!important;height:auto!important;max-width:100%!important;max-height:420px!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important}
+.grid .card .meta{width:100%!important;max-width:300px!important;margin:0 auto!important;align-items:center!important;text-align:center!important}
+.grid .card .print-choice,.grid .card .format-select{width:210px!important;max-width:210px!important}
+.grid .card .format-select{height:38px!important;min-height:38px!important;max-height:38px!important;border:1px solid var(--lntdv-brown)!important;border-radius:8px!important;background:var(--lntdv-cream)!important;color:var(--lntdv-brown-dark)!important;text-align:center!important;text-align-last:center!important}
+.grid .card .meta>strong{display:block!important;width:100%!important;text-align:center!important;color:var(--lntdv-brown-dark)!important;font:800 15px/1.2 Arial,sans-serif!important;letter-spacing:1.3px!important;margin:4px auto 0!important}
+.grid .card .meta>span,.grid .card .meta>small{display:block!important;width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+@media(min-width:901px) and (max-width:1200px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:38px 26px!important}.grid .card .lntdv-photo-stage,.grid .card .meta{max-width:280px!important}}
+@media(min-width:1201px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:700px){.grid{width:100%!important;max-width:none!important;grid-template-columns:1fr!important;gap:34px!important;padding:0 14px!important;box-sizing:border-box!important}.grid .card{width:100%!important;max-width:none!important}.grid .card .lntdv-photo-stage{width:min(88vw,360px)!important;max-width:360px!important;margin:0 auto!important}.grid .card .lntdv-photo-stage>img{width:100%!important;max-width:100%!important;max-height:520px!important;margin:0 auto!important}.grid .card .meta{width:100%!important;max-width:360px!important;margin:0 auto!important}.grid .card .print-choice,.grid .card .format-select{width:min(210px,70vw)!important;max-width:210px!important}.grid .card .meta>strong{font-size:14px!important;text-align:center!important}}
+.order-bar{background:var(--lntdv-brown)!important;border-top:2px solid var(--lntdv-brown-dark)!important;color:#fffaf3!important}.order-bar-label,.order-bar-info strong,.order-bar-total{color:#fffaf3!important}
+.order-button,#catalogOrderEndButton,#trackingButton,.checkout-submit{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-color:var(--lntdv-brown)!important}
+.order-button:hover,#catalogOrderEndButton:hover,#trackingButton:hover,.checkout-submit:hover{background:var(--lntdv-brown-dark)!important}
+#catalogOrderEnd .catalog-order-end-inner{border-color:var(--lntdv-brown)!important;color:var(--lntdv-brown)!important;background:var(--lntdv-cream)!important}
+.tracking-section,.territorio-collegamenti{border-top:3px solid var(--lntdv-brown)!important}
+.tracking-section h2,.territorio-collegamenti h2,.checkout-section-title,.modal-title{color:var(--lntdv-brown)!important}
+.info-drawer{border-left:4px solid var(--lntdv-brown)!important}
+.info-drawer h2,.info-content h3,.info-nav a,.social-links a{color:var(--lntdv-brown)!important}
+footer{background:var(--lntdv-brown)!important;color:#fffaf3!important;border-top:3px solid var(--lntdv-brown-dark)!important}
+
+/* LNTDV — HEADER COMPATTO E TITOLO LEGGIBILE — 2026-09-21 */
+header{background:#5a3b2b!important;color:#fffaf3!important;padding:28px 16px 24px!important;min-height:0!important;box-sizing:border-box!important}
+header .brand{color:#f7eee5!important;font-size:10px!important;letter-spacing:2px!important;margin:0 auto 8px!important}
+header h1{color:#fffaf3!important;font-size:clamp(22px,6vw,34px)!important;line-height:1.05!important;margin:0!important;font-family:Arial,sans-serif!important;letter-spacing:2px!important}
+header .lntdv-project-heading{color:#fffaf3!important;font-family:Georgia,serif!important;font-size:clamp(24px,5vw,34px)!important;line-height:1.15!important;font-weight:700!important;margin:6px auto 0!important;visibility:visible!important;opacity:1!important}
+header .lntdv-author-heading{color:#eadbd0!important;font-size:12px!important;margin:6px auto 0!important;visibility:visible!important;opacity:1!important}
+header .lntdv-heading-subtitle{color:#d9c7b8!important;font-size:10px!important;margin:5px auto 0!important;visibility:visible!important;opacity:1!important}
+header .intro{color:#eadbd0!important;margin:10px auto 0!important;font-size:11px!important}
+header .legend{margin-top:12px!important}
+header .legend span{background:transparent!important;border:1px solid #cdb8a5!important;color:#fffaf3!important;padding:5px 9px!important}
+.lntdv-home-title-bar{min-height:30px!important;padding:7px 42px 7px 12px!important}
+#infoMenuButton.info-menu-button{position:absolute!important;top:8px!important;right:12px!important;left:auto!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;background:transparent!important;border:0!important;box-shadow:none!important;z-index:2147483000!important}
+#infoMenuButton.info-menu-button span{width:21px!important;min-width:21px!important;height:2px!important;min-height:2px!important;background:#fffaf3!important}
+@media(max-width:600px){header{padding:24px 12px 20px!important}header .brand{font-size:9px!important;letter-spacing:1.5px!important}header h1{font-size:22px!important}header .lntdv-project-heading{font-size:25px!important}header .lntdv-author-heading{font-size:11px!important}header .lntdv-heading-subtitle{font-size:9px!important}header .intro{font-size:10px!important;margin-top:8px!important}header .legend{margin-top:10px!important}#infoMenuButton.info-menu-button{top:6px!important;right:10px!important}}
+
+/* LNTDV final responsive/accessibility cleanup 2026-09-21 */
+html{scroll-behavior:smooth}
+button,a,select,input{touch-action:manipulation}
+:focus-visible{outline:3px solid #8a674f!important;outline-offset:3px!important}
+@media(min-width:901px){.grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:26px!important;padding:0 26px!important;box-sizing:border-box!important}.grid .card{width:100%!important;padding-bottom:22px!important}.grid .card .lntdv-photo-stage{width:100%!important;aspect-ratio:4/3!important;max-width:none!important}.grid .card[data-orientation="vertical"] .lntdv-photo-stage{max-width:none!important;aspect-ratio:4/3!important}}
+@media(max-width:900px){.grid .card .lntdv-photo-stage{width:100%!important}.grid .card .meta{width:100%!important}}
+
+/* FINAL HEADER — beige background, brown text only. */
+header{background:#fbf6ef!important;color:#5a3b2b!important;border-bottom:1px solid #cdb8a5!important}
+header .brand,header h1,header .lntdv-project-heading,header .lntdv-author-heading,header .lntdv-heading-subtitle,header .intro{color:#5a3b2b!important}
+header .lntdv-project-heading{font-family:Georgia,serif!important;font-weight:700!important}
+header .lntdv-author-heading,header .lntdv-heading-subtitle,header .intro{color:#6e5545!important}
+header .legend span{background:#fbf6ef!important;border-color:#cdb8a5!important;color:#5a3b2b!important}
+#infoMenuButton.info-menu-button span{background:#5a3b2b!important}

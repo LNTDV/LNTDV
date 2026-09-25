@@ -1,0 +1,79 @@
+name: Deploy LNTDV catalog
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build canonical homepage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8').replace('\\n','\n')
+          header='''<header class="lntdv-canonical-header">
+          <button id="infoMenuButton" class="info-menu-button" type="button" aria-label="Apri menu" aria-expanded="false"><span></span><span></span><span></span></button>
+          <div class="lntdv-project-heading">La Nostra Terra Da Vicino</div>
+          <div class="lntdv-project-description"><p>Un progetto nato dall’osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati. È un invito a rallentare lo sguardo e ritrovare nella natura ciò che il ritmo quotidiano tende a nascondere.</p></div>
+          <div class="lntdv-exhibition-title">MOSTRA FOTOGRAFICA DI EDVINAS DRAGONI</div>
+          <div class="lntdv-exhibition-description"><p>Una mostra che attraversa natura, tempo e paesaggio per osservare ciò che cambia e ciò che rimane. Ogni fotografia nasce dall’incontro con una luce, una materia, una traccia: piccoli frammenti capaci di raccontare il territorio e il nostro modo di abitarlo.</p></div>
+          <div class="lntdv-author-title">EDVINAS DRAGONI</div>
+          <div class="lntdv-author-description"><p>Attraverso la fotografia, Edvinas Dragoni cerca una presenza silenziosa nelle cose: nella luce che cambia, nelle superfici della terra, nei dettagli del paesaggio. Il suo sguardo invita a fermarsi, osservare e riconoscere la bellezza di ciò che abbiamo vicino.</p></div>
+        </header><main>'''
+          s2=re.sub(r'<header\b[\s\S]*?</header>\s*<main>',header,s,count=1)
+          if s2==s:
+              raise SystemExit('Header HTML non trovato: nessuna modifica eseguita.')
+          s=s2
+          s=re.sub(r'<style id="lntdv-canonical-build-style">[\s\S]*?</style>','',s)
+          css='''<style id="lntdv-canonical-build-style">
+          .lntdv-canonical-header{position:relative!important;background:#fbf6ef!important;color:#5a3b2b!important;text-align:center!important;padding:58px 16px 34px!important;box-sizing:border-box!important;border:0!important}
+          .lntdv-project-heading{margin:0 auto 22px!important;color:#5a3b2b!important;font:700 clamp(38px,7vw,60px)/1.08 Georgia,serif!important;max-width:900px!important}
+          .lntdv-project-description,.lntdv-exhibition-description,.lntdv-author-description{width:min(820px,calc(100% - 28px));margin:0 auto;color:#5a3b2b!important;text-align:center!important}
+          .lntdv-project-description p,.lntdv-exhibition-description p,.lntdv-author-description p{margin:0;color:#5a3b2b!important;font:400 18px/1.55 Georgia,serif!important}
+          .lntdv-exhibition-title,.lntdv-author-title{margin:25px auto 10px!important;color:#5a3b2b!important;font:800 15px/1.3 Arial,sans-serif!important;letter-spacing:1.2px!important;text-transform:uppercase!important}
+          .lntdv-canonical-header .info-menu-button{position:absolute!important;top:14px!important;right:16px!important;left:auto!important;z-index:2147483000!important;width:40px!important;height:36px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:5px!important;padding:4px!important;margin:0!important;background:transparent!important;border:0!important;cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important}
+          .lntdv-canonical-header .info-menu-button span{display:block!important;width:25px!important;height:3px!important;background:#5a3b2b!important;border-radius:2px!important}
+          @media(max-width:600px){.lntdv-canonical-header{padding:58px 12px 30px!important}.lntdv-canonical-header .info-menu-button{top:12px!important;right:14px!important}.lntdv-canonical-header .lntdv-project-heading{font-size:46px!important}.lntdv-project-description p,.lntdv-exhibition-description p,.lntdv-author-description p{font-size:17px!important;line-height:1.5!important}}
+          </style>'''
+          s=s.replace('</head>',css+'</head>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          mkdir -p _site
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' ./ _site/
+          touch _site/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

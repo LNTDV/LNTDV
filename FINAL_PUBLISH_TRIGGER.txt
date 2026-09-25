@@ -1,0 +1,2 @@
+Trigger final deterministic LNTDV publish.
+Orientation source restored; requested rotations applied once only.

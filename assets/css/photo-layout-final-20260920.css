@@ -1,0 +1,303 @@
+/* LNTDV — FINAL PHOTO DISPLAY OVERRIDE — 2026-09-20
+   Foto sempre centrata e contenuta.
+   Selettore formato compatto.
+   Codice LNTDV + sequenza centrato sotto ogni foto.
+*/
+
+.grid{
+  width:min(1180px,calc(100% - 32px))!important;
+  max-width:1180px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:34px 28px!important;
+  justify-items:center!important;
+  align-items:start!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+}
+
+.grid .card{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.grid .card .lntdv-photo-stage{
+  order:1!important;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  line-height:0!important;
+  box-sizing:border-box!important;
+}
+
+.grid .card .lntdv-photo-stage>img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:560px!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+  rotate:0deg!important;
+  image-orientation:from-image!important;
+  box-sizing:border-box!important;
+}
+
+.grid .card .meta{
+  order:2!important;
+  width:100%!important;
+  max-width:520px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+}
+
+.grid .card .print-choice{
+  order:1!important;
+  width:240px!important;
+  max-width:240px!important;
+  margin:10px auto 6px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+}
+
+.grid .card .format-select{
+  display:block!important;
+  width:240px!important;
+  max-width:240px!important;
+  height:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+  margin:0 auto!important;
+  padding:0 28px 0 9px!important;
+  border:1px solid #b99a7d!important;
+  border-radius:8px!important;
+  background:#fffaf3!important;
+  color:#4b3022!important;
+  font:600 12px/40px Arial,sans-serif!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  box-sizing:border-box!important;
+}
+
+.grid .card .meta>strong,
+.grid .card .meta>span,
+.grid .card .meta>small{
+  display:block!important;
+  width:100%!important;
+  max-width:520px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+
+.grid .card .meta>strong{
+  order:2!important;
+  margin-top:3px!important;
+  padding:5px 6px 1px!important;
+  color:#4b2f22!important;
+  font:800 15px/1.2 Arial,sans-serif!important;
+  letter-spacing:1.3px!important;
+}
+
+.grid .card .meta>span{
+  order:3!important;
+  padding:1px 6px!important;
+  color:#5a3b2b!important;
+  font:500 11px/1.25 Arial,sans-serif!important;
+}
+
+.grid .card .meta>small{
+  order:4!important;
+  padding:1px 6px 5px!important;
+  color:#705748!important;
+  font:500 10px/1.25 Arial,sans-serif!important;
+}
+
+.grid .card .print-choice label{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+.grid .card:hover,
+.grid .card.selected,
+.grid .card:focus{
+  border:0!important;
+  outline:none!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+
+@media (min-width:701px) and (max-width:1050px){
+  .grid{
+    width:min(900px,calc(100% - 28px))!important;
+    max-width:900px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:30px 24px!important;
+  }
+}
+
+@media(max-width:700px){
+  .grid{
+    width:calc(100% - 28px)!important;
+    max-width:620px!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:28px!important;
+    margin:0 auto!important;
+  }
+
+  .grid .card .lntdv-photo-stage{
+    width:min(100%,560px)!important;
+    max-width:560px!important;
+    margin:0 auto!important;
+  }
+
+  .grid .card .lntdv-photo-stage>img{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:620px!important;
+    margin:0 auto!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+
+  .grid .card .meta{
+    width:100%!important;
+    max-width:560px!important;
+  }
+
+  .grid .card .print-choice,
+  .grid .card .format-select{
+    width:220px!important;
+    max-width:220px!important;
+  }
+
+  .grid .card .format-select{
+    height:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+    font-size:12px!important;
+    line-height:38px!important;
+  }
+
+  .grid .card .meta>strong{
+    font-size:14px!important;
+    letter-spacing:1px!important;
+  }
+
+  .grid .card .meta>span,
+  .grid .card .meta>small{
+    font-size:10px!important;
+  }
+}
+
+@media(max-width:380px){
+  .grid{
+    width:calc(100% - 22px)!important;
+    gap:24px!important;
+  }
+
+  .grid .card .print-choice,
+  .grid .card .format-select{
+    width:200px!important;
+    max-width:200px!important;
+  }
+}
+
+
+/* LNTDV — STANDARD UNIFORM PHOTO FRAME — MOBILE + DESKTOP */
+.grid .card .lntdv-photo-stage{
+  width:min(100%, 360px)!important;
+  height:360px!important;
+  aspect-ratio:1/1!important;
+  margin:0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#fbf6ef!important;
+  box-sizing:border-box!important;
+}
+.grid .card .lntdv-photo-stage>img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0!important;
+}
+@media (min-width:701px){
+  .grid .card .lntdv-photo-stage{
+    width:min(100%, 360px)!important;
+    height:360px!important;
+  }
+}
+@media (max-width:700px){
+  .grid .card .lntdv-photo-stage{
+    width:min(calc(100vw - 32px), 360px)!important;
+    height:min(calc(100vw - 32px), 360px)!important;
+  }
+}
+@media (max-width:380px){
+  .grid .card .lntdv-photo-stage{
+    width:calc(100vw - 24px)!important;
+    height:calc(100vw - 24px)!important;
+  }
+}
