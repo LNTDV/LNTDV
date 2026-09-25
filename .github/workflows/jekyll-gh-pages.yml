@@ -32,7 +32,6 @@ jobs:
           <button id="infoMenuButton" class="info-menu-button" type="button" aria-label="Apri menu" aria-expanded="false"><span></span><span></span><span></span></button>
           <div class="lntdv-project-heading">La Nostra Terra Da Vicino</div>
           <div class="lntdv-project-description"><p>Un progetto nato dall’osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati. È un invito a rallentare lo sguardo e ritrovare nella natura ciò che il ritmo quotidiano tende a nascondere.</p></div>
-          <div class="lntdv-story-qr"><img src="./assets/qr/lntdv-story-qr.svg?v=20260925-canonical" alt="QR code — Scopri la storia della mostra"><div class="lntdv-story-qr-label">Scopri la storia della mostra</div></div>
           <div class="lntdv-exhibition-title">MOSTRA FOTOGRAFICA DI EDVINAS DRAGONI</div>
           <div class="lntdv-exhibition-description"><p>Una mostra che attraversa natura, tempo e paesaggio per osservare ciò che cambia e ciò che rimane. Ogni fotografia nasce dall’incontro con una luce, una materia, una traccia: piccoli frammenti capaci di raccontare il territorio e il nostro modo di abitarlo.</p></div>
           <div class="lntdv-author-title">EDVINAS DRAGONI</div>
@@ -48,13 +47,10 @@ jobs:
           .lntdv-project-heading{margin:0 auto 22px!important;color:#5a3b2b!important;font:700 clamp(38px,7vw,60px)/1.08 Georgia,serif!important;max-width:900px!important}
           .lntdv-project-description,.lntdv-exhibition-description,.lntdv-author-description{width:min(820px,calc(100% - 28px));margin:0 auto;color:#5a3b2b!important;text-align:center!important}
           .lntdv-project-description p,.lntdv-exhibition-description p,.lntdv-author-description p{margin:0;color:#5a3b2b!important;font:400 18px/1.55 Georgia,serif!important}
-          .lntdv-story-qr{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;margin:26px auto 0!important}
-          .lntdv-story-qr img{display:block!important;width:150px!important;height:150px!important;object-fit:contain!important;background:#fff!important;border:4px solid #fff!important;border-radius:4px!important}
-          .lntdv-story-qr-label{margin-top:8px!important;color:#5a3b2b!important;font:700 15px/1.3 Arial,sans-serif!important;letter-spacing:.5px!important}
           .lntdv-exhibition-title,.lntdv-author-title{margin:25px auto 10px!important;color:#5a3b2b!important;font:800 15px/1.3 Arial,sans-serif!important;letter-spacing:1.2px!important;text-transform:uppercase!important}
           .lntdv-canonical-header .info-menu-button{position:absolute!important;top:14px!important;right:16px!important;left:auto!important;z-index:2147483000!important;width:40px!important;height:36px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:5px!important;padding:4px!important;margin:0!important;background:transparent!important;border:0!important;cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important}
           .lntdv-canonical-header .info-menu-button span{display:block!important;width:25px!important;height:3px!important;background:#5a3b2b!important;border-radius:2px!important}
-          @media(max-width:600px){.lntdv-canonical-header{padding:58px 12px 30px!important}.lntdv-canonical-header .info-menu-button{top:12px!important;right:14px!important}.lntdv-canonical-header .lntdv-project-heading{font-size:46px!important}.lntdv-project-description p,.lntdv-exhibition-description p,.lntdv-author-description p{font-size:17px!important;line-height:1.5!important}.lntdv-story-qr img{width:150px!important;height:150px!important}}
+          @media(max-width:600px){.lntdv-canonical-header{padding:58px 12px 30px!important}.lntdv-canonical-header .info-menu-button{top:12px!important;right:14px!important}.lntdv-canonical-header .lntdv-project-heading{font-size:46px!important}.lntdv-project-description p,.lntdv-exhibition-description p,.lntdv-author-description p{font-size:17px!important;line-height:1.5!important}}
           </style>'''
           s=s.replace('</head>',css+'</head>',1)
           p.write_text(s,encoding='utf-8')
