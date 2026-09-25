@@ -13,30 +13,22 @@
       .lntdv-title-description::before,.lntdv-title-description::after,
       header::before,header::after{content:none!important;display:none!important;background:none!important}
       header{position:relative!important}
-      #infoMenuButton.info-menu-button{
-        position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;
-        width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;
-        margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
-        box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;
-        justify-content:center!important;gap:5px!important;z-index:2147483000!important
-      }
+      #infoMenuButton.info-menu-button{position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;z-index:2147483000!important}
       #infoMenuButton.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fffaf3!important;box-shadow:none!important;opacity:1!important}
       #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
       #infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}
       #infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
-
-      header #info-project{display:block!important;width:min(820px,calc(100% - 24px))!important;margin:18px auto 0!important;padding:0!important;box-sizing:border-box!important;background:transparent!important;border:0!important;box-shadow:none!important;text-align:center!important;color:#fffaf3!important}
-      header #info-project .info-kicker{display:none!important}
-      header #info-project h3{margin:0 0 10px!important;font:700 clamp(22px,6vw,30px)/1.15 Georgia,serif!important;color:#fffaf3!important}
-      header #info-project p{margin:0!important;font:400 17px/1.55 Georgia,serif!important;color:#fffaf3!important}
+      header #lntdv-home-project-description{display:block!important;width:min(820px,calc(100% - 28px))!important;margin:16px auto 0!important;padding:0!important;box-sizing:border-box!important;text-align:center!important;color:#fffaf3!important}
+      header #lntdv-home-project-description h2{margin:0 0 9px!important;font:700 clamp(24px,6vw,31px)/1.15 Georgia,serif!important;color:#fffaf3!important}
+      header #lntdv-home-project-description p{margin:0!important;font:400 16px/1.55 Georgia,serif!important;color:#fffaf3!important}
       #lntdv-final-story-qr{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;margin:18px auto 14px!important;padding:0!important;text-align:center!important;box-sizing:border-box!important}
       #lntdv-final-story-qr img{display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;margin:0 auto 8px!important;padding:0!important;border:4px solid #fff!important;border-radius:4px!important;background:#fff!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important;box-sizing:border-box!important}
       #lntdv-final-story-qr .qr-label{font:600 11px/1.3 Arial,sans-serif!important;letter-spacing:.7px!important;color:#fffaf3!important}
       @media(max-width:700px){
         #infoMenuButton.info-menu-button{top:12px!important;right:14px!important;left:auto!important}
-        header #info-project{width:calc(100% - 28px)!important;margin-top:15px!important}
-        header #info-project h3{font-size:25px!important;margin-bottom:9px!important}
-        header #info-project p{font-size:16px!important;line-height:1.5!important}
+        header #lntdv-home-project-description{width:calc(100% - 28px)!important;margin-top:14px!important}
+        header #lntdv-home-project-description h2{font-size:25px!important;margin-bottom:8px!important}
+        header #lntdv-home-project-description p{font-size:16px!important;line-height:1.5!important}
         #lntdv-final-story-qr{margin-top:16px!important;margin-bottom:12px!important}
         #lntdv-final-story-qr img{width:136px!important;height:136px!important;max-width:136px!important}
       }
@@ -64,14 +56,23 @@
     });
   }
 
-  function moveProjectIntoHeader(heading){
-    const project=document.getElementById("info-project");
-    const header=heading && heading.closest("header");
-    if(!project || !header) return null;
-    const h3=project.querySelector("h3");
-    if(h3) h3.textContent="La Nostra Terra Da Vicino";
-    heading.insertAdjacentElement("afterend",project);
-    return project;
+  function buildProjectDescription(){
+    const old=document.getElementById("lntdv-home-project-description");
+    if(old) old.remove();
+    const source=document.querySelector("#info-project");
+    const heading=source && source.querySelector("h3");
+    const paragraph=source && source.querySelector("p");
+    if(!source || !heading || !paragraph) return null;
+    const block=document.createElement("section");
+    block.id="lntdv-home-project-description";
+    block.setAttribute("aria-label","Descrizione del progetto La Nostra Terra Da Vicino");
+    const h2=document.createElement("h2");
+    h2.textContent="La Nostra Terra Da Vicino";
+    const p=document.createElement("p");
+    p.textContent=paragraph.textContent.trim();
+    block.appendChild(h2);
+    block.appendChild(p);
+    return block;
   }
 
   function moveQr(){
@@ -80,18 +81,17 @@
     const description=document.querySelector("header .lntdv-title-description, .lntdv-title-description");
     if(!heading) return;
 
-    const project=moveProjectIntoHeader(heading);
+    const project=buildProjectDescription();
+    if(project) heading.insertAdjacentElement("afterend",project);
+
     const qr=document.createElement("div");
     qr.id="lntdv-final-story-qr";
-    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-finalorder" alt="QR code — Segui la storia della mostra"><div class="qr-label">Segui la storia della mostra</div>';
+    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-finalorder2" alt="QR code — Segui la storia della mostra"><div class="qr-label">Segui la storia della mostra</div>';
 
     if(project) project.insertAdjacentElement("afterend",qr);
     else heading.insertAdjacentElement("afterend",qr);
 
-    if(description){
-      /* Keep the exhibition title/description immediately after the QR. */
-      qr.insertAdjacentElement("afterend",description);
-    }
+    if(description) qr.insertAdjacentElement("afterend",description);
   }
 
   function init(){
