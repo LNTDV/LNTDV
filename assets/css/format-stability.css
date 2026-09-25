@@ -124,37 +124,24 @@
   .grid .card .meta>small{font-size:12px!important;line-height:1.35!important;padding:3px 10px 8px!important}
 }
 
-/* LNTDV — QR code: force a real, readable block directly under the project title.
-   The previous version relied on a text+background pseudo-element. This version
-   separates the label from the QR itself and also provides an h1 fallback. */
-header .lntdv-project-heading,
-header h1.lntdv-project-heading{
-  overflow:visible!important;
-}
-
+/* LNTDV — QR code: place it AFTER the project title description, not inside the title. */
 header .lntdv-project-heading::before,
-header h1.lntdv-project-heading::before{
-  content:"Segui la storia nella mostra"!important;
-  display:block!important;
-  width:100%!important;
-  margin:12px 0 7px!important;
-  color:#fffaf3!important;
-  font:600 11px/1.3 Arial,sans-serif!important;
-  letter-spacing:.7px!important;
-  text-align:center!important;
-  text-transform:none!important;
-}
-
 header .lntdv-project-heading::after,
+header h1.lntdv-project-heading::before,
 header h1.lntdv-project-heading::after,
 header h1::after{
+  content:none!important;
+  display:none!important;
+}
+
+.lntdv-title-description::after{
   content:""!important;
   display:block!important;
   width:132px!important;
   height:132px!important;
   min-width:132px!important;
   min-height:132px!important;
-  margin:0 auto 10px!important;
+  margin:14px auto 12px!important;
   padding:0!important;
   box-sizing:border-box!important;
   background:#fff url("../qr/lntdv-story-qr.svg") center center/128px 128px no-repeat!important;
@@ -165,20 +152,29 @@ header h1::after{
   opacity:1!important;
 }
 
+.lntdv-title-description::before{
+  content:"Segui la storia nella mostra"!important;
+  display:block!important;
+  width:100%!important;
+  margin:0 0 7px!important;
+  color:#5a3b2b!important;
+  font:600 11px/1.3 Arial,sans-serif!important;
+  letter-spacing:.7px!important;
+  text-align:center!important;
+  text-transform:none!important;
+}
+
 @media(max-width:700px){
-  header .lntdv-project-heading::before,
-  header h1.lntdv-project-heading::before{
-    margin:10px 0 6px!important;
+  .lntdv-title-description::before{
+    margin:0 0 6px!important;
     font-size:10px!important;
   }
-  header .lntdv-project-heading::after,
-  header h1.lntdv-project-heading::after,
-  header h1::after{
+  .lntdv-title-description::after{
     width:124px!important;
     height:124px!important;
     min-width:124px!important;
     min-height:124px!important;
     background-size:120px 120px!important;
-    margin-bottom:8px!important;
+    margin:10px auto 8px!important;
   }
 }
