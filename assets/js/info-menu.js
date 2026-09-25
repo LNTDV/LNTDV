@@ -1,39 +1,106 @@
-/* LNTDV — lightweight info menu controller */
+/* LNTDV — FINAL HEADER CONTROLLER — 2026-09-25 */
 (function(){
   "use strict";
-  function installNoCircleStyle(){
-    if(document.getElementById("lntdv-menu-no-circle-style")) return;
+
+  function installFinalStyle(){
+    if(document.getElementById("lntdv-final-header-fix")) return;
     const style=document.createElement("style");
-    style.id="lntdv-menu-no-circle-style";
-    style.textContent="#infoMenuButton.info-menu-button{position:fixed!important;top:18px!important;right:18px!important;left:auto!important;bottom:auto!important;width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;color:#f4eadf!important;outline:none!important;z-index:2147483000!important}#infoMenuButton.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fffaf3!important;box-shadow:none!important;opacity:1!important;transform:none!important}#infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}#infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}#infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}@media(max-width:700px){#infoMenuButton.info-menu-button{top:12px!important;left:14px!important;right:auto!important;width:30px!important;height:28px!important}#infoMenuButton.info-menu-button span{width:23px!important;min-width:23px!important}}";
+    style.id="lntdv-final-header-fix";
+    style.textContent=`
+      /* Remove every legacy QR/header pseudo-element. */
+      header h1::before,header h1::after,
+      header .lntdv-project-heading::before,header .lntdv-project-heading::after,
+      header .lntdv-title-description::before,header .lntdv-title-description::after,
+      .lntdv-title-description::before,.lntdv-title-description::after,
+      header::before,header::after{content:none!important;display:none!important;background:none!important}
+
+      /* Hamburger: always upper-right inside the brown header. */
+      header{position:relative!important}
+      #infoMenuButton.info-menu-button{
+        position:absolute!important;top:14px!important;right:16px!important;left:auto!important;bottom:auto!important;
+        width:34px!important;height:30px!important;min-width:34px!important;min-height:30px!important;
+        margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
+        box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;
+        justify-content:center!important;gap:5px!important;z-index:2147483000!important
+      }
+      #infoMenuButton.info-menu-button span{
+        display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;
+        margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fffaf3!important;
+        box-shadow:none!important;opacity:1!important
+      }
+      #infoMenuButton.info-menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
+      #infoMenuButton.info-menu-button.open span:nth-child(2){opacity:0!important}
+      #infoMenuButton.info-menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
+
+      /* QR: after the complete title/description block, never above the title. */
+      #lntdv-final-story-qr{
+        display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
+        width:100%!important;margin:18px auto 0!important;padding:0!important;text-align:center!important;box-sizing:border-box!important
+      }
+      #lntdv-final-story-qr img{
+        display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;
+        margin:0 auto 8px!important;padding:0!important;border:4px solid #fff!important;border-radius:4px!important;
+        background:#fff!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important;box-sizing:border-box!important
+      }
+      #lntdv-final-story-qr .qr-label{font:600 11px/1.3 Arial,sans-serif!important;letter-spacing:.7px!important;color:#fffaf3!important}
+      @media(max-width:700px){
+        #infoMenuButton.info-menu-button{top:12px!important;right:14px!important;left:auto!important}
+        #lntdv-final-story-qr{margin-top:18px!important}
+        #lntdv-final-story-qr img{width:136px!important;height:136px!important;max-width:136px!important}
+      }
+    `;
     document.head.appendChild(style);
   }
-  function installShowQr(){
-    if(document.getElementById("lntdv-show-qr")) return;
-    const intro=document.querySelector("header .intro");
-    if(!intro) return;
-    const wrap=document.createElement("div");
-    wrap.id="lntdv-show-qr";
-    wrap.setAttribute("aria-label","Segui la mostra");
-    wrap.innerHTML='<img alt="QR code per seguire la mostra La Nostra Terra Da Vicino" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB/0lEQVR4nO2bQYrjMBBFX40MvbRhDpCjyFfLkeYG0VHmBvIyYPNnIcnuhmZIGBJroGqRmPgtPhRVqvp2TDwY6cejJDjqqKOOOuroK1GrMWDzMmDzYlY+zMxsfrkAR59BoyQpg66Xu5GmICBIkvQVfY0ARx+JoX4vE8RfYDFviOUnYgGDsL5UgKP/gOpqH7KZzU4S4OizqK5TkM3nCXD0+2idcBSU1jdmiKJ0ws+78+laHa1oMjOzCYi/98GQrYyE7xDg6CNRausoIbHsR9b41ZU6XaujlBk95lAneGlFN9qVclCZ72+na3W0oLpOm9k8rsBSjzKblwHS5e6dsBu01FZbgoOkHFTLSiuA11Y/aM3WbVyroXEjCMZqbdQrz1Yf6H5uAbW2AMb6W73r2eoJ1Y3a/yitL29GmgAOV6MTrY6aXe7Fgy+RbICYg0j24a5uN+g+ZaztBANKY4xa8XOrK5RjHKw5yqGNGlBS5tnqC6078SiRLu0JSWxptPnlAhx9Aj2eHcNiVptg25PfIMDRZ9Dj2bEk1XFwXAE2K2dZN1odZWmvX6RpM5vZjNTs93KjH62O7hFzKCZvWZFZBry2ekWrl1s2r81IlxWb3yjA0b/FJ29JOTTHMEM5t+Ju+voEfz6671tAXbqOfSuoTPXuE3aCmv9rwVFHHXXU0f8I/QMyzVcLgxuZ2AAAAABJRU5ErkJggg=="/><div>Segui la mostra</div>';
-    const style=document.createElement("style");
-    style.id="lntdv-show-qr-style";
-    style.textContent="#lntdv-show-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:16px auto 4px;padding:0;text-align:center;color:#fffaf3;font:700 12px/1.2 Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase}#lntdv-show-qr img{display:block;width:128px;height:128px;max-width:34vw;min-width:104px;image-rendering:auto;background:#fff;padding:7px;border-radius:8px;box-sizing:content-box}@media(max-width:600px){#lntdv-show-qr{margin-top:13px;gap:7px;font-size:11px;letter-spacing:1.2px}#lntdv-show-qr img{width:112px;height:112px;min-width:100px;padding:6px}}";
-    document.head.appendChild(style);
-    intro.insertAdjacentElement("afterend",wrap);
+
+  function removeStrayNewline(){
+    Array.from(document.body.childNodes).forEach(function(node){
+      if(node.nodeType===3 && (node.textContent.trim()==="\\n" || node.textContent.trim()==="\\\\n")) node.remove();
+    });
   }
+
+  function moveQr(){
+    document.querySelectorAll("#lntdv-show-qr,#lntdv-story-qr-block,#lntdv-final-story-qr").forEach(function(el){
+      if(el.id!=="lntdv-final-story-qr") el.remove();
+    });
+
+    /* Prefer the complete project-description container. */
+    const description=document.querySelector(".lntdv-title-description");
+    if(!description) return;
+
+    const qr=document.createElement("div");
+    qr.id="lntdv-final-story-qr";
+    qr.innerHTML='<img src="./assets/qr/lntdv-story-qr.svg?v=20260925-final-qr" alt="QR code — Segui la storia nella mostra"><div class="qr-label">Segui la storia nella mostra</div>';
+    description.insertAdjacentElement("afterend",qr);
+  }
+
   function init(){
-    installNoCircleStyle();
-    installShowQr();
+    installFinalStyle();
+    removeStrayNewline();
+
     const btn=document.getElementById("infoMenuButton");
+    const header=document.querySelector("header");
+    if(btn && header){
+      header.style.position="relative";
+      btn.style.position="absolute";
+      btn.style.top="14px";
+      btn.style.right="16px";
+      btn.style.left="auto";
+      btn.style.bottom="auto";
+    }
+
+    moveQr();
+
     const drawer=document.getElementById("infoDrawer");
     const close=document.getElementById("infoDrawerClose");
-    if(!btn||!drawer)return;
-    const shut=()=>{drawer.classList.remove("open");btn.classList.remove("open");btn.setAttribute("aria-expanded","false");drawer.setAttribute("aria-hidden","true");};
+    if(!btn||!drawer) return;
+    const shut=()=>{drawer.classList.remove("open");btn.classList.remove("open");btn.setAttribute("aria-expanded","false");drawer.setAttribute("aria-hidden","true")};
     btn.addEventListener("click",()=>drawer.classList.contains("open")?shut():(drawer.classList.add("open"),btn.classList.add("open"),btn.setAttribute("aria-expanded","true"),drawer.setAttribute("aria-hidden","false")));
-    close?.addEventListener("click",shut);
+    if(close) close.addEventListener("click",shut);
     drawer.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener("click",()=>setTimeout(shut,180)));
-    document.addEventListener("keydown",e=>{if(e.key==="Escape")shut();},{passive:true});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")shut()},{passive:true});
   }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+  else init();
+  window.addEventListener("load",function(){removeStrayNewline();moveQr()},{once:true});
 })();
