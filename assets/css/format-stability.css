@@ -23,11 +23,19 @@ header{position:relative!important}
 #infoMenuButton.info-menu-button span,.info-menu-button span{display:block!important;width:24px!important;height:2px!important;min-width:24px!important;min-height:2px!important;margin:0!important;padding:0!important;background:#fffaf3!important;opacity:1!important}
 @media(max-width:700px){#infoMenuButton.info-menu-button,.info-menu-button{top:12px!important;right:14px!important;left:auto!important;width:32px!important;height:30px!important;min-width:32px!important;min-height:30px!important}.info-menu-button span{width:23px!important;min-width:23px!important}}
 
-/* FINAL HERO ORDER: keep only the second QR. The project description stays below the main title; the exhibition title follows the QR. */
+/* FINAL HERO ORDER */
 #lntdv-final-hero-flow>div.lntdv-final-qr:first-of-type{display:none!important}
-#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type{order:3!important}
 #lntdv-final-hero-flow>h1{order:1!important}
-#lntdv-final-hero-flow>p{order:2!important}
+#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type{order:3!important;margin-top:18px!important}
+#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type::before{
+  content:"La Nostra Terra Da Vicino\A\AIl progetto nasce dall’osservazione della terra e dei luoghi che attraversiamo ogni giorno, cercando dettagli, contrasti e atmosfere che spesso passano inosservati.\A\AIl lavoro nasce dal desiderio di fermare lo sguardo sul territorio e costruire, attraverso la fotografia, una memoria visiva del rapporto tra ambiente e presenza umana.";
+  white-space:pre-wrap!important;display:block!important;width:min(760px,100%)!important;margin:0 auto 18px!important;color:#fffaf3!important;text-align:center!important;font:16px/1.55 Georgia,serif!important;
+}
+#lntdv-final-hero-flow>p{order:5!important}
 #lntdv-final-hero-flow>div:not(.lntdv-final-qr){order:4!important}
-#lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type+div{order:4!important}
-#lntdv-final-hero-flow .lntdv-final-qr img{display:block!important}
+#lntdv-project-description-block{display:none!important}
+#lntdv-final-hero-flow .lntdv-final-qr img{display:block!important;width:136px!important;height:136px!important;max-width:136px!important;object-fit:contain!important;margin:0 auto 7px!important;border:4px solid #fff!important;border-radius:4px!important;background:#fff!important;box-sizing:border-box!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important}
+#lntdv-final-hero-flow .lntdv-final-qr div{font:700 12px/1.3 Arial,sans-serif!important;letter-spacing:.6px!important;color:#fffaf3!important}
+@media(max-width:600px){
+  #lntdv-final-hero-flow>div.lntdv-final-qr:last-of-type::before{width:100%!important;font-size:15px!important;line-height:1.5!important;margin-bottom:16px!important}
+}
