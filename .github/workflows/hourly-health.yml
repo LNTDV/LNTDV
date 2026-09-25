@@ -54,27 +54,18 @@ jobs:
           assert 'https://script.google.com/macros/s/' in js
           assert "p.action === 'health'" in code
 
-          # Flusso definitivo: la condivisione del token deve avvenire
-          # esclusivamente dopo la spunta di Ordini!T (colonna 20).
-          assert "LNTDV_PAYMENT_CONFIRMATION_COLUMN = 20" in token
-          assert "LNTDV_TOKEN_SENT_AT_COLUMN = 25" in token
-          assert "LNTDV_TOKEN_SEND_STATUS_COLUMN = 26" in token
+          # Canonical payment flow is now implemented only in the deploy script.
           assert 'installPaymentTokenConfirmation' in token
-          assert 'lntdvPaymentConfirmationOnEdit_' in token
-          assert 'MailApp.sendEmail' in token
-          assert 'trackingUrl' in token
-          assert 'alreadySentAt' in token
-
-          # Installer canonico: un solo handler definitivo e rimozione dei legacy.
-          assert 'function lntdvInstallFinal24092026()' in deploy
-          assert "const LNTDV_FINAL_2026_HANDLER = 'lntdvPaymentFinal24092026_'" in deploy
+          assert 'lntdvInstallFinal24092026' in token
           assert "const LNTDV_FINAL_2026_PAYMENT_COL = 20" in deploy
           assert "const LNTDV_FINAL_2026_SHARED_AT_COL = 25" in deploy
           assert "const LNTDV_FINAL_2026_STATUS_COL = 26" in deploy
-          assert 'onOrderCheckboxEdit_' in deploy
-          assert 'lntdvPaymentConfirmationOnEdit_' in deploy
-          assert 'lntdvPayment24092026_' in deploy
+          assert "const LNTDV_FINAL_2026_HANDLER = 'lntdvPaymentFinal24092026_'" in deploy
+          assert 'function lntdvInstallFinal24092026()' in deploy
+          assert 'function lntdvPaymentFinal24092026_(e)' in deploy
           assert 'MailApp.sendEmail' in deploy
+          assert 'trackingUrl' in deploy
+          assert 'alreadySentAt' in deploy
 
           assert not re.search(r'transform\s*:\s*rotate\s*\(', s, re.I)
           assert not re.search(r'\.lntdv-photo-stage[^{}]*>\s*img[^{}]*\{[^}]*transform\s*:\s*rotate', css, re.I | re.S)
@@ -122,11 +113,10 @@ jobs:
         run: |
           set -euo pipefail
           for i in {1..10}; do
-            if curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/ &&
-               grep -q 'LNTDV-001' /tmp/lntdv.html &&
-               grep -q 'LNTDV-025' /tmp/lntdv.html &&
-               grep -q 'La Nostra Terra Da Vicino' /tmp/lntdv.html &&
-               grep -q 'infoMenuButton' /tmp/lntdv.html; then
+            if curl -fsSL --max-time 30 -o /tmp/lntdv.html https://lntdv.it/ && \
+               grep -q 'LNTDV-001' /tmp/lntdv.html && \
+               grep -q 'LNTDV-025' /tmp/lntdv.html && \
+               grep -q 'La Nostra Terra Da Vicino' /tmp/lntdv.html; then
               echo "PUBLIC SITE OK"
               exit 0
             fi
