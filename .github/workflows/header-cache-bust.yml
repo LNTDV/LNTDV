@@ -17,7 +17,8 @@ jobs:
           fetch-depth: 0
       - name: Update header script version
         run: |
-          sed -i 's#info-menu.js?v=20260921-final#info-menu.js?v=20260925-stable2#' index.html
+          VERSION="20260925-stable3"
+          sed -E -i "s#info-menu.js\\?v=[^\"]*#info-menu.js?v=${VERSION}#" index.html
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           if git diff --quiet -- index.html; then
