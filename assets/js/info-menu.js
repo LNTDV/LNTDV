@@ -1,4 +1,4 @@
-/* LNTDV — stable menu + QR cleanup — 2026-09-25 */
+/* LNTDV — stable menu + QR cleanup — 2026-09-25 — stable4 */
 (function(){
 'use strict';
 var HOME='https://lntdv.it/';
